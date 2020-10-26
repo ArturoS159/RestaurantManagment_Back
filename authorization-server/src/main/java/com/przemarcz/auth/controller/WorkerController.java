@@ -15,7 +15,7 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/restaurants")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "*")
 public class WorkerController {
     private final WorkerService workerService;
 

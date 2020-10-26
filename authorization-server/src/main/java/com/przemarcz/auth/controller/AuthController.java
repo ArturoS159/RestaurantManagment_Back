@@ -11,7 +11,7 @@ import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthService authService;

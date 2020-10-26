@@ -12,6 +12,7 @@ public interface MealMapper {
     Meal toMeal(MealDto mealDto, UUID restaurantId);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "restaurantId", ignore = true)
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateMeal(MealDto mealDto, @MappingTarget Meal meal);
