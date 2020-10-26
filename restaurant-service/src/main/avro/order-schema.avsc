@@ -1,0 +1,88 @@
+{
+  "name": "OrderAvro",
+  "type": "record",
+  "namespace": "com.przemarcz.avro",
+  "fields": [
+    {
+      "name": "forename",
+      "type": "string"
+    },
+    {
+      "name": "surname",
+      "type": "string"
+    },
+    {
+      "name": "street",
+      "type": "string"
+    },
+    {
+      "name": "city",
+      "type": "string"
+    },
+    {
+      "name": "phoneNumber",
+      "type": "string"
+    },
+    {
+      "name": "postCode",
+      "type": "string"
+    },
+    {
+      "name": "comment",
+      "type": "string"
+    },
+    {
+      "name": "restaurantId",
+      "type": "string"
+    },
+    {
+      "name": "mealList",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "MealAvro",
+          "type": "record",
+          "fields": [
+            {
+              "name": "id",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "price",
+              "type": [ {
+                          "type": "string",
+                          "java-class": "java.math.BigDecimal"
+                       } ]
+            },
+            {
+              "name": "quantity",
+              "type": [ {
+                          "type": "string",
+                          "java-class": "java.math.BigDecimal"
+                       } ]
+            },
+            {
+              "name": "image",
+              "type": "string"
+            },
+            {
+              "name": "ingredients",
+              "type": "string"
+            },
+            {
+              "name": "timeToDo",
+              "type": [ {
+                          "type": "string",
+                          "java-class": "java.math.BigDecimal"
+                       } ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

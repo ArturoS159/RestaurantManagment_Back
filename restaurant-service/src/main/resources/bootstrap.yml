@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: restaurant-service
+  cloud:
+    config:
+      name: restaurant

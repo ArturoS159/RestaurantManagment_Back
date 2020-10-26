@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations: classpath:config/
+server:
+  port: 8888

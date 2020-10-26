@@ -1,0 +1,28 @@
+{
+  "name": "AccesAvro",
+  "type": "record",
+  "namespace": "com.przemarcz.avro",
+  "fields": [
+    {
+      "name": "type",
+      "type": {
+        "name": "RestaurantDo",
+        "type": "enum",
+        "symbols": [
+          "ADD",
+          "DEL"
+        ]
+      }
+    },
+    {
+      "name": "restaurantId",
+      "type": "string",
+      "logicalType": "UUID"
+    },
+    {
+      "name": "userId",
+      "type": "string",
+      "logicalType": "UUID"
+    }
+  ]
+}
