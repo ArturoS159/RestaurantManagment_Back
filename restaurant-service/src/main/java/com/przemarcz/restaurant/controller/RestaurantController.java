@@ -12,12 +12,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/restaurants")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RestaurantController {
     private final RestaurantService restaurantService;
 
@@ -42,13 +43,19 @@ public class RestaurantController {
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @DeleteMapping("/{restaurantId}")
     public ResponseEntity<RestaurantDto> delRestaurant(@PathVariable UUID restaurantId) {
-        //TODO do delete restaurant
-        return null;
+        restaurantService.delRestaurant(restaurantId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/{restaurantId}/orders")
     public ResponseEntity<Void> orderMeals(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
         restaurantService.orderMeals(restaurantId, orderDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Void> t(@PathVariable Date date){
+        System.out.println("as");
+        return null;
     }
 }

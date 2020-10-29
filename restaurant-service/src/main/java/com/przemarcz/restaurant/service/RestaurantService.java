@@ -55,8 +55,7 @@ public class RestaurantService {
     @Transactional(value = "transactionManager", readOnly = true)
     public RestaurantDto getRestaurant(UUID restaurantId) {
         return restaurantMapper.toRestaurantDto(
-                restaurantRepository.findById(restaurantId)
-                        .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)))
+                getRestaurantFromDatabase(restaurantId)
         );
     }
 
@@ -91,5 +90,14 @@ public class RestaurantService {
 
     private void sendMessageOrder(OrderAvro order) {
         orderKafkaTemplate.send(topicOrders, order);
+    }
+
+    public void delRestaurant(UUID restaurantId) {
+        //TODO
+    }
+
+    private Restaurant getRestaurantFromDatabase(UUID restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));
     }
 }
