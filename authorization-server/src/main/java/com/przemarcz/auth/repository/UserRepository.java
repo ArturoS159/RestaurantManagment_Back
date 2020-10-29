@@ -18,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByEmail(@Param("email") String email);
 
+    Optional<User> findByLogin(@Param("login") String login);
+
     Optional<User> findByLoginOrEmail(@Param("login") String login, @Param("email") String email);
 
     Page<User> findByRestaurantRolesUserIdIn(@Param("userIdList") List<UUID> userIdList, Pageable pageable);

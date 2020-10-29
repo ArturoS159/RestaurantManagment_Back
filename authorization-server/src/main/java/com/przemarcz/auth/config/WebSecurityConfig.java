@@ -28,14 +28,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/register");
+        web.ignoring().antMatchers("/register/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/register").permitAll()
+                .antMatchers("/register/**").permitAll()
                 .anyRequest().authenticated();
     }
 
