@@ -52,10 +52,4 @@ public class RestaurantController {
         restaurantService.orderMeals(restaurantId, orderDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-    @GetMapping("/test")
-    public ResponseEntity<Void> t(@PathVariable Date date){
-        System.out.println("as");
-        return null;
-    }
 }
