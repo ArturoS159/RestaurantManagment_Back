@@ -1,8 +1,8 @@
 package com.przemarcz.auth.service;
 
 import com.przemarcz.auth.dto.UserDto;
-import com.przemarcz.auth.dto.exception.NotFoundException;
-import com.przemarcz.auth.dto.exception.UserAlreadyExistException;
+import com.przemarcz.auth.exception.NotFoundException;
+import com.przemarcz.auth.exception.UserAlreadyExistException;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;

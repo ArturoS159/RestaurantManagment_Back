@@ -1,7 +1,7 @@
 package com.przemarcz.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.przemarcz.auth.dto.exception.NotFoundException;
+import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.model.enums.RoleName;
 import lombok.Getter;
 import lombok.Setter;

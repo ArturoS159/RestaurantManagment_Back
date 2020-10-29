@@ -1,13 +1,18 @@
 package com.przemarcz.restaurant.service;
 
 import com.przemarcz.avro.AccesAvro;
+import com.przemarcz.avro.MealAvro;
 import com.przemarcz.avro.OrderAvro;
 import com.przemarcz.avro.RestaurantDo;
 import com.przemarcz.restaurant.dto.OrderDto;
 import com.przemarcz.restaurant.dto.RestaurantDto;
-import com.przemarcz.restaurant.dto.exception.NotFoundException;
+import com.przemarcz.restaurant.exception.NotFoundException;
+import com.przemarcz.restaurant.mapper.AvroMapper;
 import com.przemarcz.restaurant.mapper.RestaurantMapper;
+import com.przemarcz.restaurant.mapper.TextMapper;
+import com.przemarcz.restaurant.model.Meal;
 import com.przemarcz.restaurant.model.Restaurant;
+import com.przemarcz.restaurant.repository.MealRepository;
 import com.przemarcz.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,13 +22,18 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
+    private final MealRepository mealRepository;
     private final RestaurantMapper restaurantMapper;
+    private final TextMapper textMapper;
+    private final AvroMapper avroMapper;
     private final KafkaTemplate<String, OrderAvro> orderKafkaTemplate;
     private final KafkaTemplate<String, AccesAvro> accessKafkaTemplate;
 
@@ -35,7 +45,7 @@ public class RestaurantService {
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<RestaurantDto> getAllRestaurants(String userId, Pageable pageable, boolean my) {
         if (my) {
-            return restaurantRepository.findAllByOwnerId(convertUserIdStringToUUID(userId), pageable)
+            return restaurantRepository.findAllByOwnerId(textMapper.toUUID(userId), pageable)
                     .map(restaurantMapper::toRestaurantDto);
         }
         return restaurantRepository.findAll(pageable).map(restaurantMapper::toRestaurantDto);
@@ -46,13 +56,14 @@ public class RestaurantService {
     public RestaurantDto getRestaurant(UUID restaurantId) {
         return restaurantMapper.toRestaurantDto(
                 restaurantRepository.findById(restaurantId)
-                        .orElseThrow(() -> new NotFoundException("Restaurant not found!"))
+                        .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)))
         );
     }
 
     @Transactional("chainedKafkaTransactionManager")
     public void addRestaurant(String userId, RestaurantDto restaurantDto) {
-        Restaurant restaurant = restaurantRepository.save(restaurantMapper.toRestaurant(restaurantDto, convertUserIdStringToUUID(userId)));
+        Restaurant restaurant = restaurantRepository.save(
+                restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId)));
         sendMessageAddRestaurant(userId, restaurant);
     }
 
@@ -61,12 +72,24 @@ public class RestaurantService {
         accessKafkaTemplate.send(topicAccess, accesAvro);
     }
 
+    @Transactional("chainedKafkaTransactionManager")
     public void orderMeals(UUID restaurantId, OrderDto orderDto) {
-        //TODO
+        OrderAvro orderAvro = avroMapper.toOrderAvro(orderDto, restaurantId);
+        List<MealAvro> meals = getCorrectlyMealsFromDatabase(restaurantId, orderDto);
+        orderAvro.setMeals(meals);
+        sendMessageOrder(orderAvro);
     }
 
-    private UUID convertUserIdStringToUUID(String userId) {
-        return UUID.fromString(userId);
+    private List<MealAvro> getCorrectlyMealsFromDatabase(UUID restaurantId, OrderDto orderDto) {
+        return orderDto.getMeals().stream()
+                .map(mealDto -> {
+                    Meal meal = mealRepository.findByIdAndRestaurantId(mealDto.getId(),restaurantId)
+                            .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealDto.getId())));
+                    return avroMapper.toMealAvro(mealDto,meal);
+                }).collect(Collectors.toList());
     }
 
+    private void sendMessageOrder(OrderAvro order) {
+        orderKafkaTemplate.send(topicOrders, order);
+    }
 }

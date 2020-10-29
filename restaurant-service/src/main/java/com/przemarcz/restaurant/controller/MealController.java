@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +20,7 @@ public class MealController {
 
     @GetMapping("/{restaurantId}/meals")
     public ResponseEntity<List<MealDto>> getRestaurantMeals(@PathVariable UUID restaurantId) {
-        return new ResponseEntity<>(mealService.getRestaurantMeals(restaurantId), HttpStatus.OK);
+        return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
@@ -34,8 +33,7 @@ public class MealController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}/meals/{mealId}")
-    public ResponseEntity<Void> updateMeal(Principal user,
-                                           @PathVariable UUID restaurantId,
+    public ResponseEntity<Void> updateMeal(@PathVariable UUID restaurantId,
                                            @PathVariable UUID mealId,
                                            @RequestBody MealDto mealDto) {
         mealService.updateMeal(restaurantId, mealId, mealDto);
@@ -44,8 +42,7 @@ public class MealController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @DeleteMapping("/{restaurantId}/meals/{mealId}")
-    public ResponseEntity<Void> deleteMeal(Principal user,
-                                           @PathVariable UUID restaurantId,
+    public ResponseEntity<Void> deleteMeal(@PathVariable UUID restaurantId,
                                            @PathVariable UUID mealId) {
         mealService.deleteMeal(restaurantId, mealId);
         return new ResponseEntity<>(HttpStatus.OK);

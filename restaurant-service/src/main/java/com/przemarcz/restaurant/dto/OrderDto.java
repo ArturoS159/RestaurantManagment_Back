@@ -16,5 +16,5 @@ public class OrderDto {
     private String phoneNumber;
     private String postCode;
     private String comment;
-    private List<MealDto> mealList;
+    private List<MealDto> meals;
 }

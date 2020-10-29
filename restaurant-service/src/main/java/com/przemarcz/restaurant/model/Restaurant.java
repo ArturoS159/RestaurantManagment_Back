@@ -43,9 +43,9 @@ public class Restaurant {
             orphanRemoval = true
     )
     @JoinColumn(name = "restaurant_id")
-    private List<Meal> mealList;
+    private List<Meal> meals;
 
     public void addMeal(Meal meal) {
-        mealList.add(meal);
+        meals.add(meal);
     }
 }

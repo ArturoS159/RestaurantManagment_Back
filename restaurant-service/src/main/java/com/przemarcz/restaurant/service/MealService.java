@@ -1,7 +1,7 @@
 package com.przemarcz.restaurant.service;
 
 import com.przemarcz.restaurant.dto.MealDto;
-import com.przemarcz.restaurant.dto.exception.NotFoundException;
+import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.mapper.MealMapper;
 import com.przemarcz.restaurant.model.Meal;
 import com.przemarcz.restaurant.model.Restaurant;
@@ -24,9 +24,9 @@ public class MealService {
     private final MealMapper mealMapper;
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public List<MealDto> getRestaurantMeals(UUID restaurantId) {
+    public List<MealDto> getAllRestaurantMeals(UUID restaurantId) {
         return getRestaurant(restaurantId)
-                .getMealList().stream()
+                .getMeals().stream()
                 .map(mealMapper::toMealDto).
                         collect(Collectors.toList());
     }
@@ -39,15 +39,10 @@ public class MealService {
         restaurantRepository.save(restaurant);
     }
 
-    private Restaurant getRestaurant(UUID restaurantId) {
-        return restaurantRepository.findById(restaurantId)
-                .orElseThrow(NotFoundException::new);
-    }
-
     @Transactional(value = "transactionManager")
     public void updateMeal(UUID restaurantId, UUID mealId, MealDto mealDto) {
         Meal meal = getMeal(restaurantId, mealId);
-        mealMapper.updateMeal(mealDto, meal);
+        mealMapper.updateMeal(meal, mealDto);
         mealRepository.save(meal);
     }
 
@@ -57,8 +52,13 @@ public class MealService {
         mealRepository.delete(meal);
     }
 
+    private Restaurant getRestaurant(UUID restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));
+    }
+
     private Meal getMeal(UUID restaurantId, UUID mealId) {
         return mealRepository.findByIdAndRestaurantId(mealId, restaurantId)
-                .orElseThrow(() -> new NotFoundException("Meal not found!"));
+                .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealId)));
     }
 }

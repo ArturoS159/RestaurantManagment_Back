@@ -1,7 +1,7 @@
 package com.przemarcz.auth.service;
 
 import com.przemarcz.auth.dto.UserDto;
-import com.przemarcz.auth.dto.exception.NotFoundException;
+import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.UserRole;

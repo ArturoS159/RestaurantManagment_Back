@@ -10,7 +10,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", uses = MealMapper.class)
 public interface RestaurantMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "mealList", ignore = true)
+    @Mapping(target = "meals", ignore = true)
     Restaurant toRestaurant(RestaurantDto restaurantDto, UUID ownerId);
 
     RestaurantDto toRestaurantDto(Restaurant restaurant);

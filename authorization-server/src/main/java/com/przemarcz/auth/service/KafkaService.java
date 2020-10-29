@@ -1,6 +1,6 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.dto.exception.NotFoundException;
+import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.enums.RoleName;
 import com.przemarcz.auth.repository.UserRepository;
@@ -32,6 +32,7 @@ public class KafkaService {
     private void addOrDeleteUserRole(ConsumerRecord<String, AccesAvro> accessAvro) {
         final UUID userId = charSequenceToUuid(accessAvro.value().getUserId());
         final UUID restaurantId = charSequenceToUuid(accessAvro.value().getRestaurantId());
+        //TODO is exist&&refactors
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("User " + userId + " not found!"));
         if (accessAvro.value().getType().equals(RestaurantDo.ADD)) {

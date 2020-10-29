@@ -36,8 +36,9 @@
       "type": "string"
     },
     {
-      "name": "mealList",
-      "type": {
+      "name": "meals",
+      "default": null,
+      "type": ["null",{
         "type": "array",
         "items": {
           "name": "MealAvro",
@@ -60,10 +61,7 @@
             },
             {
               "name": "quantity",
-              "type": [ {
-                          "type": "string",
-                          "java-class": "java.math.BigDecimal"
-                       } ]
+              "type": "string"
             },
             {
               "name": "image",
@@ -82,7 +80,7 @@
             }
           ]
         }
-      }
+      }]
     }
   ]
 }

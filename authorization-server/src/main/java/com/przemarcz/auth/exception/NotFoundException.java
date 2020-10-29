@@ -1,4 +1,4 @@
-package com.przemarcz.auth.dto.exception;
+package com.przemarcz.auth.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException() {
