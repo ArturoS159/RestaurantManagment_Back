@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.PathParam;
 import java.security.Principal;
 import java.util.Date;
 import java.util.UUID;
@@ -54,8 +55,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<Void> t(@PathVariable Date date){
-        System.out.println("as");
+    public String test(@PathParam("date") Date date) {
         return null;
     }
 }

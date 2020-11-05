@@ -1,6 +1,5 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.dto.RegisterPersonalData;
 import com.przemarcz.auth.dto.RegisterUser;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.exception.NotFoundException;
@@ -36,12 +35,12 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional(value = "transactionManager")
-    public void register(RegisterUser registerUser) {
-        if (isUserExist(registerUser)) {
+    public void register(RegisterUser user) {
+        if (isUserExist(user)) {
             throw new UserAlreadyExistException();
         }
-        userRepository.save(userMapper.toUser(registerUser,registerUser.getRole()));
-        log.info(String.format("User %s registered!", registerUser.getLogin()));
+        userRepository.save(userMapper.toUser(user));
+        log.info(String.format("User %s registered!", user.getLogin()));
     }
 
     private boolean isUserExist(RegisterUser user) {
@@ -64,11 +63,10 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    @Transactional(value = "transactionManager")
-    public void continueRegister(RegisterPersonalData registerPersonalData, String login) {
-        User user = userRepository.findByLogin(login).orElseThrow(() ->
-                new NotFoundException(String.format("User %s not found!",login)));
-        userMapper.addPersonalData(user,registerPersonalData);
+    public void addOwnerData(String id) {
+        User user = userRepository.findById(requireNonNull(getUserIdInUUID(id))).orElseThrow(IllegalArgumentException::new);
+        user.setOwner(true);
+        //TODO
         userRepository.save(user);
     }
 }

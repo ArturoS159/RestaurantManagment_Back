@@ -1,7 +1,8 @@
 package com.przemarcz.auth.model;
 
-import com.przemarcz.auth.model.enums.RoleName;
+import com.przemarcz.auth.model.enums.Role;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "user_roles")
+@NoArgsConstructor
 public class UserRole implements Serializable {
     private static final long serialVersionUID = 6228683028367657690L;
     @Id
@@ -25,7 +27,12 @@ public class UserRole implements Serializable {
     @Column(name = "user_id")
     private UUID userId;
     @Enumerated(EnumType.STRING)
-    private RoleName role;
+    private Role role;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
+
+    public UserRole(Role role, UUID restaurantId) {
+        this.role = role;
+        this.restaurantId = restaurantId;
+    }
 }

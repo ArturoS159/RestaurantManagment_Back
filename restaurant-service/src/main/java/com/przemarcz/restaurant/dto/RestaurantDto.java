@@ -1,6 +1,6 @@
 package com.przemarcz.restaurant.dto;
 
-import com.przemarcz.restaurant.model.RestaurantCategory;
+import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.Getter;
 import lombok.Setter;
 

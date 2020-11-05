@@ -1,6 +1,5 @@
 package com.przemarcz.auth.controller;
 
-import com.przemarcz.auth.dto.RegisterPersonalData;
 import com.przemarcz.auth.dto.RegisterUser;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.service.AuthService;
@@ -24,15 +23,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterUser registerUser) {
-        authService.register(registerUser);
+    public ResponseEntity<Void> register(@RequestBody RegisterUser user) {
+        authService.register(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/register/{login}/personal-data")
-    public ResponseEntity<Void> continueRegister(@RequestBody RegisterPersonalData registerPersonalData,
-                                                 @PathVariable String login) {
-        authService.continueRegister(registerPersonalData,login);
+    @PostMapping("/user/owner-data")
+    public ResponseEntity<Void> addOwnerData(Principal user) {
+        authService.addOwnerData(user.getName());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

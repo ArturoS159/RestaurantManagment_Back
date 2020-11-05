@@ -31,7 +31,7 @@ create table if not exists users (
   identity_number VARCHAR(256),
   nip VARCHAR(256),
   regon VARCHAR(256),
-  base_role VARCHAR(256)
+  owner boolean
 );
 
 create table if not exists user_roles (

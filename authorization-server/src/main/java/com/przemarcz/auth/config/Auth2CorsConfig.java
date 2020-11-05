@@ -13,7 +13,7 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Collections;
 
 @Configuration
-public class CorsConfig {
+public class Auth2CorsConfig {
 
     @Bean
     public FilterRegistrationBean<CorsFilter> customCorsFilter() {
@@ -22,7 +22,7 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
-        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("*");
         config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
         FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(new CorsFilter(source));

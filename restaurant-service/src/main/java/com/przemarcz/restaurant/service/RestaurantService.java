@@ -63,6 +63,7 @@ public class RestaurantService {
     public void addRestaurant(String userId, RestaurantDto restaurantDto) {
         Restaurant restaurant = restaurantRepository.save(
                 restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId)));
+        restaurant.setDefaultWorkTime();
         sendMessageAddRestaurant(userId, restaurant);
     }
 

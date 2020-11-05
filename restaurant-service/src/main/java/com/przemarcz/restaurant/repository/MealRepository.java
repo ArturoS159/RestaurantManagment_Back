@@ -5,10 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface MealRepository extends JpaRepository<Meal, UUID> {
     Optional<Meal> findByIdAndRestaurantId(@Param("id") UUID id, @Param("restaurantId") UUID restaurantId);
+    List<Meal> findAllByRestaurantId(@Param("restaurantId") UUID restaurantId);
 }
