@@ -2,7 +2,7 @@ package com.przemarcz.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.przemarcz.auth.exception.NotFoundException;
-import com.przemarcz.auth.model.enums.RoleName;
+import com.przemarcz.auth.model.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -54,34 +54,32 @@ public class User implements UserDetails, Serializable {
     private String identityNumber;
     private String nip;
     private String regon;
-    @Column(name = "base_role")
-    @Enumerated(EnumType.STRING)
-    private RoleName baseRole;
+    private boolean owner;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private List<UserRole> restaurantRoles = new ArrayList<>();
 
-    public void addRole(RoleName roleName, UUID restaurantId){
-        UserRole userRole = new UserRole();
-        userRole.setRole(roleName);
-        userRole.setRestaurantId(restaurantId);
+    public void addRole(Role role, UUID restaurantId) {
+        UserRole userRole = new UserRole(role, restaurantId);
         restaurantRoles.add(userRole);
     }
 
-    public void delRole(RoleName roleName, UUID restaurantId){
+    public void delRole(Role role, UUID restaurantId) {
         restaurantRoles.remove(restaurantRoles.stream().filter(userRole ->
-                isRestaurantAndRoleTheSame(roleName, restaurantId, userRole)).findFirst()
+                isRestaurantAndRoleTheSame(role, restaurantId, userRole)).findFirst()
                 .orElseThrow(NotFoundException::new));
     }
 
-    private boolean isRestaurantAndRoleTheSame(RoleName roleName, UUID restaurantId, UserRole userRole) {
-        return userRole.getRestaurantId().equals(restaurantId) && userRole.getRole().equals(roleName);
+    private boolean isRestaurantAndRoleTheSame(Role role, UUID restaurantId, UserRole userRole) {
+        return userRole.getRestaurantId().equals(restaurantId) && userRole.getRole() == (role);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(PRE_ROLE + baseRole));
+        if (owner) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(PRE_ROLE + Role.OWNER));
+        }
         restaurantRoles.forEach(
                 userRole -> grantedAuthorities.add(
                         new SimpleGrantedAuthority(PRE_ROLE + userRole.getRole() + "_" + userRole.getRestaurantId())

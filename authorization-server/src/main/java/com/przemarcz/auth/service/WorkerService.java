@@ -5,7 +5,7 @@ import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.UserRole;
-import com.przemarcz.auth.model.enums.RoleName;
+import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
 import com.przemarcz.auth.repository.UserRoleRepository;
 import lombok.AllArgsConstructor;
@@ -29,14 +29,14 @@ public class WorkerService {
 
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<UserDto> getAllRestaurantWorkers(UUID restaurantId, Pageable pageable) {
-        List<UUID> userIdList = getUserIdsByRestaurantId(restaurantId);
+        List<UUID> workersId = getWorkersId(restaurantId);
 
-        return userRepository.findByRestaurantRolesUserIdIn(userIdList, pageable)
+        return userRepository.findByRestaurantRolesUserIdIn(workersId, pageable)
                 .map(userMapper::toUserWorkerDto);
     }
 
-    public List<UUID> getUserIdsByRestaurantId(UUID restaurantId) {
-        return userRoleRepository.findAllByRestaurantIdAndRole(restaurantId, RoleName.WORKER)
+    private List<UUID> getWorkersId(UUID restaurantId) {
+        return userRoleRepository.findAllByRestaurantIdAndRole(restaurantId, Role.WORKER)
                 .stream()
                 .map(UserRole::getUserId)
                 .collect(Collectors.toList());
@@ -44,11 +44,15 @@ public class WorkerService {
 
     @Transactional(value = "transactionManager")
     public void addRestaurantWorker(UUID restaurantId, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(
+        User user = getUserFromDatabase(email);
+        //TODO is exist
+        user.addRole(Role.WORKER, restaurantId);
+        userRepository.save(user);
+    }
+
+    public User getUserFromDatabase(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException(String.format("User %s not found!", email))
         );
-        //TODO is exist
-        user.addRole(RoleName.WORKER, restaurantId);
-        userRepository.save(user);
     }
 }

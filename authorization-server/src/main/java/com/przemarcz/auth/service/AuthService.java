@@ -1,9 +1,11 @@
 package com.przemarcz.auth.service;
 
+import com.przemarcz.auth.dto.RegisterUser;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.exception.UserAlreadyExistException;
 import com.przemarcz.auth.mapper.UserMapper;
+import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,15 +35,15 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional(value = "transactionManager")
-    public void register(UserDto user) {
+    public void register(RegisterUser user) {
         if (isUserExist(user)) {
             throw new UserAlreadyExistException();
         }
-        userRepository.save(userMapper.toUser(user,user.getRole()));
+        userRepository.save(userMapper.toUser(user));
         log.info(String.format("User %s registered!", user.getLogin()));
     }
 
-    private boolean isUserExist(UserDto user) {
+    private boolean isUserExist(RegisterUser user) {
         return userRepository.findByLoginOrEmail(user.getLogin(), user.getEmail()).isPresent();
     }
 
@@ -61,4 +63,10 @@ public class AuthService implements UserDetailsService {
         }
     }
 
+    public void addOwnerData(String id) {
+        User user = userRepository.findById(requireNonNull(getUserIdInUUID(id))).orElseThrow(IllegalArgumentException::new);
+        user.setOwner(true);
+        //TODO
+        userRepository.save(user);
+    }
 }

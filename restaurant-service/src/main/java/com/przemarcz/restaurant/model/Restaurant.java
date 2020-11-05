@@ -1,14 +1,16 @@
 package com.przemarcz.restaurant.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.przemarcz.restaurant.model.enums.Days;
+import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalTime;
+import java.util.*;
 
 @Entity
 @Table(name = "restaurants")
@@ -16,6 +18,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class Restaurant {
+
+    @JsonIgnore
+    private final static String MAX_TIME = "23:59";
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -43,9 +48,23 @@ public class Restaurant {
             orphanRemoval = true
     )
     @JoinColumn(name = "restaurant_id")
-    private List<Meal> meals;
+    private List<Meal> meals = new ArrayList<>();
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "restaurant_id")
+    private List<WorkTime> workTimes = new ArrayList<>();
 
     public void addMeal(Meal meal) {
         meals.add(meal);
+    }
+
+    public void setDefaultWorkTime() {
+        Arrays.stream(Days.values()).forEach(day -> {
+                    WorkTime workTime = new WorkTime(day, LocalTime.MIN, LocalTime.parse(MAX_TIME));
+                    workTimes.add(workTime);
+                }
+        );
     }
 }

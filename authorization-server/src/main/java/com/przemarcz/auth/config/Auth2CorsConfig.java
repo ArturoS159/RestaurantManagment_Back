@@ -13,7 +13,7 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Collections;
 
 @Configuration
-public class CorsConfig {
+public class Auth2CorsConfig {
 
     @Bean
     public FilterRegistrationBean<CorsFilter> customCorsFilter() {

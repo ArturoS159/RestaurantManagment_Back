@@ -1,15 +1,14 @@
 package com.przemarcz.auth.controller;
 
+import com.przemarcz.auth.dto.RegisterUser;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.service.AuthService;
 import lombok.AllArgsConstructor;
-import org.bouncycastle.asn1.ocsp.Request;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Date;
 
 @RestController
 @AllArgsConstructor
@@ -23,14 +22,15 @@ public class AuthController {
         return new ResponseEntity<>(authService.getUserData(user.getName()), HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Void> getXa(@RequestParam Date date) {
-        return null;
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@RequestBody RegisterUser user) {
+        authService.register(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody UserDto userDto) {
-        authService.register(userDto);
+    @PostMapping("/user/owner-data")
+    public ResponseEntity<Void> addOwnerData(Principal user) {
+        authService.addOwnerData(user.getName());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
