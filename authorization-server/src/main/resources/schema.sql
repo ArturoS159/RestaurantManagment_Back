@@ -27,11 +27,7 @@ create table if not exists users (
   city VARCHAR(256),
   post_code VARCHAR(256),
   phone_number VARCHAR(256),
-  house_number VARCHAR(256),
-  identity_number VARCHAR(256),
-  nip VARCHAR(256),
-  regon VARCHAR(256),
-  owner boolean
+  house_number VARCHAR(256)
 );
 
 create table if not exists user_roles (

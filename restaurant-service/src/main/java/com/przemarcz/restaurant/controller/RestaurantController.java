@@ -34,7 +34,6 @@ public class RestaurantController {
         return new ResponseEntity<>(restaurantService.getRestaurant(restaurantId), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('OWNER')")
     @PostMapping
     public ResponseEntity<UUID> addRestaurant(Principal user, @RequestBody RestaurantDto restaurantDto) {
         restaurantService.addRestaurant(user.getName(), restaurantDto);

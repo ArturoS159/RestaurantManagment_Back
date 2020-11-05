@@ -50,12 +50,6 @@ public class User implements UserDetails, Serializable {
     private String phoneNumber;
     @Column(name = "house_number")
     private String houseNumber;
-    @Column(name = "identity_number")
-    private String identityNumber;
-    private String nip;
-    private String regon;
-    @Column(name = "owner")
-    private boolean isOwner;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<UserRole> restaurantRoles = new ArrayList<>();
@@ -78,9 +72,6 @@ public class User implements UserDetails, Serializable {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        if (isOwner) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(PRE_ROLE + Role.OWNER));
-        }
         restaurantRoles.forEach(
                 userRole -> grantedAuthorities.add(
                         new SimpleGrantedAuthority(PRE_ROLE + userRole.getRole() + "_" + userRole.getRestaurantId())
