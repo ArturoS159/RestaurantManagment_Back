@@ -54,7 +54,8 @@ public class User implements UserDetails, Serializable {
     private String identityNumber;
     private String nip;
     private String regon;
-    private boolean owner;
+    @Column(name = "owner")
+    private boolean isOwner;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<UserRole> restaurantRoles = new ArrayList<>();
@@ -77,7 +78,7 @@ public class User implements UserDetails, Serializable {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        if (owner) {
+        if (isOwner) {
             grantedAuthorities.add(new SimpleGrantedAuthority(PRE_ROLE + Role.OWNER));
         }
         restaurantRoles.forEach(

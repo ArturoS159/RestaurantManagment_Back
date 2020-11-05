@@ -13,7 +13,4 @@ public class PersonalData {
     private String postCode;
     private String phoneNumber;
     private String houseNumber;
-    private String identityNumber;
-    private String nip;
-    private String regon;
 }

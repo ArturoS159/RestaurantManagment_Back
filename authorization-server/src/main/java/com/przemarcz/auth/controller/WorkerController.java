@@ -17,6 +17,7 @@ import java.util.UUID;
 @RequestMapping("/restaurants")
 @CrossOrigin(origins = "http://localhost:3000")
 public class WorkerController {
+
     private final WorkerService workerService;
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

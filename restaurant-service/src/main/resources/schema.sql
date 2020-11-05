@@ -8,7 +8,12 @@ create table if not exists restaurants (
   city VARCHAR(256),
   street VARCHAR(256),
   house_number VARCHAR(256),
-  phone_number VARCHAR(256)
+  phone_number VARCHAR(256),
+  active boolean,
+  description VARCHAR(256),
+  nip VARCHAR(256),
+  regon VARCHAR(256),
+  post_code VARCHAR(256)
 );
 
 create table if not exists meals (

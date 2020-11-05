@@ -2,6 +2,7 @@ package com.przemarcz.restaurant.controller;
 
 import com.przemarcz.restaurant.dto.OrderDto;
 import com.przemarcz.restaurant.dto.RestaurantDto;
+import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,12 +13,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/restaurants")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class RestaurantController {
     private final RestaurantService restaurantService;
 
@@ -34,9 +36,24 @@ public class RestaurantController {
 
     @PreAuthorize("hasRole('OWNER')")
     @PostMapping
-    public ResponseEntity<Void> addRestaurant(Principal user, @RequestBody RestaurantDto restaurantDto) {
+    public ResponseEntity<UUID> addRestaurant(Principal user, @RequestBody RestaurantDto restaurantDto) {
         restaurantService.addRestaurant(user.getName(), restaurantDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
+    @PutMapping("/{restaurantId}")
+    public ResponseEntity<Void> updateRestaurant(@PathVariable UUID restaurantId,
+                                                 @RequestBody RestaurantDto restaurantDto) {
+        restaurantService.updateRestaurant(restaurantId, restaurantDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
+    @PutMapping("/{restaurantId}/time")
+    public ResponseEntity<Void> updateRestaurantTime(@PathVariable UUID restaurantId, @RequestBody List<WorkTimeDto> worksTime) {
+        restaurantService.updateRestaurantTime(restaurantId, worksTime);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

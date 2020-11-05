@@ -6,6 +6,7 @@ import com.przemarcz.avro.OrderAvro;
 import com.przemarcz.avro.RestaurantDo;
 import com.przemarcz.restaurant.dto.OrderDto;
 import com.przemarcz.restaurant.dto.RestaurantDto;
+import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.mapper.AvroMapper;
 import com.przemarcz.restaurant.mapper.RestaurantMapper;
@@ -60,17 +61,31 @@ public class RestaurantService {
     }
 
     @Transactional("chainedKafkaTransactionManager")
-    public void addRestaurant(String userId, RestaurantDto restaurantDto) {
+    public UUID addRestaurant(String userId, RestaurantDto restaurantDto) {
         Restaurant restaurant = restaurantRepository.save(
                 restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId)));
         restaurant.setDefaultWorkTime();
         sendMessageAddRestaurant(userId, restaurant);
+        return restaurant.getId();
     }
 
     private void sendMessageAddRestaurant(String userId, Restaurant restaurant) {
         AccesAvro accesAvro = new AccesAvro(RestaurantDo.ADD, restaurant.getId().toString(), userId);
         accessKafkaTemplate.send(topicAccess, accesAvro);
     }
+
+    public void updateRestaurant(UUID restaurantId, RestaurantDto restaurantDto) {
+        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
+        restaurantMapper.updateRestaurant(restaurant,restaurantDto);
+        restaurantRepository.save(restaurant);
+    }
+
+    public void updateRestaurantTime(UUID restaurantId, List<WorkTimeDto> worksTime) {
+        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
+        restaurant.updateWorkTime(worksTime);
+        restaurantRepository.save(restaurant);
+    }
+
 
     @Transactional("chainedKafkaTransactionManager")
     public void orderMeals(UUID restaurantId, OrderDto orderDto) {

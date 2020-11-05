@@ -27,10 +27,4 @@ public class AuthController {
         authService.register(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-    @PostMapping("/user/owner-data")
-    public ResponseEntity<Void> addOwnerData(Principal user) {
-        authService.addOwnerData(user.getName());
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
 }

@@ -15,9 +15,14 @@ public class RestaurantDto {
     private String name;
     private Set<RestaurantCategory> category;
     private List<MealDto> meals;
+    private List<WorkTimeDto> worksTime;
     private String image;
+    private String description;
+    private String nip;
+    private String regon;
     private String city;
     private String street;
+    private String postCode;
     private String houseNumber;
     private String phoneNumber;
 }
