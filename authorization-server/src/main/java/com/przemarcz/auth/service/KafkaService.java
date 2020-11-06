@@ -1,6 +1,7 @@
 package com.przemarcz.auth.service;
 
 import com.przemarcz.auth.exception.NotFoundException;
+import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
@@ -19,14 +20,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaService {
+
     private static final String TOPIC_OWNER = "access-owner";
     private final UserRepository userRepository;
+    private final TextMapper textMapper;
 
     @KafkaListener(topics = TOPIC_OWNER)
     @Transactional("chainedKafkaTransactionManager")
     public void consumeFromOwnerTopic(ConsumerRecord<String, AccesAvro> accessAvro) {
-        final UUID userId = charSequenceToUuid(accessAvro.value().getUserId());
-        final UUID restaurantId = charSequenceToUuid(accessAvro.value().getRestaurantId());
+        final UUID userId = textMapper.toUUID(accessAvro.value().getUserId());
+        final UUID restaurantId = textMapper.toUUID(accessAvro.value().getRestaurantId());
         //TODO is exist&&refactors
         User user = getUserFromDatabase(userId);
         if (isAddedRestaurant(accessAvro)) {
@@ -45,10 +48,6 @@ public class KafkaService {
     private User getUserFromDatabase(UUID userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException(String.format("User %s not found!", userId)));
-    }
-
-    private UUID charSequenceToUuid(CharSequence charSequence) {
-        return UUID.fromString(charSequence.toString());
     }
 
 }
