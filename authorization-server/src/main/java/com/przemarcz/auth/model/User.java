@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +37,8 @@ public class User implements UserDetails, Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(unique = true)
-    private String email = "test";
+    @Email
+    private String email;
     @Column(unique = true)
     private String login;
     private String password;

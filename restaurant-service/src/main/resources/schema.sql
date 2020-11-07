@@ -9,7 +9,7 @@ create table if not exists restaurants (
   street VARCHAR(256),
   house_number VARCHAR(256),
   phone_number VARCHAR(256),
-  active boolean,
+  deleted boolean,
   description VARCHAR(256),
   nip VARCHAR(256),
   regon VARCHAR(256),

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterUser user) {
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterUser user) {
         authService.register(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

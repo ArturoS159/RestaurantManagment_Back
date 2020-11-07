@@ -86,7 +86,6 @@ public class RestaurantService {
         restaurantRepository.save(restaurant);
     }
 
-
     @Transactional("chainedKafkaTransactionManager")
     public void orderMeals(UUID restaurantId, OrderDto orderDto) {
         OrderAvro orderAvro = avroMapper.toOrderAvro(orderDto, restaurantId);

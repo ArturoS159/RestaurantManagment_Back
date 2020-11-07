@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
+
 @ControllerAdvice
 public class HandlerController {
 
@@ -21,5 +23,11 @@ public class HandlerController {
     public ResponseEntity<ApiResponse> handleExceptionConflict(RuntimeException err) {
         final ApiResponse apiResponse = new ApiResponse(err.getMessage());
         return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse> handleExceptionValidator(RuntimeException err) {
+        final ApiResponse apiResponse = new ApiResponse(err.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 }

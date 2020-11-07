@@ -12,7 +12,7 @@
 	<artifactId>restaurant-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>restaurant-service</name>
-	<description>RestaurantSerice</description>
+	<description>RestaurantService</description>
 
 	<properties>
 		<java.version>11</java.version>

@@ -60,8 +60,8 @@ public class Restaurant {
     )
     @JoinColumn(name = "restaurant_id")
     private List<WorkTime> worksTime = new ArrayList<>();
-    @Column(name = "active")
-    private boolean isActive;
+    @Column(name = "deleted")
+    private boolean isDeleted;
     private String description;
     private String nip;
     private String regon;

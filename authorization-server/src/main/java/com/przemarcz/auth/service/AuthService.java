@@ -29,7 +29,7 @@ public class AuthService implements UserDetailsService {
         try{
             return getUserById(value);
         }catch (Exception err){
-            return userRepository.findByLogin(value)
+            return userRepository.findByLogin(value.toLowerCase())
                     .orElseThrow(
                             () -> new NotFoundException(String.format("User %s not found!", value))
                     );
