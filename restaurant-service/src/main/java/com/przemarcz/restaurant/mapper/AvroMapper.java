@@ -15,7 +15,6 @@ public interface AvroMapper {
     @Mapping(target = "meals", ignore = true)
     OrderAvro toOrderAvro(OrderDto orderDto, UUID restaurantId);
 
-    @Mapping(target = "id", source = "meal.id")
     @Mapping(target = "name", source = "meal.name")
     @Mapping(target = "price", source = "meal.price")
     @Mapping(target = "image", source = "meal.image")

@@ -10,9 +10,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableSchemaRegistryClient
-public class AuthenticationServer {
+public class OrderServiceApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AuthenticationServer.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(OrderServiceApplication.class, args);
+	}
+
 }

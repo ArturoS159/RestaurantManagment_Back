@@ -5,6 +5,7 @@ import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.Days;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import static java.util.Objects.nonNull;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Restaurant {
 
     @JsonIgnore
