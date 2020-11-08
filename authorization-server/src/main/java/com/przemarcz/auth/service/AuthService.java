@@ -65,7 +65,7 @@ public class AuthService implements UserDetailsService {
 
     public void addOwnerData(String id) {
         User user = userRepository.findById(requireNonNull(getUserIdInUUID(id))).orElseThrow(IllegalArgumentException::new);
-        user.setOwner(true);
+//        user.setOwner(true);
         //TODO
         userRepository.save(user);
     }

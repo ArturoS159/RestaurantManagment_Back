@@ -30,7 +30,7 @@ class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.cors().disable()
+        http
                 .antMatcher("/me")
                 .authorizeRequests()
                 .anyRequest().authenticated();
