@@ -11,11 +11,9 @@ public interface TextMapper {
     default UUID toUUID(CharSequence value) {
         return UUID.fromString(value.toString());
     }
-
     default BigDecimal toBigDecimal(Object value) {
         return new BigDecimal(value.toString());
     }
-
     default Integer toInteger(Object value) {
         return Integer.valueOf(value.toString());
     }

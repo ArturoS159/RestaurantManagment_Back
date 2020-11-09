@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,15 +50,6 @@ public class MealController {
                                            @PathVariable UUID mealId) {
         mealService.deleteMeal(restaurantId, mealId);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/test")
-    @Transactional("chainedKafkaTransactionManager")
-    public Void test() {
-        OrderAvro orderAvro = new OrderAvro();
-        orderAvro.setSurname("surname");
-        orderKafkaTemplate.send("orders",orderAvro);
-        return null;
     }
 
 }

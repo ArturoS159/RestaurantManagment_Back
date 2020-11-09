@@ -4,6 +4,11 @@
   "namespace": "com.przemarcz.avro",
   "fields": [
     {
+      "name": "id",
+      "type": "string",
+      "logicalType": "UUID"
+    },
+    {
       "name": "forename",
       "type": "string"
     },

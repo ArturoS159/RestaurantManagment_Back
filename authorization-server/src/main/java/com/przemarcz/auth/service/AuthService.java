@@ -3,7 +3,7 @@ package com.przemarcz.auth.service;
 import com.przemarcz.auth.dto.RegisterUser;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.exception.NotFoundException;
-import com.przemarcz.auth.exception.UserAlreadyExistException;
+import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
@@ -39,7 +39,7 @@ public class AuthService implements UserDetailsService {
     @Transactional(value = "transactionManager")
     public void register(RegisterUser user) {
         if (isUserExist(user)) {
-            throw new UserAlreadyExistException();
+            throw new AlreadyExistException();
         }
         userRepository.save(userMapper.toUser(user));
         log.info(String.format("User %s registered!", user.getLogin()));

@@ -13,6 +13,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", uses = TextMapper.class)
 public interface AvroMapper {
     @Mapping(target = "meals", ignore = true)
+    @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
     OrderAvro toOrderAvro(OrderDto orderDto, UUID restaurantId);
 
     @Mapping(target = "name", source = "meal.name")

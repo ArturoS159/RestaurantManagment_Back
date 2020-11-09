@@ -1,7 +1,7 @@
 package com.przemarcz.auth.service
 
 import com.przemarcz.auth.dto.RegisterUser
-import com.przemarcz.auth.exception.UserAlreadyExistException
+import com.przemarcz.auth.exception.AlreadyExistException
 import com.przemarcz.auth.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -56,7 +56,7 @@ class AuthServiceTest extends Specification {
             authService.register(registerUser)
         then:
             userRepository.findAll().size()==size
-            thrown(UserAlreadyExistException)
+            thrown(AlreadyExistException)
         where:
             login  | email        | password  || size
             "login"| "difff@wp.pl"| "password"|| 1

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class KafkaService {
+public class OrderConsumer {
 
     private static final String TOPIC_ORDERS = "orders";
     private final OrderRepository orderRepository;
