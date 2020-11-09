@@ -1,7 +1,5 @@
 package com.przemarcz.auth.config;
 
-
-
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +11,10 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Collections;
 
 @Configuration
-public class Auth2CorsConfig {
+public class Auth2CrossConfig {
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> customCorsFilter() {
+    public FilterRegistrationBean<CorsFilter> customCrossFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);

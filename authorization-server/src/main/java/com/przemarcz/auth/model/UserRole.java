@@ -1,6 +1,7 @@
 package com.przemarcz.auth.model;
 
 import com.przemarcz.auth.model.enums.Role;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "user_roles")
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserRole implements Serializable {
     private static final long serialVersionUID = 6228683028367657690L;
     @Id

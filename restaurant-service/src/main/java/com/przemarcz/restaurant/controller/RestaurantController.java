@@ -19,7 +19,7 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/restaurants")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class RestaurantController {
     private final RestaurantService restaurantService;
 
@@ -63,8 +63,7 @@ public class RestaurantController {
     }
 
     @PostMapping("/{restaurantId}/orders")
-    public ResponseEntity<Void> orderMeals(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
-        restaurantService.orderMeals(restaurantId, orderDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<String> orderMeals(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
+        return new ResponseEntity<>(restaurantService.orderMeals(restaurantId, orderDto),HttpStatus.OK);
     }
 }

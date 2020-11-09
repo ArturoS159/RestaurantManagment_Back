@@ -3,7 +3,9 @@ package com.przemarcz.auth.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.model.enums.Role;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +24,8 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 6529685098267757690L;
@@ -36,7 +41,8 @@ public class User implements UserDetails, Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(unique = true)
-    private String email = "test";
+    @Email
+    private String email;
     @Column(unique = true)
     private String login;
     private String password;

@@ -13,9 +13,9 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", uses = TextMapper.class)
 public interface AvroMapper {
     @Mapping(target = "meals", ignore = true)
+    @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
     OrderAvro toOrderAvro(OrderDto orderDto, UUID restaurantId);
 
-    @Mapping(target = "id", source = "meal.id")
     @Mapping(target = "name", source = "meal.name")
     @Mapping(target = "price", source = "meal.price")
     @Mapping(target = "image", source = "meal.image")

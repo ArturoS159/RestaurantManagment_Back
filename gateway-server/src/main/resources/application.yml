@@ -28,3 +28,7 @@ zuul:
       path: /restaurant-api/**
       url: http://localhost:8883
       stripPrefix: false
+    order-service:
+      path: /order-api/**
+      url: http://localhost:8884
+      stripPrefix: false

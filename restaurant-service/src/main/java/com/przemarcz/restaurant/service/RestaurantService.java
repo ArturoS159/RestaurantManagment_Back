@@ -86,13 +86,13 @@ public class RestaurantService {
         restaurantRepository.save(restaurant);
     }
 
-
     @Transactional("chainedKafkaTransactionManager")
-    public void orderMeals(UUID restaurantId, OrderDto orderDto) {
+    public String orderMeals(UUID restaurantId, OrderDto orderDto) {
         OrderAvro orderAvro = avroMapper.toOrderAvro(orderDto, restaurantId);
         List<MealAvro> meals = getCorrectlyMealsFromDatabase(restaurantId, orderDto);
         orderAvro.setMeals(meals);
         sendMessageOrder(orderAvro);
+        return orderAvro.getId().toString();
     }
 
     private List<MealAvro> getCorrectlyMealsFromDatabase(UUID restaurantId, OrderDto orderDto) {
