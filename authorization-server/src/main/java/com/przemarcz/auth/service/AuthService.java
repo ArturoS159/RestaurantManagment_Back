@@ -52,7 +52,7 @@ public class AuthService implements UserDetailsService {
         }
         User user = userMapper.toUser(registerUser);
         user.generateUserActivationKey();
-        mailSender.sendEmail(user.getEmail(),user.getUserAuthorization().getActivationKey());
+        mailSender.sendEmail(user.getEmail(),user.getUserAuthorization().getActivationKey(),user.getLogin());
         userRepository.save(user);
         log.info(String.format("User %s registered!", user.getLogin()));
     }

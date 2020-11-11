@@ -35,15 +35,15 @@ public class MailSender{
     private String charset;
 
     @Async
-    public void sendEmail(String userEmail,String activationKey) throws EmailException {
+    public void sendEmail(String userEmail, String activationKey, String login) throws EmailException {
         List<InternetAddress> address = prepareAddress(userEmail);
         HtmlEmail htmlEmail = prepareConnection();
-        setContent(activationKey, address, htmlEmail);
+        setContent(activationKey, address, htmlEmail, login);
         htmlEmail.send();
     }
 
-    private void setContent(String activationKey, List<InternetAddress> address, HtmlEmail htmlEmail) throws EmailException {
-        htmlEmail.setHtmlMsg(String.format(content, activationKey));
+    private void setContent(String activationKey, List<InternetAddress> address, HtmlEmail htmlEmail,String login) throws EmailException {
+        htmlEmail.setHtmlMsg(String.format(content,login,activationKey));
         htmlEmail.setSubject(subject);
         htmlEmail.setFrom(email, userName);
         htmlEmail.setTo(address);
