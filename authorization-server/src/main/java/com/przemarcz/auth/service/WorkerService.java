@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Slf4j
 public class WorkerService {
+
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;

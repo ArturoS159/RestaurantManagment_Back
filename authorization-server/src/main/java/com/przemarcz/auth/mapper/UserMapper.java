@@ -3,8 +3,7 @@ package com.przemarcz.auth.mapper;
 import com.przemarcz.auth.dto.RegisterUser;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = PasswordEncoderMapper.class)
 public interface UserMapper {
@@ -29,4 +28,11 @@ public interface UserMapper {
     @Mapping(target = "restaurantRoles", ignore = true)
     User toUser(RegisterUser user);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "login", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUser(@MappingTarget User user, UserDto userDto);
 }

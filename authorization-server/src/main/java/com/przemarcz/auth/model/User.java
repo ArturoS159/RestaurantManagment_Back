@@ -1,12 +1,14 @@
 package com.przemarcz.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.model.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.Objects.nonNull;
 
 @Getter
 @Setter
@@ -41,7 +45,6 @@ public class User implements UserDetails, Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(unique = true)
-    @Email
     private String email;
     @Column(unique = true)
     private String login;
@@ -59,6 +62,13 @@ public class User implements UserDetails, Serializable {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private List<UserRole> restaurantRoles = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="user_authorization")
+    @JsonIgnore
+    private UserAuthorization userAuthorization;
+    @JsonIgnore
+    private boolean active;
+
 
     public void addRole(Role role, UUID restaurantId) {
         UserRole userRole = new UserRole(role, restaurantId);
@@ -73,6 +83,28 @@ public class User implements UserDetails, Serializable {
 
     private boolean isRestaurantAndRoleTheSame(Role role, UUID restaurantId, UserRole userRole) {
         return userRole.getRestaurantId().equals(restaurantId) && userRole.getRole() == (role);
+    }
+
+    public void activeAccount(String activationKey) {
+        if(active)
+            throw new AlreadyExistException("User was activated!");
+        if(isActivationKeyTheSame(activationKey)){
+            active=true;
+        }else{
+            throw new IllegalArgumentException("Bad activation key!");
+        }
+    }
+
+    private boolean isActivationKeyTheSame(String activationKey) {
+        return nonNull(activationKey) && userAuthorization.getActivationKey().equals(activationKey);
+    }
+
+    public void generateUserActivationKey() {
+        userAuthorization = new UserAuthorization(generateKey());
+    }
+
+    private String generateKey() {
+        return RandomStringUtils.randomAlphabetic(10);
     }
 
     @Override
@@ -113,6 +145,6 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return active;
     }
 }
