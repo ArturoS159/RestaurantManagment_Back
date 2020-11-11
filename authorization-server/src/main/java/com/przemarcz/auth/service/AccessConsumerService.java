@@ -20,23 +20,20 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AccessConsumer {
+public class AccessConsumerService {
 
-    private static final String TOPIC_OWNER = "access-owner";
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final TextMapper textMapper;
 
-    @KafkaListener(topics = TOPIC_OWNER)
     @Transactional("chainedKafkaTransactionManager")
-    public void consumeFromOwnerTopic(ConsumerRecord<String, AccessAvro> accessAvro) {
-        final UUID userId = textMapper.toUUID(accessAvro.value().getUserId());
-        final UUID restaurantId = textMapper.toUUID(accessAvro.value().getRestaurantId());
+    public void consumeFromOwnerTopic(CharSequence userIdCharSeq, CharSequence restaurantIdCharSeq, RestaurantDo type) {
+        final UUID userId = textMapper.toUUID(userIdCharSeq);
+        final UUID restaurantId = textMapper.toUUID(restaurantIdCharSeq);
 
         if(userRoleRepository.findByUserIdAndRole(userId,Role.OWNER).isEmpty()){
-            //TODO refactor
             User user = getUserFromDatabase(userId);
-            if (isRestaurantAdded(accessAvro)) {
+            if (isRestaurantAdded(type)) {
                 user.addRole(Role.OWNER, restaurantId);
             } else {
                 user.delRole(Role.OWNER, restaurantId);
@@ -46,13 +43,12 @@ public class AccessConsumer {
         }
     }
 
-    private boolean isRestaurantAdded(ConsumerRecord<String, AccessAvro> accessAvro) {
-        return accessAvro.value().getType().equals(RestaurantDo.ADD);
+    private boolean isRestaurantAdded(RestaurantDo type) {
+        return type.equals(RestaurantDo.ADD);
     }
 
     private User getUserFromDatabase(UUID userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException(String.format("User %s not found!", userId)));
     }
-
 }
