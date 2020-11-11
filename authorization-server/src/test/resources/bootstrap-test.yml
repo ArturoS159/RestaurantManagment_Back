@@ -5,21 +5,3 @@ spring:
   config:
     discovery:
       enabled: false
-  kafka:
-    consumer:
-      group-id: group
-      isolation-level: read_committed
-    producer:
-      transaction-id-prefix: txa-
-  datasource:
-    initialization-mode: always
-    schema: classpath:schema.sql
-    url: jdbc:h2:mem:authDb
-    username: sa
-    password: password
-    driverClassName: org.h2.Driver
-
-user:
-  client: app
-  resourceId: rest_service
-  secret: $2a$10$z29A3ca3ktEh15ooDfUnI.k9avxG2R7hfJQOrndRBu4YMl9UFXTBS

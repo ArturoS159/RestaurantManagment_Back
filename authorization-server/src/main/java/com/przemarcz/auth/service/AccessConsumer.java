@@ -6,7 +6,7 @@ import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
 import com.przemarcz.auth.repository.UserRoleRepository;
-import com.przemarcz.avro.AccesAvro;
+import com.przemarcz.avro.AccessAvro;
 import com.przemarcz.avro.RestaurantDo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class AccessConsumer {
 
     @KafkaListener(topics = TOPIC_OWNER)
     @Transactional("chainedKafkaTransactionManager")
-    public void consumeFromOwnerTopic(ConsumerRecord<String, AccesAvro> accessAvro) {
+    public void consumeFromOwnerTopic(ConsumerRecord<String, AccessAvro> accessAvro) {
         final UUID userId = textMapper.toUUID(accessAvro.value().getUserId());
         final UUID restaurantId = textMapper.toUUID(accessAvro.value().getRestaurantId());
 
@@ -46,7 +46,7 @@ public class AccessConsumer {
         }
     }
 
-    private boolean isRestaurantAdded(ConsumerRecord<String, AccesAvro> accessAvro) {
+    private boolean isRestaurantAdded(ConsumerRecord<String, AccessAvro> accessAvro) {
         return accessAvro.value().getType().equals(RestaurantDo.ADD);
     }
 

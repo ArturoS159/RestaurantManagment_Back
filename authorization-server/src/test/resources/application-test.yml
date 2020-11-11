@@ -1,0 +1,21 @@
+spring:
+  kafka:
+    consumer:
+      group-id: group
+      isolation-level: read_committed
+    producer:
+      transaction-id-prefix: txa-
+    bootstrap-servers: http://localhost:9092
+  datasource:
+    initialization-mode: always
+    schema: classpath:schema.sql
+    url: jdbc:h2:mem:authDb
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+
+
+user:
+  client: noname
+  resourceId: noname
+  secret: $2y$12$1t2NAJqPll8fUD2UGrfrweQowSgeWEil/d2FFc3J2ttDn85Paqbm.

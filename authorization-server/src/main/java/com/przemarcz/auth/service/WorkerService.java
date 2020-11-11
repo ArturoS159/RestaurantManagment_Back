@@ -1,6 +1,7 @@
 package com.przemarcz.auth.service;
 
 import com.przemarcz.auth.dto.UserDto;
+import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
@@ -29,13 +30,13 @@ public class WorkerService {
 
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<UserDto> getAllRestaurantWorkers(UUID restaurantId, Pageable pageable) {
-        List<UUID> workersId = getWorkersId(restaurantId);
+        List<UUID> workersId = getWorkersByRestaurantId(restaurantId);
 
-        return userRepository.findByRestaurantRolesUserIdIn(workersId, pageable)
+        return userRepository.findByIdIn(workersId, pageable)
                 .map(userMapper::toUserWorkerDto);
     }
 
-    private List<UUID> getWorkersId(UUID restaurantId) {
+    private List<UUID> getWorkersByRestaurantId(UUID restaurantId) {
         return userRoleRepository.findAllByRestaurantIdAndRole(restaurantId, Role.WORKER)
                 .stream()
                 .map(UserRole::getUserId)
@@ -44,10 +45,16 @@ public class WorkerService {
 
     @Transactional(value = "transactionManager")
     public void addRestaurantWorker(UUID restaurantId, String email) {
-        User user = getUserFromDatabase(email);
-        //TODO is exist
+        User user = getUserFromDatabase(email.toLowerCase());
+        if(isWorkerExistInRestaurant(restaurantId,user.getId())){
+            throw new AlreadyExistException(String.format("User %s is added before!",email));
+        }
         user.addRole(Role.WORKER, restaurantId);
         userRepository.save(user);
+    }
+
+    private boolean isWorkerExistInRestaurant(UUID restaurantId, UUID userId) {
+        return userRoleRepository.findByRestaurantIdAndUserIdAndRole(restaurantId, userId, Role.WORKER).isPresent();
     }
 
     public User getUserFromDatabase(String email) {
