@@ -1,16 +1,11 @@
 package com.przemarcz.auth.controller;
 
-import com.przemarcz.auth.model.User;
-import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.service.AccessConsumerService;
 import com.przemarcz.avro.AccessAvro;
 import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
