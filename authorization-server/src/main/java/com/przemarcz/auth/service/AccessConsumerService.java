@@ -6,7 +6,7 @@ import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
 import com.przemarcz.auth.repository.UserRoleRepository;
-import com.przemarcz.avro.AccessAvro;
+import com.przemarcz.avro.AccesAvro;
 import com.przemarcz.avro.RestaurantDo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,18 +22,20 @@ import java.util.UUID;
 @Slf4j
 public class AccessConsumerService {
 
+    private static final String TOPIC_OWNER = "access-owner";
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final TextMapper textMapper;
 
     @Transactional("chainedKafkaTransactionManager")
-    public void consumeFromOwnerTopic(CharSequence userIdCharSeq, CharSequence restaurantIdCharSeq, RestaurantDo type) {
-        final UUID userId = textMapper.toUUID(userIdCharSeq);
-        final UUID restaurantId = textMapper.toUUID(restaurantIdCharSeq);
+    @KafkaListener(topics = TOPIC_OWNER)
+    public void consumeFromOwnerTopic(ConsumerRecord<String, AccesAvro> accessAvro) {
+        final UUID userId = textMapper.toUUID(accessAvro.value().getUserId());
+        final UUID restaurantId = textMapper.toUUID(accessAvro.value().getRestaurantId());
 
         if(userRoleRepository.findByUserIdAndRole(userId,Role.OWNER).isEmpty()){
             User user = getUserFromDatabase(userId);
-            if (isRestaurantAdded(type)) {
+            if (isRestaurantAdded(accessAvro.value().getType())) {
                 user.addRole(Role.OWNER, restaurantId);
             } else {
                 user.delRole(Role.OWNER, restaurantId);
