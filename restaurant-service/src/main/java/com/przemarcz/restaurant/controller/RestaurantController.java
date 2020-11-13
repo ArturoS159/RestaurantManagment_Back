@@ -35,9 +35,8 @@ public class RestaurantController {
     }
 
     @PostMapping
-    public ResponseEntity<UUID> addRestaurant(Principal user, @RequestBody RestaurantDto restaurantDto) {
-        restaurantService.addRestaurant(user.getName(), restaurantDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<RestaurantDto> addRestaurant(Principal user, @RequestBody RestaurantDto restaurantDto) {
+        return new ResponseEntity<>(restaurantService.addRestaurant(user.getName(), restaurantDto),HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
