@@ -61,12 +61,12 @@ public class RestaurantService {
     }
 
     @Transactional("chainedKafkaTransactionManager")
-    public UUID addRestaurant(String userId, RestaurantDto restaurantDto) {
+    public RestaurantDto addRestaurant(String userId, RestaurantDto restaurantDto) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId));
         restaurant.setDefaultWorkTimeIfNotAdded();
         restaurantRepository.save(restaurant);
         sendMessageAddRestaurant(userId, restaurant);
-        return restaurant.getId();
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
     private void sendMessageAddRestaurant(String userId, Restaurant restaurant) {
