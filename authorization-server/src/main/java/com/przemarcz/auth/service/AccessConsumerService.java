@@ -33,16 +33,14 @@ public class AccessConsumerService {
         final UUID userId = textMapper.toUUID(accessAvro.value().getUserId());
         final UUID restaurantId = textMapper.toUUID(accessAvro.value().getRestaurantId());
 
-        if(userRoleRepository.findByUserIdAndRole(userId,Role.OWNER).isEmpty()){
-            User user = getUserFromDatabase(userId);
-            if (isRestaurantAdded(accessAvro.value().getType())) {
-                user.addRole(Role.OWNER, restaurantId);
-            } else {
-                user.delRole(Role.OWNER, restaurantId);
-            }
-            userRepository.save(user);
-            log.info(String.format("Owner role update to user: %s", userId));
+        User user = getUserFromDatabase(userId);
+        if (isRestaurantAdded(accessAvro.value().getType())) {
+            user.addRole(Role.OWNER, restaurantId);
+        } else {
+            user.delRole(Role.OWNER, restaurantId);
         }
+        userRepository.save(user);
+        log.info(String.format("Owner role update to user: %s", userId));
     }
 
     private boolean isRestaurantAdded(RestaurantDo type) {

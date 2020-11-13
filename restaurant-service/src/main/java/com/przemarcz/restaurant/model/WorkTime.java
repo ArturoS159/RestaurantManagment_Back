@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity

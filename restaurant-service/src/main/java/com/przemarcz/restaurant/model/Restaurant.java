@@ -14,6 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -74,12 +75,20 @@ public class Restaurant {
         meals.add(meal);
     }
 
-    public void setDefaultWorkTime() {
-        Arrays.stream(Days.values()).forEach(day -> {
-                    WorkTime workTime = new WorkTime(day, LocalTime.MIN, LocalTime.parse(MAX_TIME));
-                    worksTime.add(workTime);
+    public void setDefaultWorkTimeIfNotAdded() {
+        //TODO refactor
+        for(int i=0;i<Days.values().length;i++){
+            int a=0;
+            for(int y=0;y<worksTime.size();y++){
+                if(Days.values()[i].name().equals(worksTime.get(y).getDay().name())){
+                    a=1;
                 }
-        );
+            }
+            if(a==0){
+                WorkTime workTime = new WorkTime(Days.values()[i], LocalTime.MIN, LocalTime.parse(MAX_TIME));
+                worksTime.add(workTime);
+            }
+        }
     }
 
     public void updateWorkTime(List<WorkTimeDto> timeDtos) {
