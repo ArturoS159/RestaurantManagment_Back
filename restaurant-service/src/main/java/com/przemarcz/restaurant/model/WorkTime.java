@@ -5,11 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalTime;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -20,12 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WorkTime {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    private UUID id;
+    private UUID id = UUID.randomUUID();;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
     @Enumerated(EnumType.STRING)

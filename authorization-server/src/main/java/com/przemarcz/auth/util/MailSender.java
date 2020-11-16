@@ -1,4 +1,4 @@
-package com.przemarcz.auth.helper;
+package com.przemarcz.auth.util;
 
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -13,25 +13,25 @@ import java.util.List;
 @Component
 public class MailSender{
 
-    @Value("${email.user}")
+    @Value("${email.user:user}")
     private String user;
-    @Value("${email.user-name}")
+    @Value("${email.user-name:user-name}")
     private String userName;
-    @Value("${email.password}")
+    @Value("${email.password:password}")
     private String password;
-    @Value("${email.email}")
+    @Value("${email.email:email@test.pl}")
     private String email;
-    @Value("${email.host}")
+    @Value("${email.host:host}")
     private String host;
-    @Value("${email.smtp-port}")
+    @Value("${email.smtp-port:123}")
     private Integer smtpPort;
-    @Value("${email.ssl-smtp}")
+    @Value("${email.ssl-smtp:123}")
     private String sslSmtp;
-    @Value("${email.subject}")
+    @Value("${email.subject:subject}")
     private String subject;
-    @Value("${email.content}")
+    @Value("${email.content:content}")
     private String content;
-    @Value("${email.charset}")
+    @Value("${email.charset:UTF-8}")
     private String charset;
 
     @Async

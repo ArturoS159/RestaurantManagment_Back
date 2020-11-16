@@ -61,7 +61,6 @@ class AuthServiceTest extends Specification {
         login   | email         | password   || size
         "login" | "difff@wp.pl" | "password" || 1
         "difff" | "email@wp.pl" | "password" || 1
-
     }
 
 }

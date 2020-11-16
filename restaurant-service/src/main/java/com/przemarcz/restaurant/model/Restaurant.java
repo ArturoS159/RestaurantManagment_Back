@@ -9,12 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -31,12 +32,7 @@ public class Restaurant {
     private static final String MAX_TIME = "23:59";
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     private String name;
     private String image;
     @ElementCollection(targetClass = RestaurantCategory.class)
@@ -62,7 +58,7 @@ public class Restaurant {
             orphanRemoval = true
     )
     @JoinColumn(name = "restaurant_id")
-    private List<WorkTime> worksTime = new ArrayList<>();
+    private List<WorkTime> worksTime;
     @Column(name = "deleted")
     private boolean isDeleted;
     private String description;
@@ -76,12 +72,15 @@ public class Restaurant {
     }
 
     public void setDefaultWorkTimeIfNotAdded() {
+        worksTime = new ArrayList<>();
         //TODO refactor
         for(int i=0;i<Days.values().length;i++){
             int a=0;
-            for(int y=0;y<worksTime.size();y++){
-                if(Days.values()[i].name().equals(worksTime.get(y).getDay().name())){
-                    a=1;
+            if(nonNull(worksTime)){
+                for(int y=0;y<worksTime.size();y++){
+                    if(Days.values()[i].name().equals(worksTime.get(y).getDay().name())){
+                        a=1;
+                    }
                 }
             }
             if(a==0){
@@ -118,6 +117,6 @@ public class Restaurant {
     private WorkTime getCorrectDay(WorkTimeDto workTimeDto) {
         return this.worksTime.stream().filter(
                 workTime -> workTimeDto.getDay().equals(workTime.getDay())
-        ).findFirst().orElseThrow(() -> new NotFoundException("Something gone wrong!"));
+        ).findFirst().orElseThrow(() -> new IllegalArgumentException("Something gone wrong!"));
     }
 }

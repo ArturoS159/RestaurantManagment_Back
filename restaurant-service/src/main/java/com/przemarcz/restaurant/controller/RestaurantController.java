@@ -41,10 +41,9 @@ public class RestaurantController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<Void> updateRestaurant(@PathVariable UUID restaurantId,
+    public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable UUID restaurantId,
                                                  @RequestBody RestaurantDto restaurantDto) {
-        restaurantService.updateRestaurant(restaurantId, restaurantDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(restaurantService.updateRestaurant(restaurantId, restaurantDto),HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
@@ -56,13 +55,14 @@ public class RestaurantController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @DeleteMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantDto> delRestaurant(@PathVariable UUID restaurantId) {
+    public ResponseEntity<Void> delRestaurant(@PathVariable UUID restaurantId) {
         restaurantService.delRestaurant(restaurantId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/{restaurantId}/orders")
-    public ResponseEntity<String> orderMeals(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
-        return new ResponseEntity<>(restaurantService.orderMeals(restaurantId, orderDto),HttpStatus.OK);
+    public ResponseEntity<Void> orderMeals(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
+        restaurantService.orderMeals(restaurantId, orderDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

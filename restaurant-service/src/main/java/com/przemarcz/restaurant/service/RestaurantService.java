@@ -74,10 +74,11 @@ public class RestaurantService {
         accessKafkaTemplate.send(topicAccess, accesAvro);
     }
 
-    public void updateRestaurant(UUID restaurantId, RestaurantDto restaurantDto) {
+    public RestaurantDto updateRestaurant(UUID restaurantId, RestaurantDto restaurantDto) {
         Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
         restaurantMapper.updateRestaurant(restaurant,restaurantDto);
         restaurantRepository.save(restaurant);
+        return restaurantMapper.toRestaurantDto(restaurant);
     }
 
     public void updateRestaurantTime(UUID restaurantId, List<WorkTimeDto> worksTime) {
@@ -87,12 +88,11 @@ public class RestaurantService {
     }
 
     @Transactional("chainedKafkaTransactionManager")
-    public String orderMeals(UUID restaurantId, OrderDto orderDto) {
+    public void orderMeals(UUID restaurantId, OrderDto orderDto) {
         OrderAvro orderAvro = avroMapper.toOrderAvro(orderDto, restaurantId);
         List<MealAvro> meals = getMealsFromDatabase(restaurantId, orderDto);
         orderAvro.setMeals(meals);
         sendMessageOrder(orderAvro);
-        return orderAvro.getId().toString();
     }
 
     private List<MealAvro> getMealsFromDatabase(UUID restaurantId, OrderDto orderDto) {
