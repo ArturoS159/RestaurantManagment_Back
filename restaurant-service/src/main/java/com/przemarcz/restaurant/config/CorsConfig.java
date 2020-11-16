@@ -14,7 +14,7 @@ import java.util.Collections;
 public class CorsConfig {
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> customCorsFilter() {
+    public FilterRegistrationBean<CorsFilter> corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);

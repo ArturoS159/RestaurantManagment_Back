@@ -11,11 +11,7 @@ import java.io.IOException;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class CrossFilter implements Filter {
-
-    @Override
-    public void init(FilterConfig fc) throws ServletException {
-    }
+class CorsConfig implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp,
@@ -34,9 +30,4 @@ class CrossFilter implements Filter {
         }
 
     }
-
-    @Override
-    public void destroy() {
-    }
-
 }
