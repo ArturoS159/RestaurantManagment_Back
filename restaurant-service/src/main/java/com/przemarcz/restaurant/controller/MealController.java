@@ -29,19 +29,17 @@ public class MealController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/meals")
-    public ResponseEntity<Void> addMeal(@PathVariable UUID restaurantId,
+    public ResponseEntity<MealDto> addMeal(@PathVariable UUID restaurantId,
                                         @RequestBody MealDto mealDto) {
-        mealService.addMeal(restaurantId, mealDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(mealService.addMeal(restaurantId, mealDto),HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}/meals/{mealId}")
-    public ResponseEntity<Void> updateMeal(@PathVariable UUID restaurantId,
+    public ResponseEntity<MealDto> updateMeal(@PathVariable UUID restaurantId,
                                            @PathVariable UUID mealId,
                                            @RequestBody MealDto mealDto) {
-        mealService.updateMeal(restaurantId, mealId, mealDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(mealService.updateMeal(restaurantId, mealId, mealDto),HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

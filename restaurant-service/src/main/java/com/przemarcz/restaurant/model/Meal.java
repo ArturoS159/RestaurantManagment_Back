@@ -19,12 +19,7 @@ import java.util.UUID;
 public class Meal {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     @Column(name = "restaurant_id")
     private UUID restaurantId;
     private String name;

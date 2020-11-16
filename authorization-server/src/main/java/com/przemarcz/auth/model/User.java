@@ -36,6 +36,8 @@ public class User implements UserDetails, Serializable {
 
     @JsonIgnore
     private static final String PRE_ROLE = "ROLE_";
+    private static final Integer TEN = 10;
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -104,7 +106,7 @@ public class User implements UserDetails, Serializable {
     }
 
     private String generateKey() {
-        return RandomStringUtils.randomAlphabetic(10);
+        return RandomStringUtils.randomAlphabetic(TEN);
     }
 
     @Override

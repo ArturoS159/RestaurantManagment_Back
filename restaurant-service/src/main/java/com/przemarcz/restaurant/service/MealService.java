@@ -32,18 +32,20 @@ public class MealService {
     }
 
     @Transactional(value = "transactionManager")
-    public void addMeal(UUID restaurantId, MealDto mealDto) {
-        Restaurant restaurant = getRestaurant(restaurantId);
+    public MealDto addMeal(UUID restaurantId, MealDto mealDto) {
+        Restaurant restaurantInDb = getRestaurant(restaurantId);
         Meal meal = mealMapper.toMeal(mealDto, restaurantId);
-        restaurant.addMeal(meal);
-        restaurantRepository.save(restaurant);
+        restaurantInDb.addMeal(meal);
+        restaurantRepository.save(restaurantInDb);
+        return mealMapper.toMealDto(meal);
     }
 
     @Transactional(value = "transactionManager")
-    public void updateMeal(UUID restaurantId, UUID mealId, MealDto mealDto) {
+    public MealDto updateMeal(UUID restaurantId, UUID mealId, MealDto mealDto) {
         Meal meal = getMeal(restaurantId, mealId);
         mealMapper.updateMeal(meal, mealDto);
         mealRepository.save(meal);
+        return mealMapper.toMealDto(meal);
     }
 
     @Transactional(value = "transactionManager")
