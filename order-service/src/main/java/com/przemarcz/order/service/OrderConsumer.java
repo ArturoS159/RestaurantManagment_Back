@@ -1,7 +1,7 @@
 package com.przemarcz.order.service;
 
 import com.przemarcz.avro.OrderAvro;
-import com.przemarcz.order.helper.OrderHelper;
+import com.przemarcz.order.util.OrderHelper;
 import com.przemarcz.order.mapper.OrderMapper;
 import com.przemarcz.order.model.Order;
 import com.przemarcz.order.repository.OrderRepository;

@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface AvroMapper {
     @Mapping(target = "meals", ignore = true)
     @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
-    OrderAvro toOrderAvro(OrderDto orderDto, UUID restaurantId);
+    OrderAvro toOrderAvro(OrderDto orderDto, UUID restaurantId, String userId);
 
     @Mapping(target = "name", source = "meal.name")
     @Mapping(target = "price", source = "meal.price")

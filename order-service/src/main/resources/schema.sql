@@ -8,6 +8,7 @@ create table if not exists orders (
   street VARCHAR(256),
   post_code VARCHAR(256),
   phone_number VARCHAR(256),
+  email VARCHAR(256),
   comment VARCHAR(256),
   price NUMERIC,
   restaurant_id UUID
@@ -22,4 +23,12 @@ create table if not exists meals (
   ingredients VARCHAR(256),
   time_to_do NUMERIC,
   quantity INTEGER
+);
+
+create table if not exists payments (
+  restaurant_id UUID PRIMARY KEY,
+  pos_id VARCHAR(256),
+  md5 VARCHAR(256),
+  client_id VARCHAR(256),
+  client_secret VARCHAR(256)
 );

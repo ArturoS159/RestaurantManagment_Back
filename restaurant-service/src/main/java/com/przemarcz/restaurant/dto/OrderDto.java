@@ -13,6 +13,7 @@ public class OrderDto {
     private String surname;
     private String street;
     private String city;
+    private String email;
     private String phoneNumber;
     private String postCode;
     private String comment;

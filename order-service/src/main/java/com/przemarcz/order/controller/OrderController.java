@@ -22,7 +22,8 @@ public class OrderController {
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/orders")
-    public ResponseEntity<Page<OrderDto>> getAllOrders(@PathVariable UUID restaurantId, Pageable pageable) {
+    public ResponseEntity<Page<OrderDto>> getAllOrders(@PathVariable UUID restaurantId,
+                                                       Pageable pageable) {
         return new ResponseEntity<>(orderService.getAllOrders(restaurantId, pageable), HttpStatus.OK);
     }
 }

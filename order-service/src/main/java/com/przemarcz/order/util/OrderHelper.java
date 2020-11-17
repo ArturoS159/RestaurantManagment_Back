@@ -1,4 +1,4 @@
-package com.przemarcz.order.helper;
+package com.przemarcz.order.util;
 
 import com.przemarcz.order.model.Meal;
 import org.springframework.stereotype.Component;

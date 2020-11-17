@@ -27,6 +27,7 @@ public class Order {
     private String postCode;
     @Column(name = "phone_number")
     private String phoneNumber;
+    private String email;
     private String comment;
     private BigDecimal price;
     @Column(name = "restaurant_id")
