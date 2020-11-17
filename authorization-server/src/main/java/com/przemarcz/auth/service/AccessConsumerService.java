@@ -5,7 +5,6 @@ import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
-import com.przemarcz.auth.repository.UserRoleRepository;
 import com.przemarcz.avro.AccesAvro;
 import com.przemarcz.avro.RestaurantDo;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ public class AccessConsumerService {
 
     private static final String TOPIC_OWNER = "access-owner";
     private final UserRepository userRepository;
-    private final UserRoleRepository userRoleRepository;
     private final TextMapper textMapper;
 
     @Transactional("chainedKafkaTransactionManager")

@@ -1,12 +1,9 @@
 {
-  "name": "OrderAvro",
-  "type": "record",
-  "namespace": "com.przemarcz.avro",
   "fields": [
     {
+      "logicalType": "UUID",
       "name": "id",
-      "type": "string",
-      "logicalType": "UUID"
+      "type": "string"
     },
     {
       "name": "forename",
@@ -33,55 +30,75 @@
       "type": "string"
     },
     {
+      "name": "email",
+      "type": "string"
+    },
+    {
       "name": "comment",
       "type": "string"
     },
     {
+      "logicalType": "UUID",
       "name": "restaurantId",
       "type": "string"
     },
     {
-      "name": "meals",
+      "logicalType": "UUID",
+      "name": "userId",
+      "type": "string"
+    },
+    {
       "default": null,
-      "type": ["null",{
-        "type": "array",
-        "items": {
-          "name": "MealAvro",
-          "type": "record",
-          "fields": [
-            {
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "name": "price",
-              "type": [ {
-                          "type": "string",
-                          "java-class": "java.math.BigDecimal"
-                       } ]
-            },
-            {
-              "name": "quantity",
-              "type": "string"
-            },
-            {
-              "name": "image",
-              "type": "string"
-            },
-            {
-              "name": "ingredients",
-              "type": "string"
-            },
-            {
-              "name": "timeToDo",
-              "type": [ {
-                          "type": "string",
-                          "java-class": "java.math.BigDecimal"
-                       } ]
-            }
-          ]
+      "name": "meals",
+      "type": [
+        "null",
+        {
+          "items": {
+            "fields": [
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "price",
+                "type": [
+                  {
+                    "java-class": "java.math.BigDecimal",
+                    "type": "string"
+                  }
+                ]
+              },
+              {
+                "name": "quantity",
+                "type": "string"
+              },
+              {
+                "name": "image",
+                "type": "string"
+              },
+              {
+                "name": "ingredients",
+                "type": "string"
+              },
+              {
+                "name": "timeToDo",
+                "type": [
+                  {
+                    "java-class": "java.math.BigDecimal",
+                    "type": "string"
+                  }
+                ]
+              }
+            ],
+            "name": "MealAvro",
+            "type": "record"
+          },
+          "type": "array"
         }
-      }]
+      ]
     }
-  ]
+  ],
+  "name": "OrderAvro",
+  "namespace": "com.przemarcz.avro",
+  "type": "record"
 }
