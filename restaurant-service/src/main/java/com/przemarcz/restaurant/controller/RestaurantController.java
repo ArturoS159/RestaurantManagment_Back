@@ -60,7 +60,7 @@ public class RestaurantController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/{restaurantId}/orders")
+    @PostMapping("/{restaurantId}/order")
     public ResponseEntity<Void> orderMeals(Principal principal, @PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
         restaurantService.orderMeals(restaurantId, orderDto, principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);

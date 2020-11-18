@@ -10,8 +10,12 @@ create table if not exists orders (
   phone_number VARCHAR(256),
   email VARCHAR(256),
   comment VARCHAR(256),
+  user_id UUID,
   price NUMERIC,
-  restaurant_id UUID
+  restaurant_id UUID,
+  payed BOOLEAN,
+  payu_url TEXT,
+  payu_order_id VARCHAR(256)
 );
 
 create table if not exists meals (

@@ -22,4 +22,10 @@ public class HandlerController {
         final ApiResponse apiResponse = new ApiResponse(err.getMessage());
         return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse> handleExceptionIllegalArgument(RuntimeException err) {
+        final ApiResponse apiResponse = new ApiResponse(err.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
 }

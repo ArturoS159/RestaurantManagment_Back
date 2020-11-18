@@ -29,6 +29,8 @@ public class Order {
     private String phoneNumber;
     private String email;
     private String comment;
+    @Column(name = "user_id")
+    private UUID userId;
     private BigDecimal price;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
@@ -38,4 +40,9 @@ public class Order {
     )
     @JoinColumn(name = "order_id")
     private List<Meal> meals;
+    private boolean payed;
+    @Column(name = "payu_url")
+    private String payUUrl;
+    @Column(name = "payu_order_id")
+    private String payUOrderId;
 }

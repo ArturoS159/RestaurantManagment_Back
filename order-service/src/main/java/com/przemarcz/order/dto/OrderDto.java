@@ -4,6 +4,7 @@ import com.przemarcz.order.model.Meal;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,11 @@ public class OrderDto {
     private String postCode;
     private String phoneNumber;
     private String comment;
+    private UUID userId;
     private BigDecimal price;
     private UUID restaurantId;
     private List<Meal> meals;
+    private boolean payed;
+    private String payUUrl;
+    private String payUOrderId;
 }
