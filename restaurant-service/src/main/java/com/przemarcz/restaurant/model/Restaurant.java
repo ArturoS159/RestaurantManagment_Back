@@ -58,7 +58,7 @@ public class Restaurant {
             orphanRemoval = true
     )
     @JoinColumn(name = "restaurant_id")
-    private List<WorkTime> worksTime;
+    private List<WorkTime> worksTime = new ArrayList<>();
     @Column(name = "deleted")
     private boolean isDeleted;
     @Column(name = "  payment_online")
@@ -74,15 +74,13 @@ public class Restaurant {
     }
 
     public void setDefaultWorkTimeIfNotAdded() {
-        worksTime = new ArrayList<>();
         //TODO refactor
         for(int i=0;i<Days.values().length;i++){
             int a=0;
-            if(nonNull(worksTime)){
-                for(int y=0;y<worksTime.size();y++){
-                    if(Days.values()[i].name().equals(worksTime.get(y).getDay().name())){
-                        a=1;
-                    }
+            for (WorkTime time : worksTime) {
+                if (Days.values()[i].name().equals(time.getDay().name())) {
+                    a = 1;
+                    break;
                 }
             }
             if(a==0){
