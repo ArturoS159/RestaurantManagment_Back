@@ -10,6 +10,7 @@ import java.util.UUID;
 public interface RestaurantMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "meals", ignore = true)
+    @Mapping(target = "paymentOnline", expression = "java(false)")
     Restaurant toRestaurant(RestaurantDto restaurantDto, UUID ownerId);
 
     @Mapping(target = "id", ignore = true)

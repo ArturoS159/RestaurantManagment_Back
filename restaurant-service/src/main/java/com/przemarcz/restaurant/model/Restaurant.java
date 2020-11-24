@@ -61,7 +61,7 @@ public class Restaurant {
     private List<WorkTime> worksTime = new ArrayList<>();
     @Column(name = "deleted")
     private boolean isDeleted;
-    @Column(name = "  payment_online")
+    @Column(name = "payment_online")
     private boolean paymentOnline;
     private String description;
     private String nip;
