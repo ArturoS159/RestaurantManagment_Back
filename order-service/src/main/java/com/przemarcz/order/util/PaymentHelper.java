@@ -1,10 +1,13 @@
 package com.przemarcz.order.util;
 
 import com.przemarcz.order.model.RestaurantPayment;
+import com.przemarcz.order.util.payumodels.Payment;
+import com.przemarcz.order.util.payumodels.PaymentResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +23,9 @@ public class PaymentHelper {
     private static final int CORRECT_RESPONSE_200 = 200;
     private static final int CORRECT_RESPONSE_302 = 302;
     private static final int EIGHT = 8;
+    private static final int ZERO = 0;
     private static final char AMPERSAND = '&';
+    private static final String COMPLETED = "COMPLETED";
 
 
     public String getAuthorizationToken(String clientId, String clientSecret){
@@ -60,6 +65,25 @@ public class PaymentHelper {
     private String getOrderIdFromUrl(URI url){
         String urlString = url.getRawQuery();
         return urlString.substring(EIGHT,urlString.indexOf(AMPERSAND));
+    }
+
+    public boolean checkOrderStatus(RestaurantPayment restaurantPayment,String payUOrderId){
+        String authToken = getAuthorizationToken(restaurantPayment.getClientId(),restaurantPayment.getClientSecret());
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        Response response = client.target(String.format("https://secure.snd.payu.com/api/v2_1/orders/%s", payUOrderId))
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", authToken)
+                .get();
+        return isStatusCompleted(response);
+    }
+
+    private boolean isStatusCompleted(Response response){
+        if(response.getStatus() != CORRECT_RESPONSE_200){
+            return false;
+        }
+        String body = response.readEntity(String.class);
+        JSONObject jsonObject = new JSONObject(body);
+        return jsonObject.getJSONArray("orders").getJSONObject(ZERO).getString("status").equals(COMPLETED);
     }
 
 }

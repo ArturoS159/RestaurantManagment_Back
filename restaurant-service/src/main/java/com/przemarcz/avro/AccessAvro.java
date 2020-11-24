@@ -13,24 +13,24 @@ import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
-public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -1499481383644579322L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"AccesAvro\",\"namespace\":\"com.przemarcz.avro\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"RestaurantDo\",\"symbols\":[\"ADD\",\"DEL\"]}},{\"name\":\"restaurantId\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"userId\",\"type\":\"string\",\"logicalType\":\"UUID\"}]}");
+public class AccessAvro extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+  private static final long serialVersionUID = 458244586526810627L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"AccessAvro\",\"namespace\":\"com.przemarcz.avro\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"AddDelete\",\"symbols\":[\"ADD\",\"DEL\"]}},{\"name\":\"restaurantId\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"userId\",\"type\":\"string\",\"logicalType\":\"UUID\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
 
-  private static final BinaryMessageEncoder<AccesAvro> ENCODER =
-      new BinaryMessageEncoder<AccesAvro>(MODEL$, SCHEMA$);
+  private static final BinaryMessageEncoder<AccessAvro> ENCODER =
+      new BinaryMessageEncoder<AccessAvro>(MODEL$, SCHEMA$);
 
-  private static final BinaryMessageDecoder<AccesAvro> DECODER =
-      new BinaryMessageDecoder<AccesAvro>(MODEL$, SCHEMA$);
+  private static final BinaryMessageDecoder<AccessAvro> DECODER =
+      new BinaryMessageDecoder<AccessAvro>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageEncoder instance used by this class.
    * @return the message encoder used by this class
    */
-  public static BinaryMessageEncoder<AccesAvro> getEncoder() {
+  public static BinaryMessageEncoder<AccessAvro> getEncoder() {
     return ENCODER;
   }
 
@@ -38,7 +38,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
    * Return the BinaryMessageDecoder instance used by this class.
    * @return the message decoder used by this class
    */
-  public static BinaryMessageDecoder<AccesAvro> getDecoder() {
+  public static BinaryMessageDecoder<AccessAvro> getDecoder() {
     return DECODER;
   }
 
@@ -47,12 +47,12 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
    * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
-  public static BinaryMessageDecoder<AccesAvro> createDecoder(SchemaStore resolver) {
-    return new BinaryMessageDecoder<AccesAvro>(MODEL$, SCHEMA$, resolver);
+  public static BinaryMessageDecoder<AccessAvro> createDecoder(SchemaStore resolver) {
+    return new BinaryMessageDecoder<AccessAvro>(MODEL$, SCHEMA$, resolver);
   }
 
   /**
-   * Serializes this AccesAvro to a ByteBuffer.
+   * Serializes this AccessAvro to a ByteBuffer.
    * @return a buffer holding the serialized data for this instance
    * @throws java.io.IOException if this instance could not be serialized
    */
@@ -61,17 +61,17 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   /**
-   * Deserializes a AccesAvro from a ByteBuffer.
+   * Deserializes a AccessAvro from a ByteBuffer.
    * @param b a byte buffer holding serialized data for an instance of this class
-   * @return a AccesAvro instance decoded from the given buffer
+   * @return a AccessAvro instance decoded from the given buffer
    * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
    */
-  public static AccesAvro fromByteBuffer(
+  public static AccessAvro fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
 
-   private com.przemarcz.avro.RestaurantDo type;
+   private com.przemarcz.avro.AddDelete type;
    private java.lang.CharSequence restaurantId;
    private java.lang.CharSequence userId;
 
@@ -80,7 +80,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>.
    */
-  public AccesAvro() {}
+  public AccessAvro() {}
 
   /**
    * All-args constructor.
@@ -88,7 +88,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
    * @param restaurantId The new value for restaurantId
    * @param userId The new value for userId
    */
-  public AccesAvro(com.przemarcz.avro.RestaurantDo type, java.lang.CharSequence restaurantId, java.lang.CharSequence userId) {
+  public AccessAvro(com.przemarcz.avro.AddDelete type, java.lang.CharSequence restaurantId, java.lang.CharSequence userId) {
     this.type = type;
     this.restaurantId = restaurantId;
     this.userId = userId;
@@ -110,7 +110,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: type = (com.przemarcz.avro.RestaurantDo)value$; break;
+    case 0: type = (com.przemarcz.avro.AddDelete)value$; break;
     case 1: restaurantId = (java.lang.CharSequence)value$; break;
     case 2: userId = (java.lang.CharSequence)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
@@ -121,7 +121,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
    * Gets the value of the 'type' field.
    * @return The value of the 'type' field.
    */
-  public com.przemarcz.avro.RestaurantDo getType() {
+  public com.przemarcz.avro.AddDelete getType() {
     return type;
   }
 
@@ -130,7 +130,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
    * Sets the value of the 'type' field.
    * @param value the value to set.
    */
-  public void setType(com.przemarcz.avro.RestaurantDo value) {
+  public void setType(com.przemarcz.avro.AddDelete value) {
     this.type = value;
   }
 
@@ -169,47 +169,47 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   /**
-   * Creates a new AccesAvro RecordBuilder.
-   * @return A new AccesAvro RecordBuilder
+   * Creates a new AccessAvro RecordBuilder.
+   * @return A new AccessAvro RecordBuilder
    */
-  public static com.przemarcz.avro.AccesAvro.Builder newBuilder() {
-    return new com.przemarcz.avro.AccesAvro.Builder();
+  public static com.przemarcz.avro.AccessAvro.Builder newBuilder() {
+    return new com.przemarcz.avro.AccessAvro.Builder();
   }
 
   /**
-   * Creates a new AccesAvro RecordBuilder by copying an existing Builder.
+   * Creates a new AccessAvro RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new AccesAvro RecordBuilder
+   * @return A new AccessAvro RecordBuilder
    */
-  public static com.przemarcz.avro.AccesAvro.Builder newBuilder(com.przemarcz.avro.AccesAvro.Builder other) {
+  public static com.przemarcz.avro.AccessAvro.Builder newBuilder(com.przemarcz.avro.AccessAvro.Builder other) {
     if (other == null) {
-      return new com.przemarcz.avro.AccesAvro.Builder();
+      return new com.przemarcz.avro.AccessAvro.Builder();
     } else {
-      return new com.przemarcz.avro.AccesAvro.Builder(other);
+      return new com.przemarcz.avro.AccessAvro.Builder(other);
     }
   }
 
   /**
-   * Creates a new AccesAvro RecordBuilder by copying an existing AccesAvro instance.
+   * Creates a new AccessAvro RecordBuilder by copying an existing AccessAvro instance.
    * @param other The existing instance to copy.
-   * @return A new AccesAvro RecordBuilder
+   * @return A new AccessAvro RecordBuilder
    */
-  public static com.przemarcz.avro.AccesAvro.Builder newBuilder(com.przemarcz.avro.AccesAvro other) {
+  public static com.przemarcz.avro.AccessAvro.Builder newBuilder(com.przemarcz.avro.AccessAvro other) {
     if (other == null) {
-      return new com.przemarcz.avro.AccesAvro.Builder();
+      return new com.przemarcz.avro.AccessAvro.Builder();
     } else {
-      return new com.przemarcz.avro.AccesAvro.Builder(other);
+      return new com.przemarcz.avro.AccessAvro.Builder(other);
     }
   }
 
   /**
-   * RecordBuilder for AccesAvro instances.
+   * RecordBuilder for AccessAvro instances.
    */
   @org.apache.avro.specific.AvroGenerated
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<AccesAvro>
-    implements org.apache.avro.data.RecordBuilder<AccesAvro> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<AccessAvro>
+    implements org.apache.avro.data.RecordBuilder<AccessAvro> {
 
-    private com.przemarcz.avro.RestaurantDo type;
+    private com.przemarcz.avro.AddDelete type;
     private java.lang.CharSequence restaurantId;
     private java.lang.CharSequence userId;
 
@@ -222,7 +222,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.przemarcz.avro.AccesAvro.Builder other) {
+    private Builder(com.przemarcz.avro.AccessAvro.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.type)) {
         this.type = data().deepCopy(fields()[0].schema(), other.type);
@@ -239,10 +239,10 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
     }
 
     /**
-     * Creates a Builder by copying an existing AccesAvro instance
+     * Creates a Builder by copying an existing AccessAvro instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.przemarcz.avro.AccesAvro other) {
+    private Builder(com.przemarcz.avro.AccessAvro other) {
       super(SCHEMA$);
       if (isValidValue(fields()[0], other.type)) {
         this.type = data().deepCopy(fields()[0].schema(), other.type);
@@ -262,7 +262,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       * Gets the value of the 'type' field.
       * @return The value.
       */
-    public com.przemarcz.avro.RestaurantDo getType() {
+    public com.przemarcz.avro.AddDelete getType() {
       return type;
     }
 
@@ -272,7 +272,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'type'.
       * @return This builder.
       */
-    public com.przemarcz.avro.AccesAvro.Builder setType(com.przemarcz.avro.RestaurantDo value) {
+    public com.przemarcz.avro.AccessAvro.Builder setType(com.przemarcz.avro.AddDelete value) {
       validate(fields()[0], value);
       this.type = value;
       fieldSetFlags()[0] = true;
@@ -292,7 +292,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       * Clears the value of the 'type' field.
       * @return This builder.
       */
-    public com.przemarcz.avro.AccesAvro.Builder clearType() {
+    public com.przemarcz.avro.AccessAvro.Builder clearType() {
       type = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -312,7 +312,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'restaurantId'.
       * @return This builder.
       */
-    public com.przemarcz.avro.AccesAvro.Builder setRestaurantId(java.lang.CharSequence value) {
+    public com.przemarcz.avro.AccessAvro.Builder setRestaurantId(java.lang.CharSequence value) {
       validate(fields()[1], value);
       this.restaurantId = value;
       fieldSetFlags()[1] = true;
@@ -332,7 +332,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       * Clears the value of the 'restaurantId' field.
       * @return This builder.
       */
-    public com.przemarcz.avro.AccesAvro.Builder clearRestaurantId() {
+    public com.przemarcz.avro.AccessAvro.Builder clearRestaurantId() {
       restaurantId = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -352,7 +352,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'userId'.
       * @return This builder.
       */
-    public com.przemarcz.avro.AccesAvro.Builder setUserId(java.lang.CharSequence value) {
+    public com.przemarcz.avro.AccessAvro.Builder setUserId(java.lang.CharSequence value) {
       validate(fields()[2], value);
       this.userId = value;
       fieldSetFlags()[2] = true;
@@ -372,7 +372,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       * Clears the value of the 'userId' field.
       * @return This builder.
       */
-    public com.przemarcz.avro.AccesAvro.Builder clearUserId() {
+    public com.przemarcz.avro.AccessAvro.Builder clearUserId() {
       userId = null;
       fieldSetFlags()[2] = false;
       return this;
@@ -380,10 +380,10 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
 
     @Override
     @SuppressWarnings("unchecked")
-    public AccesAvro build() {
+    public AccessAvro build() {
       try {
-        AccesAvro record = new AccesAvro();
-        record.type = fieldSetFlags()[0] ? this.type : (com.przemarcz.avro.RestaurantDo) defaultValue(fields()[0]);
+        AccessAvro record = new AccessAvro();
+        record.type = fieldSetFlags()[0] ? this.type : (com.przemarcz.avro.AddDelete) defaultValue(fields()[0]);
         record.restaurantId = fieldSetFlags()[1] ? this.restaurantId : (java.lang.CharSequence) defaultValue(fields()[1]);
         record.userId = fieldSetFlags()[2] ? this.userId : (java.lang.CharSequence) defaultValue(fields()[2]);
         return record;
@@ -396,8 +396,8 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumWriter<AccesAvro>
-    WRITER$ = (org.apache.avro.io.DatumWriter<AccesAvro>)MODEL$.createDatumWriter(SCHEMA$);
+  private static final org.apache.avro.io.DatumWriter<AccessAvro>
+    WRITER$ = (org.apache.avro.io.DatumWriter<AccessAvro>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -405,8 +405,8 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumReader<AccesAvro>
-    READER$ = (org.apache.avro.io.DatumReader<AccesAvro>)MODEL$.createDatumReader(SCHEMA$);
+  private static final org.apache.avro.io.DatumReader<AccessAvro>
+    READER$ = (org.apache.avro.io.DatumReader<AccessAvro>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {
@@ -431,7 +431,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
   {
     org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
     if (fieldOrder == null) {
-      this.type = com.przemarcz.avro.RestaurantDo.values()[in.readEnum()];
+      this.type = com.przemarcz.avro.AddDelete.values()[in.readEnum()];
 
       this.restaurantId = in.readString(this.restaurantId instanceof Utf8 ? (Utf8)this.restaurantId : null);
 
@@ -441,7 +441,7 @@ public class AccesAvro extends org.apache.avro.specific.SpecificRecordBase imple
       for (int i = 0; i < 3; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
-          this.type = com.przemarcz.avro.RestaurantDo.values()[in.readEnum()];
+          this.type = com.przemarcz.avro.AddDelete.values()[in.readEnum()];
           break;
 
         case 1:

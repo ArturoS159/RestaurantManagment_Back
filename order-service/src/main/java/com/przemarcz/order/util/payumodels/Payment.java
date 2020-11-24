@@ -1,4 +1,4 @@
-package com.przemarcz.order.util;
+package com.przemarcz.order.util.payumodels;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,6 @@ import java.util.List;
 public class Payment {
     private String customerIp;
     private String continueUrl;
-    private String extOrderId;
     private String merchantPosId;
     private String description;
     private String currencyCode;

@@ -1,5 +1,7 @@
 package com.przemarcz.order.service;
 
+import com.przemarcz.avro.AddDelete;
+import com.przemarcz.avro.PaymentAvro;
 import com.przemarcz.order.dto.PaymentDto;
 import com.przemarcz.order.exception.AlreadyExistException;
 import com.przemarcz.order.exception.NotFoundException;
@@ -8,6 +10,7 @@ import com.przemarcz.order.model.RestaurantPayment;
 import com.przemarcz.order.repository.PaymentRepository;
 import com.przemarcz.order.util.PaymentHelper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +25,9 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentHelper paymentHelper;
+    private final KafkaTemplate<String, PaymentAvro> paymentKafkaTemplate;
 
-    @Transactional(value = "transactionManager")
+    @Transactional("chainedKafkaTransactionManager")
     public PaymentDto addPayment(UUID restaurantId, PaymentDto paymentDto){
         if(hasRestaurantPayment(restaurantId)){
             throw new AlreadyExistException("This restaurant has payment!");
@@ -33,7 +37,7 @@ public class PaymentService {
         }
         RestaurantPayment restaurantPayment = paymentMapper.toPayment(paymentDto, restaurantId);
         paymentRepository.save(restaurantPayment);
-        //TODO send kafka to restaurant-service added payment
+        sendPayment(restaurantId, AddDelete.ADD);
         return paymentMapper.toPaymentDto(restaurantPayment);
     }
 
@@ -65,11 +69,17 @@ public class PaymentService {
     public void deletePayment(UUID restaurantId) {
         if(hasRestaurantPayment(restaurantId)){
             paymentRepository.deleteById(restaurantId);
+            sendPayment(restaurantId,AddDelete.DEL);
         }
     }
 
     private RestaurantPayment getRestaurantPayment(UUID restaurantId) {
         return paymentRepository.findById(restaurantId)
                 .orElseThrow(() -> new NotFoundException(String.format("Payment with %s not found!", restaurantId)));
+    }
+
+    private void sendPayment(UUID restaurantId, AddDelete type){
+        PaymentAvro paymentAvro = paymentMapper.toPaymentAvro(restaurantId,type);
+        paymentKafkaTemplate.send("payments", paymentAvro);
     }
 }

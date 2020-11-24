@@ -61,6 +61,8 @@ public class Restaurant {
     private List<WorkTime> worksTime;
     @Column(name = "deleted")
     private boolean isDeleted;
+    @Column(name = "  payment_online")
+    private boolean paymentOnline;
     private String description;
     private String nip;
     private String regon;

@@ -1,12 +1,12 @@
 {
-  "name": "AccesAvro",
+  "name": "AccessAvro",
   "type": "record",
   "namespace": "com.przemarcz.avro",
   "fields": [
     {
       "name": "type",
       "type": {
-        "name": "RestaurantDo",
+        "name": "AddDelete",
         "type": "enum",
         "symbols": [
           "ADD",

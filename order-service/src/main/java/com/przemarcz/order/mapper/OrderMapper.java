@@ -3,7 +3,7 @@ package com.przemarcz.order.mapper;
 import com.przemarcz.avro.OrderAvro;
 import com.przemarcz.order.dto.OrderDto;
 import com.przemarcz.order.model.Order;
-import com.przemarcz.order.util.PaymentResponse;
+import com.przemarcz.order.util.payumodels.PaymentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

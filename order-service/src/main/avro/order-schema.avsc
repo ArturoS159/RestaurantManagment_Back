@@ -38,6 +38,33 @@
       "type": "string"
     },
     {
+      "name": "time",
+      "type": "string"
+    },
+    {
+      "name": "paymentMethod",
+      "type": {
+        "name": "PaymentMethod",
+        "type": "enum",
+        "symbols": [
+          "CASH",
+          "ONLINE"
+        ]
+      }
+    },
+    {
+      "name": "orderType",
+      "type": {
+        "name": "OrderType",
+        "type": "enum",
+        "symbols": [
+          "IN_LOCAL",
+          "TAKE_AWAY",
+          "DELIVERY"
+        ]
+      }
+    },
+    {
       "logicalType": "UUID",
       "name": "restaurantId",
       "type": "string"

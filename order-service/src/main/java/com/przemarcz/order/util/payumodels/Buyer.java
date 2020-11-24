@@ -1,4 +1,4 @@
-package com.przemarcz.order.util;
+package com.przemarcz.order.util.payumodels;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

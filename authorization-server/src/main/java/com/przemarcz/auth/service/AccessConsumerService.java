@@ -5,8 +5,8 @@ import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
-import com.przemarcz.avro.AccesAvro;
-import com.przemarcz.avro.RestaurantDo;
+import com.przemarcz.avro.AccessAvro;
+import com.przemarcz.avro.AddDelete;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -27,7 +27,7 @@ public class AccessConsumerService {
 
     @Transactional("chainedKafkaTransactionManager")
     @KafkaListener(topics = TOPIC_OWNER)
-    public void consumeFromOwnerTopic(ConsumerRecord<String, AccesAvro> accessAvro) {
+    public void consumeFromOwnerTopic(ConsumerRecord<String, AccessAvro> accessAvro) {
         final UUID userId = textMapper.toUUID(accessAvro.value().getUserId());
         final UUID restaurantId = textMapper.toUUID(accessAvro.value().getRestaurantId());
 
@@ -41,8 +41,8 @@ public class AccessConsumerService {
         log.info(String.format("Owner role update to user: %s", userId));
     }
 
-    private boolean isRestaurantAdded(RestaurantDo type) {
-        return type.equals(RestaurantDo.ADD);
+    private boolean isRestaurantAdded(AddDelete type) {
+        return type.equals(AddDelete.ADD);
     }
 
     private User getUserFromDatabase(UUID userId) {

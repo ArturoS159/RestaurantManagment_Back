@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,14 +32,25 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getAllOrders(restaurantId, pageable), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
+    @PostMapping("/{restaurantId}/orders/refresh")
+    public ResponseEntity<Void> checkOrdersStatus(@PathVariable UUID restaurantId){
+        orderService.checkOrdersStatus(restaurantId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping("/{restaurantId}/orders/{orderId}")
     public ResponseEntity<OrderDto> getOrder(@PathVariable UUID restaurantId,@PathVariable UUID orderId) {
         return new ResponseEntity<>(orderService.getOrder(restaurantId, orderId), HttpStatus.OK);
     }
 
+    @PostMapping("/{restaurantId}/orders/{orderId}/pay")
+    public ResponseEntity<OrderDto> payOrderAgain(@PathVariable UUID restaurantId,@PathVariable UUID orderId) throws IOException {
+        return new ResponseEntity<>(orderService.payOrderAgain(restaurantId, orderId), HttpStatus.OK);
+    }
+
     @KafkaListener(topics = TOPIC_ORDERS)
-    public void consumeFromOwnerTopic(ConsumerRecord<String, OrderAvro> orderAvro) throws IOException {
+    public void consumeOrders(ConsumerRecord<String, OrderAvro> orderAvro) throws IOException {
         orderService.addOrder(orderAvro);
     }
 }

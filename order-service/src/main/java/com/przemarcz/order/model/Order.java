@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +31,7 @@ public class Order {
     private String phoneNumber;
     private String email;
     private String comment;
+    private LocalDateTime time;
     @Column(name = "user_id")
     private UUID userId;
     private BigDecimal price;

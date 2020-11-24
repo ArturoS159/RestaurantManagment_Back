@@ -1,5 +1,5 @@
 {
-  "name": "AccessAvro",
+  "name": "PaymentAvro",
   "type": "record",
   "namespace": "com.przemarcz.avro",
   "fields": [
@@ -16,11 +16,6 @@
     },
     {
       "name": "restaurantId",
-      "type": "string",
-      "logicalType": "UUID"
-    },
-    {
-      "name": "userId",
       "type": "string",
       "logicalType": "UUID"
     }

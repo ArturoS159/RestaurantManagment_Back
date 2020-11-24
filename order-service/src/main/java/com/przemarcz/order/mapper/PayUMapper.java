@@ -2,9 +2,9 @@ package com.przemarcz.order.mapper;
 
 import com.przemarcz.order.model.Meal;
 import com.przemarcz.order.model.Order;
-import com.przemarcz.order.util.Buyer;
-import com.przemarcz.order.util.Payment;
-import com.przemarcz.order.util.Product;
+import com.przemarcz.order.util.payumodels.Buyer;
+import com.przemarcz.order.util.payumodels.Payment;
+import com.przemarcz.order.util.payumodels.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -17,7 +17,6 @@ public interface PayUMapper {
 
     @Mapping(target = "buyer", source = "order", qualifiedByName = "toBuyer")
     @Mapping(target = "customerIp", expression = "java(\"123.123.123.123\")")
-    @Mapping(target = "extOrderId", expression = "java(order.getId().toString())")
     @Mapping(target = "description", expression = "java(\"Zamówienie nr: \"+order.getId().toString())")
     @Mapping(target = "currencyCode", expression = "java(\"PLN\")")
     @Mapping(target = "totalAmount", source = "order.price", qualifiedByName = "deleteDot")

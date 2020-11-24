@@ -14,8 +14,8 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class OrderAvro extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -9166355929476490171L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderAvro\",\"namespace\":\"com.przemarcz.avro\",\"fields\":[{\"name\":\"id\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"forename\",\"type\":\"string\"},{\"name\":\"surname\",\"type\":\"string\"},{\"name\":\"street\",\"type\":\"string\"},{\"name\":\"city\",\"type\":\"string\"},{\"name\":\"phoneNumber\",\"type\":\"string\"},{\"name\":\"postCode\",\"type\":\"string\"},{\"name\":\"email\",\"type\":\"string\"},{\"name\":\"comment\",\"type\":\"string\"},{\"name\":\"restaurantId\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"userId\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"meals\",\"type\":[\"null\",{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"MealAvro\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"price\",\"type\":[{\"type\":\"string\",\"java-class\":\"java.math.BigDecimal\"}]},{\"name\":\"quantity\",\"type\":\"string\"},{\"name\":\"image\",\"type\":\"string\"},{\"name\":\"ingredients\",\"type\":\"string\"},{\"name\":\"timeToDo\",\"type\":[{\"type\":\"string\",\"java-class\":\"java.math.BigDecimal\"}]}]}}],\"default\":null}]}");
+  private static final long serialVersionUID = 5042190036130753333L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OrderAvro\",\"namespace\":\"com.przemarcz.avro\",\"fields\":[{\"name\":\"id\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"forename\",\"type\":\"string\"},{\"name\":\"surname\",\"type\":\"string\"},{\"name\":\"street\",\"type\":\"string\"},{\"name\":\"city\",\"type\":\"string\"},{\"name\":\"phoneNumber\",\"type\":\"string\"},{\"name\":\"postCode\",\"type\":\"string\"},{\"name\":\"email\",\"type\":\"string\"},{\"name\":\"comment\",\"type\":\"string\"},{\"name\":\"time\",\"type\":\"string\"},{\"name\":\"paymentMethod\",\"type\":{\"type\":\"enum\",\"name\":\"PaymentMethod\",\"symbols\":[\"CASH\",\"ONLINE\"]}},{\"name\":\"orderType\",\"type\":{\"type\":\"enum\",\"name\":\"OrderType\",\"symbols\":[\"IN_LOCAL\",\"TAKE_AWAY\",\"DELIVERY\"]}},{\"name\":\"restaurantId\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"userId\",\"type\":\"string\",\"logicalType\":\"UUID\"},{\"name\":\"meals\",\"type\":[\"null\",{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"MealAvro\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"price\",\"type\":[{\"type\":\"string\",\"java-class\":\"java.math.BigDecimal\"}]},{\"name\":\"quantity\",\"type\":\"string\"},{\"name\":\"image\",\"type\":\"string\"},{\"name\":\"ingredients\",\"type\":\"string\"},{\"name\":\"timeToDo\",\"type\":[{\"type\":\"string\",\"java-class\":\"java.math.BigDecimal\"}]}]}}],\"default\":null}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -83,6 +83,9 @@ static {
    private java.lang.CharSequence postCode;
    private java.lang.CharSequence email;
    private java.lang.CharSequence comment;
+   private java.lang.CharSequence time;
+   private com.przemarcz.avro.PaymentMethod paymentMethod;
+   private com.przemarcz.avro.OrderType orderType;
    private java.lang.CharSequence restaurantId;
    private java.lang.CharSequence userId;
    private java.util.List<com.przemarcz.avro.MealAvro> meals;
@@ -105,11 +108,14 @@ static {
    * @param postCode The new value for postCode
    * @param email The new value for email
    * @param comment The new value for comment
+   * @param time The new value for time
+   * @param paymentMethod The new value for paymentMethod
+   * @param orderType The new value for orderType
    * @param restaurantId The new value for restaurantId
    * @param userId The new value for userId
    * @param meals The new value for meals
    */
-  public OrderAvro(java.lang.CharSequence id, java.lang.CharSequence forename, java.lang.CharSequence surname, java.lang.CharSequence street, java.lang.CharSequence city, java.lang.CharSequence phoneNumber, java.lang.CharSequence postCode, java.lang.CharSequence email, java.lang.CharSequence comment, java.lang.CharSequence restaurantId, java.lang.CharSequence userId, java.util.List<com.przemarcz.avro.MealAvro> meals) {
+  public OrderAvro(java.lang.CharSequence id, java.lang.CharSequence forename, java.lang.CharSequence surname, java.lang.CharSequence street, java.lang.CharSequence city, java.lang.CharSequence phoneNumber, java.lang.CharSequence postCode, java.lang.CharSequence email, java.lang.CharSequence comment, java.lang.CharSequence time, com.przemarcz.avro.PaymentMethod paymentMethod, com.przemarcz.avro.OrderType orderType, java.lang.CharSequence restaurantId, java.lang.CharSequence userId, java.util.List<com.przemarcz.avro.MealAvro> meals) {
     this.id = id;
     this.forename = forename;
     this.surname = surname;
@@ -119,6 +125,9 @@ static {
     this.postCode = postCode;
     this.email = email;
     this.comment = comment;
+    this.time = time;
+    this.paymentMethod = paymentMethod;
+    this.orderType = orderType;
     this.restaurantId = restaurantId;
     this.userId = userId;
     this.meals = meals;
@@ -138,9 +147,12 @@ static {
     case 6: return postCode;
     case 7: return email;
     case 8: return comment;
-    case 9: return restaurantId;
-    case 10: return userId;
-    case 11: return meals;
+    case 9: return time;
+    case 10: return paymentMethod;
+    case 11: return orderType;
+    case 12: return restaurantId;
+    case 13: return userId;
+    case 14: return meals;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -158,9 +170,12 @@ static {
     case 6: postCode = (java.lang.CharSequence)value$; break;
     case 7: email = (java.lang.CharSequence)value$; break;
     case 8: comment = (java.lang.CharSequence)value$; break;
-    case 9: restaurantId = (java.lang.CharSequence)value$; break;
-    case 10: userId = (java.lang.CharSequence)value$; break;
-    case 11: meals = (java.util.List<com.przemarcz.avro.MealAvro>)value$; break;
+    case 9: time = (java.lang.CharSequence)value$; break;
+    case 10: paymentMethod = (com.przemarcz.avro.PaymentMethod)value$; break;
+    case 11: orderType = (com.przemarcz.avro.OrderType)value$; break;
+    case 12: restaurantId = (java.lang.CharSequence)value$; break;
+    case 13: userId = (java.lang.CharSequence)value$; break;
+    case 14: meals = (java.util.List<com.przemarcz.avro.MealAvro>)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -319,6 +334,57 @@ static {
   }
 
   /**
+   * Gets the value of the 'time' field.
+   * @return The value of the 'time' field.
+   */
+  public java.lang.CharSequence getTime() {
+    return time;
+  }
+
+
+  /**
+   * Sets the value of the 'time' field.
+   * @param value the value to set.
+   */
+  public void setTime(java.lang.CharSequence value) {
+    this.time = value;
+  }
+
+  /**
+   * Gets the value of the 'paymentMethod' field.
+   * @return The value of the 'paymentMethod' field.
+   */
+  public com.przemarcz.avro.PaymentMethod getPaymentMethod() {
+    return paymentMethod;
+  }
+
+
+  /**
+   * Sets the value of the 'paymentMethod' field.
+   * @param value the value to set.
+   */
+  public void setPaymentMethod(com.przemarcz.avro.PaymentMethod value) {
+    this.paymentMethod = value;
+  }
+
+  /**
+   * Gets the value of the 'orderType' field.
+   * @return The value of the 'orderType' field.
+   */
+  public com.przemarcz.avro.OrderType getOrderType() {
+    return orderType;
+  }
+
+
+  /**
+   * Sets the value of the 'orderType' field.
+   * @param value the value to set.
+   */
+  public void setOrderType(com.przemarcz.avro.OrderType value) {
+    this.orderType = value;
+  }
+
+  /**
    * Gets the value of the 'restaurantId' field.
    * @return The value of the 'restaurantId' field.
    */
@@ -419,6 +485,9 @@ static {
     private java.lang.CharSequence postCode;
     private java.lang.CharSequence email;
     private java.lang.CharSequence comment;
+    private java.lang.CharSequence time;
+    private com.przemarcz.avro.PaymentMethod paymentMethod;
+    private com.przemarcz.avro.OrderType orderType;
     private java.lang.CharSequence restaurantId;
     private java.lang.CharSequence userId;
     private java.util.List<com.przemarcz.avro.MealAvro> meals;
@@ -470,17 +539,29 @@ static {
         this.comment = data().deepCopy(fields()[8].schema(), other.comment);
         fieldSetFlags()[8] = other.fieldSetFlags()[8];
       }
-      if (isValidValue(fields()[9], other.restaurantId)) {
-        this.restaurantId = data().deepCopy(fields()[9].schema(), other.restaurantId);
+      if (isValidValue(fields()[9], other.time)) {
+        this.time = data().deepCopy(fields()[9].schema(), other.time);
         fieldSetFlags()[9] = other.fieldSetFlags()[9];
       }
-      if (isValidValue(fields()[10], other.userId)) {
-        this.userId = data().deepCopy(fields()[10].schema(), other.userId);
+      if (isValidValue(fields()[10], other.paymentMethod)) {
+        this.paymentMethod = data().deepCopy(fields()[10].schema(), other.paymentMethod);
         fieldSetFlags()[10] = other.fieldSetFlags()[10];
       }
-      if (isValidValue(fields()[11], other.meals)) {
-        this.meals = data().deepCopy(fields()[11].schema(), other.meals);
+      if (isValidValue(fields()[11], other.orderType)) {
+        this.orderType = data().deepCopy(fields()[11].schema(), other.orderType);
         fieldSetFlags()[11] = other.fieldSetFlags()[11];
+      }
+      if (isValidValue(fields()[12], other.restaurantId)) {
+        this.restaurantId = data().deepCopy(fields()[12].schema(), other.restaurantId);
+        fieldSetFlags()[12] = other.fieldSetFlags()[12];
+      }
+      if (isValidValue(fields()[13], other.userId)) {
+        this.userId = data().deepCopy(fields()[13].schema(), other.userId);
+        fieldSetFlags()[13] = other.fieldSetFlags()[13];
+      }
+      if (isValidValue(fields()[14], other.meals)) {
+        this.meals = data().deepCopy(fields()[14].schema(), other.meals);
+        fieldSetFlags()[14] = other.fieldSetFlags()[14];
       }
     }
 
@@ -526,17 +607,29 @@ static {
         this.comment = data().deepCopy(fields()[8].schema(), other.comment);
         fieldSetFlags()[8] = true;
       }
-      if (isValidValue(fields()[9], other.restaurantId)) {
-        this.restaurantId = data().deepCopy(fields()[9].schema(), other.restaurantId);
+      if (isValidValue(fields()[9], other.time)) {
+        this.time = data().deepCopy(fields()[9].schema(), other.time);
         fieldSetFlags()[9] = true;
       }
-      if (isValidValue(fields()[10], other.userId)) {
-        this.userId = data().deepCopy(fields()[10].schema(), other.userId);
+      if (isValidValue(fields()[10], other.paymentMethod)) {
+        this.paymentMethod = data().deepCopy(fields()[10].schema(), other.paymentMethod);
         fieldSetFlags()[10] = true;
       }
-      if (isValidValue(fields()[11], other.meals)) {
-        this.meals = data().deepCopy(fields()[11].schema(), other.meals);
+      if (isValidValue(fields()[11], other.orderType)) {
+        this.orderType = data().deepCopy(fields()[11].schema(), other.orderType);
         fieldSetFlags()[11] = true;
+      }
+      if (isValidValue(fields()[12], other.restaurantId)) {
+        this.restaurantId = data().deepCopy(fields()[12].schema(), other.restaurantId);
+        fieldSetFlags()[12] = true;
+      }
+      if (isValidValue(fields()[13], other.userId)) {
+        this.userId = data().deepCopy(fields()[13].schema(), other.userId);
+        fieldSetFlags()[13] = true;
+      }
+      if (isValidValue(fields()[14], other.meals)) {
+        this.meals = data().deepCopy(fields()[14].schema(), other.meals);
+        fieldSetFlags()[14] = true;
       }
     }
 
@@ -901,6 +994,126 @@ static {
     }
 
     /**
+      * Gets the value of the 'time' field.
+      * @return The value.
+      */
+    public java.lang.CharSequence getTime() {
+      return time;
+    }
+
+
+    /**
+      * Sets the value of the 'time' field.
+      * @param value The value of 'time'.
+      * @return This builder.
+      */
+    public com.przemarcz.avro.OrderAvro.Builder setTime(java.lang.CharSequence value) {
+      validate(fields()[9], value);
+      this.time = value;
+      fieldSetFlags()[9] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'time' field has been set.
+      * @return True if the 'time' field has been set, false otherwise.
+      */
+    public boolean hasTime() {
+      return fieldSetFlags()[9];
+    }
+
+
+    /**
+      * Clears the value of the 'time' field.
+      * @return This builder.
+      */
+    public com.przemarcz.avro.OrderAvro.Builder clearTime() {
+      time = null;
+      fieldSetFlags()[9] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'paymentMethod' field.
+      * @return The value.
+      */
+    public com.przemarcz.avro.PaymentMethod getPaymentMethod() {
+      return paymentMethod;
+    }
+
+
+    /**
+      * Sets the value of the 'paymentMethod' field.
+      * @param value The value of 'paymentMethod'.
+      * @return This builder.
+      */
+    public com.przemarcz.avro.OrderAvro.Builder setPaymentMethod(com.przemarcz.avro.PaymentMethod value) {
+      validate(fields()[10], value);
+      this.paymentMethod = value;
+      fieldSetFlags()[10] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'paymentMethod' field has been set.
+      * @return True if the 'paymentMethod' field has been set, false otherwise.
+      */
+    public boolean hasPaymentMethod() {
+      return fieldSetFlags()[10];
+    }
+
+
+    /**
+      * Clears the value of the 'paymentMethod' field.
+      * @return This builder.
+      */
+    public com.przemarcz.avro.OrderAvro.Builder clearPaymentMethod() {
+      paymentMethod = null;
+      fieldSetFlags()[10] = false;
+      return this;
+    }
+
+    /**
+      * Gets the value of the 'orderType' field.
+      * @return The value.
+      */
+    public com.przemarcz.avro.OrderType getOrderType() {
+      return orderType;
+    }
+
+
+    /**
+      * Sets the value of the 'orderType' field.
+      * @param value The value of 'orderType'.
+      * @return This builder.
+      */
+    public com.przemarcz.avro.OrderAvro.Builder setOrderType(com.przemarcz.avro.OrderType value) {
+      validate(fields()[11], value);
+      this.orderType = value;
+      fieldSetFlags()[11] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'orderType' field has been set.
+      * @return True if the 'orderType' field has been set, false otherwise.
+      */
+    public boolean hasOrderType() {
+      return fieldSetFlags()[11];
+    }
+
+
+    /**
+      * Clears the value of the 'orderType' field.
+      * @return This builder.
+      */
+    public com.przemarcz.avro.OrderAvro.Builder clearOrderType() {
+      orderType = null;
+      fieldSetFlags()[11] = false;
+      return this;
+    }
+
+    /**
       * Gets the value of the 'restaurantId' field.
       * @return The value.
       */
@@ -915,9 +1128,9 @@ static {
       * @return This builder.
       */
     public com.przemarcz.avro.OrderAvro.Builder setRestaurantId(java.lang.CharSequence value) {
-      validate(fields()[9], value);
+      validate(fields()[12], value);
       this.restaurantId = value;
-      fieldSetFlags()[9] = true;
+      fieldSetFlags()[12] = true;
       return this;
     }
 
@@ -926,7 +1139,7 @@ static {
       * @return True if the 'restaurantId' field has been set, false otherwise.
       */
     public boolean hasRestaurantId() {
-      return fieldSetFlags()[9];
+      return fieldSetFlags()[12];
     }
 
 
@@ -936,7 +1149,7 @@ static {
       */
     public com.przemarcz.avro.OrderAvro.Builder clearRestaurantId() {
       restaurantId = null;
-      fieldSetFlags()[9] = false;
+      fieldSetFlags()[12] = false;
       return this;
     }
 
@@ -955,9 +1168,9 @@ static {
       * @return This builder.
       */
     public com.przemarcz.avro.OrderAvro.Builder setUserId(java.lang.CharSequence value) {
-      validate(fields()[10], value);
+      validate(fields()[13], value);
       this.userId = value;
-      fieldSetFlags()[10] = true;
+      fieldSetFlags()[13] = true;
       return this;
     }
 
@@ -966,7 +1179,7 @@ static {
       * @return True if the 'userId' field has been set, false otherwise.
       */
     public boolean hasUserId() {
-      return fieldSetFlags()[10];
+      return fieldSetFlags()[13];
     }
 
 
@@ -976,7 +1189,7 @@ static {
       */
     public com.przemarcz.avro.OrderAvro.Builder clearUserId() {
       userId = null;
-      fieldSetFlags()[10] = false;
+      fieldSetFlags()[13] = false;
       return this;
     }
 
@@ -995,9 +1208,9 @@ static {
       * @return This builder.
       */
     public com.przemarcz.avro.OrderAvro.Builder setMeals(java.util.List<com.przemarcz.avro.MealAvro> value) {
-      validate(fields()[11], value);
+      validate(fields()[14], value);
       this.meals = value;
-      fieldSetFlags()[11] = true;
+      fieldSetFlags()[14] = true;
       return this;
     }
 
@@ -1006,7 +1219,7 @@ static {
       * @return True if the 'meals' field has been set, false otherwise.
       */
     public boolean hasMeals() {
-      return fieldSetFlags()[11];
+      return fieldSetFlags()[14];
     }
 
 
@@ -1016,7 +1229,7 @@ static {
       */
     public com.przemarcz.avro.OrderAvro.Builder clearMeals() {
       meals = null;
-      fieldSetFlags()[11] = false;
+      fieldSetFlags()[14] = false;
       return this;
     }
 
@@ -1034,9 +1247,12 @@ static {
         record.postCode = fieldSetFlags()[6] ? this.postCode : (java.lang.CharSequence) defaultValue(fields()[6]);
         record.email = fieldSetFlags()[7] ? this.email : (java.lang.CharSequence) defaultValue(fields()[7]);
         record.comment = fieldSetFlags()[8] ? this.comment : (java.lang.CharSequence) defaultValue(fields()[8]);
-        record.restaurantId = fieldSetFlags()[9] ? this.restaurantId : (java.lang.CharSequence) defaultValue(fields()[9]);
-        record.userId = fieldSetFlags()[10] ? this.userId : (java.lang.CharSequence) defaultValue(fields()[10]);
-        record.meals = fieldSetFlags()[11] ? this.meals : (java.util.List<com.przemarcz.avro.MealAvro>) defaultValue(fields()[11]);
+        record.time = fieldSetFlags()[9] ? this.time : (java.lang.CharSequence) defaultValue(fields()[9]);
+        record.paymentMethod = fieldSetFlags()[10] ? this.paymentMethod : (com.przemarcz.avro.PaymentMethod) defaultValue(fields()[10]);
+        record.orderType = fieldSetFlags()[11] ? this.orderType : (com.przemarcz.avro.OrderType) defaultValue(fields()[11]);
+        record.restaurantId = fieldSetFlags()[12] ? this.restaurantId : (java.lang.CharSequence) defaultValue(fields()[12]);
+        record.userId = fieldSetFlags()[13] ? this.userId : (java.lang.CharSequence) defaultValue(fields()[13]);
+        record.meals = fieldSetFlags()[14] ? this.meals : (java.util.List<com.przemarcz.avro.MealAvro>) defaultValue(fields()[14]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
