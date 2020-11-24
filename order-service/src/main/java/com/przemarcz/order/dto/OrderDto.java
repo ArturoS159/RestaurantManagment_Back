@@ -3,8 +3,6 @@ package com.przemarcz.order.dto;
 import com.przemarcz.order.model.Meal;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
