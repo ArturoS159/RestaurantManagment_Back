@@ -50,7 +50,7 @@ public class OrderController {
     }
 
     @KafkaListener(topics = TOPIC_ORDERS)
-    public void consumeOrders(ConsumerRecord<String, OrderAvro> orderAvro) throws IOException {
+    public void consumeOrders(ConsumerRecord<String, OrderAvro> orderAvro) {
         orderService.addOrder(orderAvro);
     }
 }

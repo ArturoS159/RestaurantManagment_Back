@@ -5,6 +5,7 @@
  */
 package com.przemarcz.avro;
 
+import lombok.Getter;
 import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.util.Utf8;

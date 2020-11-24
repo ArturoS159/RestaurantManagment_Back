@@ -1,5 +1,7 @@
 package com.przemarcz.order.model;
 
+import com.przemarcz.order.model.enums.OrderType;
+import com.przemarcz.order.model.enums.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,12 @@ public class Order {
     private String email;
     private String comment;
     private LocalDateTime time;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
+    private PaymentMethod paymentMethod;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_type")
+    private OrderType orderType;
     @Column(name = "user_id")
     private UUID userId;
     private BigDecimal price;

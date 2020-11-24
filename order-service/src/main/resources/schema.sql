@@ -10,6 +10,8 @@ create table if not exists orders (
   phone_number VARCHAR(256),
   email VARCHAR(256),
   comment VARCHAR(256),
+  payment_method VARCHAR(256),
+  order_type VARCHAR(256),
   time TIMESTAMP,
   user_id UUID,
   price NUMERIC,

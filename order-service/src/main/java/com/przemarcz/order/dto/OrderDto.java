@@ -20,6 +20,8 @@ public class OrderDto {
     private String postCode;
     private String phoneNumber;
     private String comment;
+    private String paymentMethod;
+    private String orderType;
     private UUID userId;
     private BigDecimal price;
     private UUID restaurantId;
