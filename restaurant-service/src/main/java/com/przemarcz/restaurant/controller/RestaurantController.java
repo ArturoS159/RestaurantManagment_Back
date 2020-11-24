@@ -72,6 +72,11 @@ public class RestaurantController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/{restaurantId}/payment")
+    public ResponseEntity<Boolean> isPaymentAvailable(@PathVariable UUID restaurantId) {
+        return new ResponseEntity<>(restaurantService.isPaymentAvailable(restaurantId),HttpStatus.OK);
+    }
+
     @KafkaListener(topics = TOPIC_PAYMENT)
     public void consumeOrders(ConsumerRecord<String, PaymentAvro> paymentAvro){
         restaurantService.addOrDeletePayment(paymentAvro);

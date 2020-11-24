@@ -7,35 +7,43 @@
     },
     {
       "name": "forename",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "surname",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "street",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "city",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "phoneNumber",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "postCode",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "email",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "comment",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "name": "time",
@@ -72,7 +80,8 @@
     {
       "logicalType": "UUID",
       "name": "userId",
-      "type": "string"
+      "type": ["null", "string"],
+      "default": null
     },
     {
       "default": null,

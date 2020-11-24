@@ -18,8 +18,6 @@ public interface AvroMapper {
     @Mapping(target = "meals", ignore = true)
     @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
     @Mapping(target = "time", expression = "java(LocalDateTime.now().toString())")
-    @Mapping(target = "orderType", expression = "java(OrderType.DELIVERY)")
-    @Mapping(target = "paymentMethod", expression = "java(PaymentMethod.CASH)")
     @Mapping(target = "comment", source = "orderDto.comment", defaultValue = "")
     OrderAvro toOrderAvro(OrderDto orderDto, UUID restaurantId, String userId);
 
