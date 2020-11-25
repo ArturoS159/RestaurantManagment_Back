@@ -7,7 +7,7 @@ import com.przemarcz.auth.repository.UserRepository
 import com.przemarcz.auth.repository.UserRoleRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
@@ -30,15 +30,7 @@ class WorkerServiceTest extends Specification {
         userRoleRepository.deleteAll()
     }
 
-    User prepareUser() {
-        User user = new User()
-        user.email = "test@wp.pl"
-        user.password = "password"
-        user.login = "login"
-        return user
-    }
-
-    User prepareUser(String email,String login) {
+    User prepareUser(String email, String login) {
         User user = new User()
         user.email = email
         user.password = "password"
@@ -49,7 +41,7 @@ class WorkerServiceTest extends Specification {
     @Unroll
     def "should add restaurant worker"() {
         given:
-        userRepository.save(prepareUser())
+        userRepository.save(prepareUser("test@wp.pl","login"))
         when:
         workerService.addRestaurantWorker(UUID.randomUUID(), email)
         then:
@@ -63,7 +55,7 @@ class WorkerServiceTest extends Specification {
 
     def "should add restaurant worker to different restaurant"() {
         given:
-        userRepository.save(prepareUser())
+        userRepository.save(prepareUser("test@wp.pl", "login"))
         when:
         workerService.addRestaurantWorker(UUID.randomUUID(), "test@wp.pl")
         workerService.addRestaurantWorker(UUID.randomUUID(), "test@wp.pl")
@@ -73,7 +65,7 @@ class WorkerServiceTest extends Specification {
 
     def "should not add restaurant worker its added before"() {
         given:
-        userRepository.save(prepareUser())
+        userRepository.save(prepareUser("test@wp.pl", "login"))
         UUID uuid = UUID.randomUUID()
         when:
         workerService.addRestaurantWorker(uuid, "test@wp.pl")
@@ -83,13 +75,14 @@ class WorkerServiceTest extends Specification {
         thrown(AlreadyExistException)
     }
 
-    def "should throw exception when try to add restaurant worker"() {
+    def "should throw exception when try to add not exist user to worker"() {
         given:
-        userRepository.save(prepareUser())
+        userRepository.save(prepareUser("test@wp.pl", "login"))
         when:
         workerService.addRestaurantWorker(UUID.randomUUID(), "notexist@wp.pl")
         then:
         userRoleRepository.findAll().size() == 0
+        userRepository.findAll().size()==1
         thrown(NotFoundException)
     }
 
@@ -103,8 +96,8 @@ class WorkerServiceTest extends Specification {
         workerService.addRestaurantWorker(restaurantId, "test2@wp.pl")
         workerService.addRestaurantWorker(restaurantIdDiff, "test2@wp.pl")
         when:
-        def sizeRestaurantFirst = workerService.getAllRestaurantWorkers(restaurantId, PageRequest.of(0, 10)).getNumberOfElements()
-        def sizeRestaurantSec = workerService.getAllRestaurantWorkers(restaurantIdDiff, PageRequest.of(0, 10)).getNumberOfElements()
+        def sizeRestaurantFirst = workerService.getAllRestaurantWorkers(restaurantId, Pageable.unpaged()).size
+        def sizeRestaurantSec = workerService.getAllRestaurantWorkers(restaurantIdDiff, Pageable.unpaged()).size
         then:
         userRoleRepository.findAll().size() == 3
         sizeRestaurantFirst == 2

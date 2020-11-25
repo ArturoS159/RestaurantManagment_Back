@@ -3,21 +3,27 @@ package com.przemarcz.auth.controller;
 import com.przemarcz.auth.dto.RegisterUser;
 import com.przemarcz.auth.dto.UserActivation;
 import com.przemarcz.auth.dto.UserDto;
+import com.przemarcz.auth.service.AccessConsumerService;
 import com.przemarcz.auth.service.AuthService;
-import lombok.AllArgsConstructor;
+import com.przemarcz.avro.AccessAvro;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.mail.EmailException;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
+    private static final String TOPIC_OWNER = "access-owner";
     private final AuthService authService;
+    private final AccessConsumerService accessConsumerService;
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUser(Principal user) {
@@ -40,5 +46,10 @@ public class AuthController {
     public ResponseEntity<Void> activeAccount(@RequestBody UserActivation userActivation) {
         authService.active(userActivation);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @KafkaListener(topics = TOPIC_OWNER)
+    public void consumeFromOwnerTopic(ConsumerRecord<String, AccessAvro> accessAvro){
+        accessConsumerService.addOrDeleteOwnerRole(accessAvro.value());
     }
 }

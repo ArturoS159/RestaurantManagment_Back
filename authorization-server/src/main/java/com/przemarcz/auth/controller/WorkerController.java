@@ -3,6 +3,7 @@ package com.przemarcz.auth.controller;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.service.WorkerService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/restaurants")
 @CrossOrigin(origins = "http://localhost:3000")
 public class WorkerController {

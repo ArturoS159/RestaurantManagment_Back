@@ -15,7 +15,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,9 +65,7 @@ public class User implements UserDetails, Serializable {
     private List<UserRole> restaurantRoles = new ArrayList<>();
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="user_authorization")
-    @JsonIgnore
     private UserAuthorization userAuthorization;
-    @JsonIgnore
     private boolean active;
 
 

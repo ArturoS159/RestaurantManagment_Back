@@ -9,10 +9,7 @@ import com.przemarcz.avro.AccessAvro;
 import com.przemarcz.avro.AddDelete;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -21,18 +18,15 @@ import java.util.UUID;
 @Slf4j
 public class AccessConsumerService {
 
-    private static final String TOPIC_OWNER = "access-owner";
     private final UserRepository userRepository;
     private final TextMapper textMapper;
 
-    @Transactional("chainedKafkaTransactionManager")
-    @KafkaListener(topics = TOPIC_OWNER)
-    public void consumeFromOwnerTopic(ConsumerRecord<String, AccessAvro> accessAvro) {
-        final UUID userId = textMapper.toUUID(accessAvro.value().getUserId());
-        final UUID restaurantId = textMapper.toUUID(accessAvro.value().getRestaurantId());
+    public void addOrDeleteOwnerRole(AccessAvro accessAvro) {
+        final UUID userId = textMapper.toUUID(accessAvro.getUserId());
+        final UUID restaurantId = textMapper.toUUID(accessAvro.getRestaurantId());
 
         User user = getUserFromDatabase(userId);
-        if (isRestaurantAdded(accessAvro.value().getType())) {
+        if (isRestaurantAdded(accessAvro.getType())) {
             user.addRole(Role.OWNER, restaurantId);
         } else {
             user.delRole(Role.OWNER, restaurantId);

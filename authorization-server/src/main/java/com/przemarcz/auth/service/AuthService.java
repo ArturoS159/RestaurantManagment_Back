@@ -37,11 +37,9 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    private User getUserFormDbByLogin(String value) {
-        return userRepository.findByLogin(value.toLowerCase())
-                .orElseThrow(
-                        () -> new NotFoundException(String.format("User %s not found!", value))
-                );
+    @Transactional(value = "transactionManager", readOnly = true)
+    public UserDto getUser(String id) {
+        return userMapper.toUserDto(getUserFromDbById(id));
     }
 
     @Transactional(value = "transactionManager")
@@ -60,13 +58,15 @@ public class AuthService implements UserDetailsService {
         return userRepository.findByLoginOrEmail(user.getLogin(), user.getEmail()).isPresent();
     }
 
-    @Transactional(value = "transactionManager", readOnly = true)
-    public UserDto getUser(String id) {
-        return userMapper.toUserDto(getUserFromDbById(id));
-    }
-
     private User getUserFromDbById(String value) {
         return userRepository.findById(textMapper.toUUID(value))
+                .orElseThrow(
+                        () -> new NotFoundException(String.format("User %s not found!", value))
+                );
+    }
+
+    private User getUserFormDbByLogin(String value) {
+        return userRepository.findByLogin(value.toLowerCase())
                 .orElseThrow(
                         () -> new NotFoundException(String.format("User %s not found!", value))
                 );
