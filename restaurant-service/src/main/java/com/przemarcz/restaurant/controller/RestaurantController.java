@@ -26,7 +26,6 @@ import java.util.UUID;
 public class RestaurantController {
 
     private static final String TOPIC_PAYMENT = "payments";
-
     private final RestaurantService restaurantService;
 
     @GetMapping
@@ -69,6 +68,13 @@ public class RestaurantController {
     @PostMapping("/{restaurantId}/order")
     public ResponseEntity<Void> orderMeals(Principal principal, @PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
         restaurantService.orderMeals(restaurantId, orderDto, principal.getName());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
+    @PostMapping("/{restaurantId}/order-personal")
+    public ResponseEntity<Void> orderMealsByPersonal(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
+        restaurantService.orderMealsByPersonal(restaurantId, orderDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

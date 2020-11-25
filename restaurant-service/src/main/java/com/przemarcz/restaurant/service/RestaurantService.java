@@ -132,4 +132,12 @@ public class RestaurantService {
         Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
         return restaurant.isPaymentOnline();
     }
+
+    @Transactional("chainedKafkaTransactionManager")
+    public void orderMealsByPersonal(UUID restaurantId, OrderDto orderDto) {
+        OrderAvro orderAvro = avroMapper.toOrderAvro(orderDto, restaurantId, null);
+        List<MealAvro> meals = getMealsFromDatabase(restaurantId, orderDto);
+        orderAvro.setMeals(meals);
+        sendMessageOrder(orderAvro);
+    }
 }
