@@ -47,8 +47,8 @@ public class WorkerService {
     @Transactional(value = "transactionManager")
     public void addRestaurantWorker(UUID restaurantId, String email) {
         User user = getUserFromDatabase(email.toLowerCase());
-        if(isWorkerExistInRestaurant(restaurantId,user.getId())){
-            throw new AlreadyExistException(String.format("User %s is added before!",email));
+        if (isWorkerExistInRestaurant(restaurantId, user.getId())) {
+            throw new AlreadyExistException(String.format("User %s is added before!", email));
         }
         user.addRole(Role.WORKER, restaurantId);
         userRepository.save(user);

@@ -2,7 +2,6 @@ package com.przemarcz.auth.controller;
 
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.service.WorkerService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +31,7 @@ public class WorkerController {
     @PostMapping("/{restaurantId}/workers")
     public ResponseEntity<Void> addRestaurantWorker(@PathVariable UUID restaurantId,
                                                     @RequestParam String email) {
-        workerService.addRestaurantWorker(restaurantId,email);
+        workerService.addRestaurantWorker(restaurantId, email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

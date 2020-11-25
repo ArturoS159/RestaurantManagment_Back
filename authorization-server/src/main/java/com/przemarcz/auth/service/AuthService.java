@@ -5,11 +5,11 @@ import com.przemarcz.auth.dto.UserActivation;
 import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
-import com.przemarcz.auth.util.MailSender;
 import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.repository.UserRepository;
+import com.przemarcz.auth.util.MailSender;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
@@ -30,9 +30,9 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String value) {
-        try{
+        try {
             return getUserFromDbById(value);
-        }catch (Exception err){
+        } catch (Exception err) {
             return getUserFormDbByLogin(value);
         }
     }
@@ -49,7 +49,7 @@ public class AuthService implements UserDetailsService {
         }
         User user = userMapper.toUser(registerUser);
         user.generateUserActivationKey();
-        mailSender.sendEmail(user.getEmail(),user.getUserAuthorization().getActivationKey(),user.getLogin());
+        mailSender.sendEmail(user.getEmail(), user.getUserAuthorization().getActivationKey(), user.getLogin());
         userRepository.save(user);
         log.info(String.format("User %s registered!", user.getLogin()));
     }
@@ -75,7 +75,7 @@ public class AuthService implements UserDetailsService {
     @Transactional(value = "transactionManager")
     public void updateUser(String userId, UserDto userDto) {
         User user = getUserFromDbById(userId);
-        userMapper.updateUser(user,userDto);
+        userMapper.updateUser(user, userDto);
         userRepository.save(user);
     }
 

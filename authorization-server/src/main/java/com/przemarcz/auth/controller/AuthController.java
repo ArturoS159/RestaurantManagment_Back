@@ -37,9 +37,9 @@ public class AuthController {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserDto> updateUser(Principal user,@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(Principal user, @RequestBody UserDto userDto) {
         authService.updateUser(user.getName(), userDto);
-        return new ResponseEntity<>( HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/active")
@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @KafkaListener(topics = TOPIC_OWNER)
-    public void consumeFromOwnerTopic(ConsumerRecord<String, AccessAvro> accessAvro){
+    public void consumeFromOwnerTopic(ConsumerRecord<String, AccessAvro> accessAvro) {
         accessConsumerService.addOrDeleteOwnerRole(accessAvro.value());
     }
 }

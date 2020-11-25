@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class MailSender{
+public class MailSender {
 
     @Value("${email.user:user}")
     private String user;
@@ -42,8 +42,8 @@ public class MailSender{
         htmlEmail.send();
     }
 
-    private void setContent(String activationKey, List<InternetAddress> address, HtmlEmail htmlEmail,String login) throws EmailException {
-        htmlEmail.setHtmlMsg(String.format(content,login,activationKey));
+    private void setContent(String activationKey, List<InternetAddress> address, HtmlEmail htmlEmail, String login) throws EmailException {
+        htmlEmail.setHtmlMsg(String.format(content, login, activationKey));
         htmlEmail.setSubject(subject);
         htmlEmail.setFrom(email, userName);
         htmlEmail.setTo(address);
@@ -59,7 +59,7 @@ public class MailSender{
 
     private HtmlEmail prepareConnection() {
         HtmlEmail htmlEmail = new HtmlEmail();
-        htmlEmail.setAuthentication(user,password);
+        htmlEmail.setAuthentication(user, password);
         htmlEmail.setCharset(charset);
         htmlEmail.setHostName(host);
         htmlEmail.setSmtpPort(smtpPort);

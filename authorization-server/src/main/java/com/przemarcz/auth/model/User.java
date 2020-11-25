@@ -64,7 +64,7 @@ public class User implements UserDetails, Serializable {
     @JoinColumn(name = "user_id")
     private List<UserRole> restaurantRoles = new ArrayList<>();
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="user_authorization")
+    @JoinColumn(name = "user_authorization")
     private UserAuthorization userAuthorization;
     private boolean active;
 
@@ -85,11 +85,11 @@ public class User implements UserDetails, Serializable {
     }
 
     public void activeAccount(String activationKey) {
-        if(active)
+        if (active)
             throw new AlreadyExistException("User was activated!");
-        if(isActivationKeyTheSame(activationKey)){
-            active=true;
-        }else{
+        if (isActivationKeyTheSame(activationKey)) {
+            active = true;
+        } else {
             throw new IllegalArgumentException("Bad activation key!");
         }
     }

@@ -1,8 +1,8 @@
 package com.przemarcz.auth.controller;
 
 import com.przemarcz.auth.dto.ApiResponse;
-import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.exception.AlreadyExistException;
+import com.przemarcz.auth.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
