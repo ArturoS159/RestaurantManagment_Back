@@ -42,13 +42,13 @@ public class RestaurantService {
     private String topicAccess;
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<RestaurantDto> getAllRestaurants(String userId, Pageable pageable, boolean my) {
-        if (my) {
-            return restaurantRepository.findAllByOwnerId(textMapper.toUUID(userId), pageable)
-                    .map(restaurantMapper::toRestaurantDto);
-        }
+    public Page<RestaurantDto> getAllRestaurantsPublic(Pageable pageable) {
         return restaurantRepository.findAll(pageable).map(restaurantMapper::toRestaurantDto);
-        //TODO refactor specification
+    }
+
+    @Transactional(value = "transactionManager", readOnly = true)
+    public Page<RestaurantDto> getAllRestaurantForOwner(String ownerId, Pageable pageable) {
+        return restaurantRepository.findAllByOwnerId(textMapper.toUUID(ownerId), pageable).map(restaurantMapper::toRestaurantDto);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)

@@ -22,7 +22,7 @@ public class MealController {
     private final MealService mealService;
     private final KafkaTemplate<String, OrderAvro> orderKafkaTemplate;
 
-    @GetMapping("/{restaurantId}/meals")
+    @GetMapping("/{restaurantId}/meals/public")
     public ResponseEntity<List<MealDto>> getRestaurantMeals(@PathVariable UUID restaurantId) {
         return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId), HttpStatus.OK);
     }

@@ -26,6 +26,7 @@ public interface UserMapper {
     @Mapping(target = "phoneNumber", ignore = true)
     @Mapping(target = "houseNumber", ignore = true)
     @Mapping(target = "restaurantRoles", ignore = true)
+    @Mapping(target = "active", ignore = true)
     User toUser(RegisterUser user);
 
     @Mapping(target = "id", ignore = true)
