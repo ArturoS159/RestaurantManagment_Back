@@ -28,7 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/register", "/active", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**");
+        web.ignoring().antMatchers("/register", "/active", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/actuator/**");
     }
 
     @Override
@@ -36,6 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/register", "/active").permitAll()
+                .antMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated();
     }
 

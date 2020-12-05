@@ -73,6 +73,9 @@
 	</dependencyManagement>
 
 	<build>
+		<finalName>
+			resource-server
+		</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
