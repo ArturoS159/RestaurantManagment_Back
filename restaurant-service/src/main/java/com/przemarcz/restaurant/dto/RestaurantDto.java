@@ -25,4 +25,5 @@ public class RestaurantDto {
     private String postCode;
     private String houseNumber;
     private String phoneNumber;
+    private boolean open;
 }

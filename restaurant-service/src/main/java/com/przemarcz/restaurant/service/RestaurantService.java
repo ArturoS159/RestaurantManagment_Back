@@ -12,6 +12,7 @@ import com.przemarcz.restaurant.model.Meal;
 import com.przemarcz.restaurant.model.Restaurant;
 import com.przemarcz.restaurant.repository.MealRepository;
 import com.przemarcz.restaurant.repository.RestaurantRepository;
+import com.przemarcz.restaurant.specification.RestaurantSpecification;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
+
     private final RestaurantRepository restaurantRepository;
     private final MealRepository mealRepository;
     private final RestaurantMapper restaurantMapper;
@@ -42,8 +45,9 @@ public class RestaurantService {
     private String topicAccess;
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<RestaurantDto> getAllRestaurantsPublic(Pageable pageable) {
-        return restaurantRepository.findAll(pageable).map(restaurantMapper::toRestaurantDto);
+    public Page<RestaurantDto> getAllRestaurantsPublic(Pageable pageable, RestaurantDto restaurantDto) {
+        RestaurantSpecification x = new RestaurantSpecification(restaurantDto);
+        return restaurantRepository.findAll(x, pageable).map(restaurantMapper::toRestaurantDto);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
