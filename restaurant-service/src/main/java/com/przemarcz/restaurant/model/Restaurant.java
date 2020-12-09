@@ -2,6 +2,7 @@ package com.przemarcz.restaurant.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.przemarcz.restaurant.dto.WorkTimeDto;
+import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.Days;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +30,13 @@ import static java.util.Objects.nonNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Restaurant {
+
     private static final String MAX_TIME = "23:59";
+    private static final int TWO_INT = 2;
+    private static final int ZERO = 0;
+    private static final BigDecimal TWO = new BigDecimal(2);
+    private static final BigDecimal MIN = new BigDecimal("0.5");
+    private static final BigDecimal MAX = new BigDecimal(5);
 
     @Id
     private UUID id = UUID.randomUUID();
@@ -72,6 +81,7 @@ public class Restaurant {
     )
     @JoinColumn(name = "restaurant_id")
     private List<Opinion> opinions;
+    private BigDecimal rate;
 
     public void addMeal(Meal meal) {
         meals.add(meal);
@@ -122,5 +132,29 @@ public class Restaurant {
         return this.worksTime.stream().filter(
                 workTime -> workTimeDto.getDay().equals(workTime.getDay())
         ).findFirst().orElseThrow(() -> new IllegalArgumentException("Something gone wrong!"));
+    }
+
+    public void addOpinion(Opinion opinion) {
+        if(isUserAddedOpinionBefore(opinion)){
+            throw new AlreadyExistException(String.format("Opinion by user %s was added before!", opinion.getUserId()));
+        }
+        if(isRateOpinionInRange(opinion.getRate())){
+            if(isNull(rate)){
+                rate = opinion.getRate();
+            }else{
+                rate = rate.add(opinion.getRate()).divide(TWO, TWO_INT, RoundingMode.DOWN);
+            }
+            opinions.add(opinion);
+        }else{
+            throw new IllegalArgumentException("Opinion is not in range!");
+        }
+    }
+
+    private boolean isUserAddedOpinionBefore(Opinion opinion) {
+        return opinions.stream().anyMatch(opinion1 -> opinion1.getUserId().equals(opinion.getUserId()));
+    }
+
+    private boolean isRateOpinionInRange(BigDecimal rate) {
+        return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
     }
 }

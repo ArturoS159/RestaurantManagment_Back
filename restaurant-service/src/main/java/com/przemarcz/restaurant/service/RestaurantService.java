@@ -46,7 +46,7 @@ public class RestaurantService {
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<RestaurantDto> getAllRestaurants(Pageable pageable, RestaurantDto restaurantDto) {
         RestaurantSpecification specification = new RestaurantSpecification(restaurantDto);
-        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toRestaurantDto);
+        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toRestaurantPublicDto);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
@@ -71,8 +71,8 @@ public class RestaurantService {
     }
 
     private void sendMessageAddRestaurant(String userId, Restaurant restaurant) {
-        AccessAvro accesAvro = new AccessAvro(AddDelete.ADD, restaurant.getId().toString(), userId);
-        accessKafkaTemplate.send(topicAccess, accesAvro);
+        AccessAvro accessAvro = new AccessAvro(AddDelete.ADD, restaurant.getId().toString(), userId);
+        accessKafkaTemplate.send(topicAccess, accessAvro);
     }
 
     public RestaurantDto updateRestaurant(UUID restaurantId, RestaurantDto restaurantDto) {
@@ -119,11 +119,6 @@ public class RestaurantService {
         //TODO
     }
 
-    private Restaurant getRestaurantFromDatabase(UUID restaurantId) {
-        return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));
-    }
-
     @Transactional("chainedKafkaTransactionManager")
     public void addOrDeletePayment(ConsumerRecord<String, PaymentAvro> paymentAvro) {
         Restaurant restaurant = getRestaurantFromDatabase(textMapper.toUUID(paymentAvro.value().getRestaurantId()));
@@ -136,8 +131,13 @@ public class RestaurantService {
         return restaurant.isPaymentOnline();
     }
 
+    private Restaurant getRestaurantFromDatabase(UUID restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));
+    }
+
     @Transactional("chainedKafkaTransactionManager")
-    public void orderMealsByPersonal(UUID restaurantId, OrderDto orderDto) {
+    public void orderMealsByStaff(UUID restaurantId, OrderDto orderDto) {
         OrderAvro orderAvro = avroMapper.toOrderAvro(orderDto, restaurantId, null);
         List<MealAvro> meals = getMealsFromDatabase(restaurantId, orderDto);
         orderAvro.setMeals(meals);

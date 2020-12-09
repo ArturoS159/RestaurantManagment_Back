@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
-@Table(name = "meals")
+@Table(name = "opinions")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,6 +23,7 @@ public class Opinion {
     private UUID id;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
+    private UUID userId;
     private BigDecimal rate;
     private String description;
 }

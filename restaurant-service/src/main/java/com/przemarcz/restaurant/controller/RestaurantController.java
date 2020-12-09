@@ -78,7 +78,7 @@ public class RestaurantController {
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/order-personal")
     public ResponseEntity<Void> orderMealsByPersonal(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
-        restaurantService.orderMealsByPersonal(restaurantId, orderDto);
+        restaurantService.orderMealsByStaff(restaurantId, orderDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

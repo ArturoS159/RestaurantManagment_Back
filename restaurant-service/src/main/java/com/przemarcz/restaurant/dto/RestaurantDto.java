@@ -4,6 +4,7 @@ import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -26,4 +27,5 @@ public class RestaurantDto {
     private String houseNumber;
     private String phoneNumber;
     private boolean open;
+    private BigDecimal rate;
 }
