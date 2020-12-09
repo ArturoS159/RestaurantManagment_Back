@@ -53,7 +53,7 @@ class WorkerServiceTest extends Specification {
         "TEsT@wp.pL" || 1
     }
 
-    def "should add restaurant worker to different restaurant"() {
+    def "should add restaurant worker when is different restaurant"() {
         given:
         userRepository.save(prepareUser("test@wp.pl", "login"))
         when:
@@ -63,7 +63,7 @@ class WorkerServiceTest extends Specification {
         userRoleRepository.findAll().size() == 2
     }
 
-    def "should not add restaurant worker its added before"() {
+    def "should not add restaurant worker when is added before"() {
         given:
         userRepository.save(prepareUser("test@wp.pl", "login"))
         UUID uuid = UUID.randomUUID()
@@ -102,5 +102,38 @@ class WorkerServiceTest extends Specification {
         userRoleRepository.findAll().size() == 3
         sizeRestaurantFirst == 2
         sizeRestaurantSec == 1
+    }
+
+    def "should delete worker from restaurant"() {
+        given:
+        User user = userRepository.save(prepareUser("test@wp.pl", "login"))
+        UUID restaurantId = UUID.randomUUID()
+        workerService.addRestaurantWorker(restaurantId, "test@wp.pl")
+        workerService.addRestaurantWorker(UUID.randomUUID(), "test@wp.pl")
+        when:
+        workerService.deleteRestaurantWorker(restaurantId, user.getId())
+        then:
+        userRepository.findById(user.getId()).get().restaurantRoles.size()==1
+    }
+
+    def "should throw exception when try to delete not existing worker"() {
+        given:
+        userRepository.save(prepareUser("test@wp.pl", "login"))
+        when:
+        workerService.deleteRestaurantWorker(UUID.randomUUID(), UUID.randomUUID())
+        then:
+        thrown(NotFoundException)
+    }
+
+    def "should throw exception when try to delete not existing role in user"() {
+        given:
+        User user = userRepository.save(prepareUser("test@wp.pl", "login"))
+        UUID restaurantId = UUID.randomUUID()
+        workerService.addRestaurantWorker(restaurantId, "test@wp.pl")
+        when:
+        workerService.deleteRestaurantWorker(UUID.randomUUID(), user.getId())
+        then:
+        userRepository.findById(user.getId()).get().restaurantRoles.size()==1
+        thrown(NotFoundException)
     }
 }

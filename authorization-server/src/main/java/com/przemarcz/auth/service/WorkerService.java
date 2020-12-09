@@ -45,16 +45,17 @@ public class WorkerService {
     }
 
     @Transactional(value = "transactionManager")
-    public void addRestaurantWorker(UUID restaurantId, String email) {
+    public UserDto addRestaurantWorker(UUID restaurantId, String email) {
         User user = getUserFromDatabase(email.toLowerCase());
-        if (isWorkerExistInRestaurant(restaurantId, user.getId())) {
+        if (isWorkerAddedBefore(restaurantId, user.getId())) {
             throw new AlreadyExistException(String.format("User %s is added before!", email));
         }
         user.addRole(Role.WORKER, restaurantId);
         userRepository.save(user);
+        return userMapper.toUserWorkerDto(user);
     }
 
-    private boolean isWorkerExistInRestaurant(UUID restaurantId, UUID userId) {
+    private boolean isWorkerAddedBefore(UUID restaurantId, UUID userId) {
         return userRoleRepository.findByRestaurantIdAndUserIdAndRole(restaurantId, userId, Role.WORKER).isPresent();
     }
 
@@ -62,5 +63,12 @@ public class WorkerService {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException(String.format("User %s not found!", email))
         );
+    }
+
+    public void deleteRestaurantWorker(UUID restaurantId, UUID workerId) {
+        User user = userRepository.findById(workerId).orElseThrow(
+                () -> new NotFoundException(String.format("User %s not found!", workerId)));
+        user.delRole(Role.WORKER, restaurantId);
+        userRepository.save(user);
     }
 }

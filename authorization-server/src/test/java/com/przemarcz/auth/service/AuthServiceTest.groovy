@@ -81,7 +81,7 @@ class AuthServiceTest extends Specification {
         User user = prepareUser("login", "email@wp.pl")
         user.generateUserActivationKey()
         userRepository.save(user)
-        UserActivation userActivation = new UserActivation();
+        UserActivation userActivation = new UserActivation()
         userActivation.setLogin("login")
         userActivation.setActivationKey(user.getUserAuthorization().getActivationKey())
         when:
@@ -104,7 +104,7 @@ class AuthServiceTest extends Specification {
         userRepository.findAll().size()==2
     }
 
-    def "should correct login user by login"(){
+    def "should correct login when user try to login by login"(){
         given:
         User user = prepareUser("login", "email@wp.pl")
         User user1 = prepareUser("login1", "email1@wp.pl")
@@ -116,7 +116,7 @@ class AuthServiceTest extends Specification {
         userDetails.getUsername()==user.id.toString()
     }
 
-    def "should correct login user by userId"(){
+    def "should correct login when user try to login by userId"(){
         given:
         User user = prepareUser("login", "email@wp.pl")
         User user1 = prepareUser("login1", "email1@wp.pl")

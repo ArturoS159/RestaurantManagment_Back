@@ -31,20 +31,24 @@ class UserTest extends Specification {
         UUID restaurant1 = UUID.randomUUID()
         UUID restaurant2 = UUID.randomUUID()
         UUID restaurant3 = UUID.randomUUID()
+        UUID restaurant4 = UUID.randomUUID()
         user.addRole(Role.OWNER,restaurant1)
         user.addRole(Role.OWNER,restaurant2)
         user.addRole(Role.WORKER,restaurant3)
+        user.addRole(Role.WORKER,restaurant4)
         when:
         user.delRole(Role.OWNER,restaurant1)
         then:
-        user.getRestaurantRoles().size()==2
+        user.getRestaurantRoles().size()==3
         user.getRestaurantRoles().get(0).getRole()==Role.OWNER
         user.getRestaurantRoles().get(0).getRestaurantId()==restaurant2
         user.getRestaurantRoles().get(1).getRole()==Role.WORKER
         user.getRestaurantRoles().get(1).getRestaurantId()==restaurant3
+        user.getRestaurantRoles().get(2).getRole()==Role.WORKER
+        user.getRestaurantRoles().get(2).getRestaurantId()==restaurant4
     }
 
-    def "should throw exception role in user not found"() {
+    def "should throw exception when role in user not found"() {
         given:
         User user = prepareUser("login", "email@wp.pl", "password")
         UUID restaurant1 = UUID.randomUUID()
@@ -66,7 +70,7 @@ class UserTest extends Specification {
         user.active
     }
 
-    def "should throw exception user is activated"(){
+    def "should throw exception when user is activated before"(){
         given:
         User user = prepareUser("login", "email@wp.pl", "password")
         user.generateUserActivationKey()
@@ -77,7 +81,7 @@ class UserTest extends Specification {
         thrown(AlreadyExistException)
     }
 
-    def "should throw exception bad activation key"(){
+    def "should throw exception when bad activation key"(){
         given:
         User user = prepareUser("login", "email@wp.pl", "password")
         user.generateUserActivationKey()
