@@ -30,7 +30,7 @@ public class RestaurantController {
 
     @GetMapping
     public ResponseEntity<Page<RestaurantDto>> getAllRestaurant(Pageable pageable, @ModelAttribute("restaurantDto") RestaurantDto restaurantDto){
-        return new ResponseEntity<>(restaurantService.getAllRestaurantsPublic(pageable, restaurantDto), HttpStatus.OK);
+        return new ResponseEntity<>(restaurantService.getAllRestaurants(pageable, restaurantDto), HttpStatus.OK);
     }
 
     @GetMapping("/owner")
