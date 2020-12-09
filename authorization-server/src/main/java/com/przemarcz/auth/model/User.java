@@ -1,6 +1,5 @@
 package com.przemarcz.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.model.enums.Role;
@@ -15,6 +14,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,8 +33,6 @@ import static java.util.Objects.nonNull;
 public class User implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 6529685098267757690L;
-
-    @JsonIgnore
     private static final String PRE_ROLE = "ROLE_";
     private static final Integer TEN = 10;
 
@@ -49,6 +48,8 @@ public class User implements UserDetails, Serializable {
     private String email;
     @Column(unique = true)
     private String login;
+    @NotNull
+    @Size(min = 3, message = "aaa")
     private String password;
     private String forename;
     private String surname;
@@ -85,9 +86,9 @@ public class User implements UserDetails, Serializable {
     }
 
     public void activeAccount(String activationKey) {
-        if (active)
+        if (active) {
             throw new AlreadyExistException("User was activated!");
-        if (isActivationKeyTheSame(activationKey)) {
+        } else if (isActivationKeyTheSame(activationKey)) {
             active = true;
         } else {
             throw new IllegalArgumentException("Bad activation key!");

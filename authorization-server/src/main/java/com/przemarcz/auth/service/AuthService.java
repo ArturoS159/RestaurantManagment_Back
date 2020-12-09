@@ -58,20 +58,6 @@ public class AuthService implements UserDetailsService {
         return userRepository.findByLoginOrEmail(user.getLogin(), user.getEmail()).isPresent();
     }
 
-    private User getUserFromDbById(String value) {
-        return userRepository.findById(textMapper.toUUID(value))
-                .orElseThrow(
-                        () -> new NotFoundException(String.format("User %s not found!", value))
-                );
-    }
-
-    private User getUserFormDbByLogin(String value) {
-        return userRepository.findByLogin(value.toLowerCase())
-                .orElseThrow(
-                        () -> new NotFoundException(String.format("User %s not found!", value))
-                );
-    }
-
     @Transactional(value = "transactionManager")
     public void updateUser(String userId, UserDto userDto) {
         User user = getUserFromDbById(userId);
@@ -79,10 +65,24 @@ public class AuthService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    private User getUserFromDbById(String value) {
+        return userRepository.findById(textMapper.toUUID(value))
+                .orElseThrow(
+                        () -> new NotFoundException(String.format("User %s not found!", value))
+                );
+    }
+
     @Transactional(value = "transactionManager")
     public void active(UserActivation userActivation) {
         User user = getUserFormDbByLogin(userActivation.getLogin());
         user.activeAccount(userActivation.getActivationKey());
         userRepository.save(user);
+    }
+
+    private User getUserFormDbByLogin(String value) {
+        return userRepository.findByLogin(value.toLowerCase())
+                .orElseThrow(
+                        () -> new NotFoundException(String.format("User %s not found!", value))
+                );
     }
 }
