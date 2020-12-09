@@ -34,7 +34,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Page<RestaurantDto>> getAllRestaurantForOwner(Principal user,Pageable pageable){
+    public ResponseEntity<Page<RestaurantDto>> getAllRestaurantForOwner(Principal user, Pageable pageable){
         return new ResponseEntity<>(restaurantService.getAllRestaurantForOwner(user.getName(), pageable), HttpStatus.OK);
     }
 

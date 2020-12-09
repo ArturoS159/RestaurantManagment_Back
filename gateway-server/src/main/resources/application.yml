@@ -16,6 +16,10 @@ zuul:
     connect-timeout-millis: 20000
     socket-timeout-millis: 20000
   routes:
+    resource-server:
+      path: /resource-api/**
+      url: http://localhost:8881
+      stripPrefix: false
     auth-service:
       path: /user-api/**
       url: http://localhost:8882
