@@ -28,17 +28,17 @@ public class RestaurantController {
     private static final String TOPIC_PAYMENT = "payments";
     private final RestaurantService restaurantService;
 
-    @GetMapping
+    @GetMapping("/public")
     public ResponseEntity<Page<RestaurantDto>> getAllRestaurant(Pageable pageable, @ModelAttribute("restaurantDto") RestaurantDto restaurantDto){
         return new ResponseEntity<>(restaurantService.getAllRestaurants(pageable, restaurantDto), HttpStatus.OK);
     }
 
-    @GetMapping("/owner")
+    @GetMapping
     public ResponseEntity<Page<RestaurantDto>> getAllRestaurantForOwner(Principal user, Pageable pageable){
         return new ResponseEntity<>(restaurantService.getAllRestaurantForOwner(user.getName(), pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/{restaurantId}")
+    @GetMapping("/{restaurantId}/public")
     public ResponseEntity<RestaurantDto> getRestaurant(@PathVariable UUID restaurantId) {
         return new ResponseEntity<>(restaurantService.getRestaurant(restaurantId), HttpStatus.OK);
     }
