@@ -27,8 +27,6 @@ import static java.util.Objects.nonNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Restaurant {
-
-    @JsonIgnore
     private static final String MAX_TIME = "23:59";
 
     @Id
@@ -68,6 +66,12 @@ public class Restaurant {
     private String regon;
     @Column(name = "post_code")
     private String postCode;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "restaurant_id")
+    private List<Opinion> opinions;
 
     public void addMeal(Meal meal) {
         meals.add(meal);

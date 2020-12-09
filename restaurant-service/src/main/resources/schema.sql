@@ -14,7 +14,15 @@ create table if not exists restaurants (
   description VARCHAR(256),
   nip VARCHAR(256),
   regon VARCHAR(256),
-  post_code VARCHAR(256)
+  post_code VARCHAR(256),
+  opinion_id UUID
+);
+
+create table if not exists opinions (
+  id UUID PRIMARY KEY,
+  restaurant_id UUID REFERENCES restaurants(id),
+  rate NUMERIC,
+  description VARCHAR(256)
 );
 
 create table if not exists meals (

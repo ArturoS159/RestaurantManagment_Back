@@ -18,15 +18,11 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Meal {
+public class Opinion {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
-    private String name;
-    private BigDecimal price;
-    private String image;
-    private String ingredients;
-    @Column(name = "time_to_do")
-    private BigDecimal timeToDo;
+    private BigDecimal rate;
+    private String description;
 }
