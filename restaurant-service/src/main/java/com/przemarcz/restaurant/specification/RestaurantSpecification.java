@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import javax.persistence.criteria.*;
 import javax.ws.rs.NotFoundException;
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -44,8 +45,9 @@ public class RestaurantSpecification implements Specification<Restaurant> {
             predicates.add(builder.like(builder.lower(root.get(Restaurant_.city)),"%"+city.toLowerCase()+"%"));
         }
         if(!CollectionUtils.isEmpty(category)){
-            predicates.add(root.join(Restaurant_.category).in(category));
-            query.distinct(true);
+            category.forEach(
+                    restaurantCategory -> predicates.add(builder.like(root.get(Restaurant_.category), "%"+restaurantCategory.toString()+"%"))
+            );
         }
         if(open){
             final LocalTime now = LocalTime.now();

@@ -16,7 +16,8 @@ create table if not exists restaurants (
   regon VARCHAR(256),
   post_code VARCHAR(256),
   opinion_id UUID,
-  rate NUMERIC
+  rate NUMERIC,
+  category TEXT
 );
 
 create table if not exists opinions (

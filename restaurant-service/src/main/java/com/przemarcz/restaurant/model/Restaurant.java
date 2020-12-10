@@ -1,17 +1,13 @@
 package com.przemarcz.restaurant.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.Days;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import lombok.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -41,10 +37,6 @@ public class Restaurant {
     private UUID id = UUID.randomUUID();
     private String name;
     private String image;
-    @ElementCollection(targetClass = RestaurantCategory.class)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "restaurant_category")
-    private Set<RestaurantCategory> category;
     @Column(name = "owner_id")
     private UUID ownerId;
     private String city;
@@ -83,6 +75,26 @@ public class Restaurant {
     @JoinColumn(name = "restaurant_id")
     private List<Opinion> opinions;
     private BigDecimal rate;
+    @Column(name="category")
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String category;
+
+    public Set<RestaurantCategory> getCategory(){
+        if(isNull(category)){
+            return Collections.emptySet();
+        }
+        String[] categoriesArr = category.split(",");
+        Set<RestaurantCategory> restaurantCategories = new HashSet<>();
+        Arrays.stream(categoriesArr).forEach(
+                cat -> restaurantCategories.add(RestaurantCategory.valueOf(cat))
+        );
+        return restaurantCategories;
+    }
+
+    public void setCategory(Set<RestaurantCategory> restaurantCategories) {
+        category = StringUtils.join(restaurantCategories, ",");
+    }
 
     public void addMeal(Meal meal) {
         meals.add(meal);
