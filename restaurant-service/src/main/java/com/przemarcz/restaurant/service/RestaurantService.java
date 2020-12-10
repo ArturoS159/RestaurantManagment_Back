@@ -46,7 +46,8 @@ public class RestaurantService {
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<RestaurantDto> getAllRestaurants(Pageable pageable, RestaurantDto restaurantDto) {
         RestaurantSpecification specification = new RestaurantSpecification(restaurantDto);
-        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toRestaurantPublicDto);
+        Page<Restaurant> restaurants = restaurantRepository.findAll(specification, pageable);
+        return restaurants.map(restaurantMapper::toRestaurantPublicDto);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)

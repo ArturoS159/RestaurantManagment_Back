@@ -10,15 +10,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -54,6 +53,7 @@ public class Restaurant {
     private String houseNumber;
     @Column(name = "phone_number")
     private String phoneNumber;
+
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true
@@ -156,5 +156,18 @@ public class Restaurant {
 
     private boolean isRateOpinionInRange(BigDecimal rate) {
         return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
+    }
+
+    public Meal getMeal(UUID mealId) {
+        return getMealById(mealId);
+    }
+
+    public void deleteMeal(UUID mealId) {
+        meals.remove(getMealById(mealId));
+    }
+
+    private Meal getMealById(UUID mealId) {
+        return meals.stream().filter(meal -> meal.getId().equals(mealId)).findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealId)));
     }
 }

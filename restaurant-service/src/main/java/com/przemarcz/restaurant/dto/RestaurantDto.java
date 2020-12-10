@@ -16,7 +16,7 @@ public class RestaurantDto {
     private String name;
     private Set<RestaurantCategory> category;
     private List<MealDto> meals;
-    private List<WorkTimeDto> worksTime;
+//    private List<WorkTimeDto> worksTime;
     private String image;
     private String description;
     private String nip;

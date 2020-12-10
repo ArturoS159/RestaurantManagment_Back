@@ -33,16 +33,17 @@ public class MealService {
 
     @Transactional(value = "transactionManager")
     public MealDto addMeal(UUID restaurantId, MealDto mealDto) {
-        Restaurant restaurantInDb = getRestaurant(restaurantId);
+        Restaurant restaurant = getRestaurant(restaurantId);
         Meal meal = mealMapper.toMeal(mealDto, restaurantId);
-        restaurantInDb.addMeal(meal);
-        restaurantRepository.save(restaurantInDb);
+        restaurant.addMeal(meal);
+        restaurantRepository.save(restaurant);
         return mealMapper.toMealDto(meal);
     }
 
     @Transactional(value = "transactionManager")
     public MealDto updateMeal(UUID restaurantId, UUID mealId, MealDto mealDto) {
-        Meal meal = getMeal(restaurantId, mealId);
+        Restaurant restaurant = getRestaurant(restaurantId);
+        Meal meal = restaurant.getMeal(mealId);
         mealMapper.updateMeal(meal, mealDto);
         mealRepository.save(meal);
         return mealMapper.toMealDto(meal);
@@ -50,8 +51,8 @@ public class MealService {
 
     @Transactional(value = "transactionManager")
     public void deleteMeal(UUID restaurantId, UUID mealId) {
-        Meal meal = getMeal(restaurantId, mealId);
-        mealRepository.delete(meal);
+        Restaurant restaurant = getRestaurant(restaurantId);
+        restaurant.deleteMeal(mealId);
     }
 
     private Restaurant getRestaurant(UUID restaurantId) {

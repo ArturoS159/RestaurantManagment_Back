@@ -18,7 +18,7 @@ public interface MealMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "restaurantId", ignore = true)
-    @Mapping(target = "price", source = "price", qualifiedByName = "scaleBigDecimal")
+    @Mapping(target = "price", source = "mealDto.price", qualifiedByName = "scaleBigDecimal")
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateMeal(@MappingTarget Meal meal, MealDto mealDto);
