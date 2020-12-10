@@ -77,7 +77,8 @@ public class Restaurant {
     private String postCode;
     @OneToMany(
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
     )
     @JoinColumn(name = "restaurant_id")
     private List<Opinion> opinions;

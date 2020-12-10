@@ -23,14 +23,14 @@ public class OpinionService {
     private final RestaurantRepository restaurantRepository;
     private final OpinionMapper opinionMapper;
     private final TextMapper textMapper;
+    private final RestaurantService restaurantService;
 
     public Page<OpinionDto> getAllRestaurantOpinions(UUID restaurantId, Pageable pageable) {
         return opinionRepository.findAllByRestaurantId(restaurantId,pageable).map(opinionMapper::toOpinionDto);
     }
 
     public OpinionDto addRestaurantOpinion(OpinionDto opinionDto, UUID restaurantId, String userId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
         Opinion opinion = opinionMapper.toOpinion(opinionDto, textMapper.toUUID(userId));
         restaurant.addOpinion(opinion);
         restaurantRepository.save(restaurant);
