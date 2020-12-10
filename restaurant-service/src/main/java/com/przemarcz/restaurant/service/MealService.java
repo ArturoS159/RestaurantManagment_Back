@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MealService {
 
-    private final RestaurantRepository restaurantRepository;
     private final MealRepository mealRepository;
     private final MealMapper mealMapper;
+    private final RestaurantService restaurantService;
 
     @Transactional(value = "transactionManager", readOnly = true)
     public List<MealDto> getAllRestaurantMeals(UUID restaurantId) {
-        return getRestaurant(restaurantId)
+        return restaurantService.getRestaurantFromDatabase(restaurantId)
                 .getMeals().stream()
                 .map(mealMapper::toMealDto).
                         collect(Collectors.toList());
@@ -33,17 +33,17 @@ public class MealService {
 
     @Transactional(value = "transactionManager")
     public MealDto addMeal(UUID restaurantId, MealDto mealDto) {
-        Restaurant restaurant = getRestaurant(restaurantId);
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
         Meal meal = mealMapper.toMeal(mealDto, restaurantId);
         restaurant.addMeal(meal);
-        restaurantRepository.save(restaurant);
         return mealMapper.toMealDto(meal);
     }
 
     @Transactional(value = "transactionManager")
     public MealDto updateMeal(UUID restaurantId, UUID mealId, MealDto mealDto) {
-        Restaurant restaurant = getRestaurant(restaurantId);
-        Meal meal = restaurant.getMeal(mealId);
+        Meal meal = restaurantService
+                .getRestaurantFromDatabase(restaurantId)
+                .getMeal(mealId);
         mealMapper.updateMeal(meal, mealDto);
         mealRepository.save(meal);
         return mealMapper.toMealDto(meal);
@@ -51,17 +51,7 @@ public class MealService {
 
     @Transactional(value = "transactionManager")
     public void deleteMeal(UUID restaurantId, UUID mealId) {
-        Restaurant restaurant = getRestaurant(restaurantId);
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
         restaurant.deleteMeal(mealId);
-    }
-
-    private Restaurant getRestaurant(UUID restaurantId) {
-        return restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));
-    }
-
-    private Meal getMeal(UUID restaurantId, UUID mealId) {
-        return mealRepository.findByIdAndRestaurantId(mealId, restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealId)));
     }
 }
