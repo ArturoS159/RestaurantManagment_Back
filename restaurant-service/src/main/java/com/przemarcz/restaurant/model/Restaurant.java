@@ -100,6 +100,43 @@ public class Restaurant {
         meals.add(meal);
     }
 
+    public Meal getMeal(UUID mealId) {
+        return getMealById(mealId);
+    }
+
+    public void deleteMeal(UUID mealId) {
+        meals.remove(getMealById(mealId));
+    }
+
+    private Meal getMealById(UUID mealId) {
+        return meals.stream().filter(meal -> meal.getId().equals(mealId)).findFirst()
+                .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealId)));
+    }
+
+    public void addOpinion(Opinion opinion) {
+        if(isUserAddedOpinionBefore(opinion)){
+            throw new AlreadyExistException(String.format("Opinion by user %s was added before!", opinion.getUserId()));
+        }
+        if(isRateOpinionInRange(opinion.getRate())){
+            Optional<BigDecimal> rateOptional = Optional.ofNullable(rate);
+            rateOptional.ifPresentOrElse(
+                    rateOld -> rate = rateOld.add(opinion.getRate()).divide(TWO, TWO_INT, RoundingMode.DOWN),
+                    () -> rate = opinion.getRate()
+            );
+            opinions.add(opinion);
+        }else{
+            throw new IllegalArgumentException("Opinion is not in range!");
+        }
+    }
+
+    private boolean isUserAddedOpinionBefore(Opinion opinion) {
+        return opinions.stream().anyMatch(opinion1 -> opinion1.getUserId().equals(opinion.getUserId()));
+    }
+
+    private boolean isRateOpinionInRange(BigDecimal rate) {
+        return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
+    }
+
     public void setDefaultWorkTimeIfNotAdded() {
         //TODO refactor
         for(int i=0;i<Days.values().length;i++){
@@ -145,42 +182,5 @@ public class Restaurant {
         return this.worksTime.stream().filter(
                 workTime -> workTimeDto.getDay().equals(workTime.getDay())
         ).findFirst().orElseThrow(() -> new IllegalArgumentException("Something gone wrong!"));
-    }
-
-    public void addOpinion(Opinion opinion) {
-        if(isUserAddedOpinionBefore(opinion)){
-            throw new AlreadyExistException(String.format("Opinion by user %s was added before!", opinion.getUserId()));
-        }
-        if(isRateOpinionInRange(opinion.getRate())){
-            if(isNull(rate)){
-                rate = opinion.getRate();
-            }else{
-                rate = rate.add(opinion.getRate()).divide(TWO, TWO_INT, RoundingMode.DOWN);
-            }
-            opinions.add(opinion);
-        }else{
-            throw new IllegalArgumentException("Opinion is not in range!");
-        }
-    }
-
-    private boolean isUserAddedOpinionBefore(Opinion opinion) {
-        return opinions.stream().anyMatch(opinion1 -> opinion1.getUserId().equals(opinion.getUserId()));
-    }
-
-    private boolean isRateOpinionInRange(BigDecimal rate) {
-        return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
-    }
-
-    public Meal getMeal(UUID mealId) {
-        return getMealById(mealId);
-    }
-
-    public void deleteMeal(UUID mealId) {
-        meals.remove(getMealById(mealId));
-    }
-
-    private Meal getMealById(UUID mealId) {
-        return meals.stream().filter(meal -> meal.getId().equals(mealId)).findFirst()
-                .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealId)));
     }
 }
