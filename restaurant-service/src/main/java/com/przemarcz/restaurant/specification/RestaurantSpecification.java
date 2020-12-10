@@ -45,6 +45,7 @@ public class RestaurantSpecification implements Specification<Restaurant> {
         }
         if(!CollectionUtils.isEmpty(category)){
             predicates.add(root.join(Restaurant_.category).in(category));
+            query.distinct(true);
         }
         if(open){
             final LocalTime now = LocalTime.now();
