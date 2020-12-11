@@ -1,7 +1,6 @@
 package com.przemarcz.restaurant.controller;
 
 import com.przemarcz.restaurant.dto.RestaurantDto;
-import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,13 +45,6 @@ public class RestaurantController {
     public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable UUID restaurantId,
                                                  @RequestBody RestaurantDto restaurantDto) {
         return new ResponseEntity<>(restaurantService.updateRestaurant(restaurantId, restaurantDto),HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
-    @PutMapping("/{restaurantId}/time")
-    public ResponseEntity<Void> updateRestaurantTime(@PathVariable UUID restaurantId, @RequestBody List<WorkTimeDto> worksTime) {
-        restaurantService.updateRestaurantTime(restaurantId, worksTime);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

@@ -3,11 +3,11 @@ package com.przemarcz.restaurant.service;
 import com.przemarcz.avro.AccessAvro;
 import com.przemarcz.avro.AddDelete;
 import com.przemarcz.restaurant.dto.RestaurantDto;
-import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.mapper.RestaurantMapper;
 import com.przemarcz.restaurant.mapper.TextMapper;
 import com.przemarcz.restaurant.model.Restaurant;
+import com.przemarcz.restaurant.model.WorkTime;
 import com.przemarcz.restaurant.repository.RestaurantRepository;
 import com.przemarcz.restaurant.specification.RestaurantSpecification;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,8 @@ public class RestaurantService {
     @Transactional("chainedKafkaTransactionManager")
     public RestaurantDto addRestaurant(String userId, RestaurantDto restaurantDto) {
         Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId));
-        restaurant.setDefaultWorkTimeIfNotAdded();
+        List<WorkTime> worksTime = restaurantMapper.toWorkTime(restaurantDto.getWorksTime());
+        restaurant.setWorkTime(worksTime);
         restaurantRepository.save(restaurant);
         sendMessageAddRestaurant(userId, restaurant);
         return restaurantMapper.toRestaurantDto(restaurant);
@@ -71,14 +72,9 @@ public class RestaurantService {
     public RestaurantDto updateRestaurant(UUID restaurantId, RestaurantDto restaurantDto) {
         Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
         restaurantMapper.updateRestaurant(restaurant,restaurantDto);
+        restaurant.updateWorkTime(restaurantDto.getWorksTime());
         restaurantRepository.save(restaurant);
         return restaurantMapper.toRestaurantDto(restaurant);
-    }
-
-    public void updateRestaurantTime(UUID restaurantId, List<WorkTimeDto> worksTime) {
-        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
-        restaurant.updateWorkTime(worksTime);
-        restaurantRepository.save(restaurant);
     }
 
     public void delRestaurant(UUID restaurantId) {

@@ -3,7 +3,6 @@ package com.przemarcz.restaurant.model;
 import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
-import com.przemarcz.restaurant.model.enums.Days;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +24,9 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor
 public class Restaurant {
 
-    private static final String MAX_TIME = "23:59";
     private static final int TWO_INT = 2;
     private static final int ZERO = 0;
+    private static final int SEVEN = 7;
     private static final BigDecimal TWO = new BigDecimal(2);
     private static final BigDecimal MIN = new BigDecimal("0.5");
     private static final BigDecimal MAX = new BigDecimal(5);
@@ -44,17 +43,10 @@ public class Restaurant {
     private String houseNumber;
     @Column(name = "phone_number")
     private String phoneNumber;
-
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
     private List<Meal> meals = new ArrayList<>();
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
     private List<WorkTime> worksTime = new ArrayList<>();
     @Column(name = "deleted")
@@ -136,37 +128,52 @@ public class Restaurant {
         return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
     }
 
-    public void setDefaultWorkTimeIfNotAdded() {
-        //TODO refactor
-        for(int i=0;i<Days.values().length;i++){
-            int a=0;
-            for (WorkTime time : worksTime) {
-                if (Days.values()[i].name().equals(time.getDay().name())) {
-                    a = 1;
-                    break;
-                }
-            }
-            if(a==0){
-                WorkTime workTime = new WorkTime(Days.values()[i], LocalTime.MIN, LocalTime.parse(MAX_TIME));
-                worksTime.add(workTime);
-            }
+    public void setWorkTime(List<WorkTime> incomingTime) {
+        List<WorkTime> finalWorksTime = new ArrayList<>();
+        if(incomingTime.size()==SEVEN){
+            incomingTime.forEach(
+                    workTime -> {
+                        if(areAllValuesCorrect(workTime.getFrom(), workTime.getTo())){
+                            finalWorksTime.add(workTime);
+                        }else{
+                            throw new IllegalArgumentException("Bad time values!");
+                        }
+                    }
+            );
+        }else{
+            throw new IllegalArgumentException("Not enough time values!");
         }
+        worksTime=finalWorksTime;
     }
 
-    public void updateWorkTime(List<WorkTimeDto> timeDtos) {
-        timeDtos.forEach(workTimeDto -> {
+    public void updateWorkTime(List<WorkTimeDto> timeIncoming) {
+        timeIncoming.forEach(workTimeDto -> {
             WorkTime day = getCorrectDay(workTimeDto);
             LocalTime from = workTimeDto.getFrom();
             LocalTime to = workTimeDto.getTo();
-            if(areValuesNonNull(from,to) && isFromSmaller(from,to) || areValuesNullAndTheSame(from,to)){
+            if(areAllValuesCorrect(from, to)){
                 day.setFrom(workTimeDto.getFrom());
                 day.setTo(workTimeDto.getTo());
             }
         });
     }
 
-    private boolean areValuesNullAndTheSame(LocalTime from, LocalTime to) {
-        return isNull(from)==isNull(to);
+    private WorkTime getCorrectDay(WorkTimeDto workTimeDto) {
+        return this.worksTime.stream().filter(
+                workTime -> workTimeDto.getDay().equals(workTime.getDay())
+        ).findFirst().orElseThrow(() -> new IllegalArgumentException("Something gone wrong!"));
+    }
+
+    private boolean areAllValuesCorrect(LocalTime from, LocalTime to) {
+        return areValuesNonNull(from,to) && isFromSmaller(from,to) || areValuesNull(from,to) && areValuesTheSame(from,to);
+    }
+
+    private boolean areValuesNull(LocalTime from, LocalTime to) {
+        return isNull(from) && isNull(to);
+    }
+
+    private boolean areValuesTheSame(LocalTime from, LocalTime to) {
+        return from==to;
     }
 
     private boolean areValuesNonNull(LocalTime from, LocalTime to) {
@@ -175,11 +182,5 @@ public class Restaurant {
 
     private boolean isFromSmaller(LocalTime from, LocalTime to) {
         return from.isBefore(to);
-    }
-
-    private WorkTime getCorrectDay(WorkTimeDto workTimeDto) {
-        return this.worksTime.stream().filter(
-                workTime -> workTimeDto.getDay().equals(workTime.getDay())
-        ).findFirst().orElseThrow(() -> new IllegalArgumentException("Something gone wrong!"));
     }
 }
