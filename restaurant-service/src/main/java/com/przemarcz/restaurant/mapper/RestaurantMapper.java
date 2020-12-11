@@ -29,19 +29,26 @@ public interface RestaurantMapper {
     void updateRestaurant(@MappingTarget Restaurant restaurant, RestaurantDto restaurantDto);
 
     @Mapping(target = "rate", source = "rate", qualifiedByName = "scaleRate")
-    RestaurantDto toRestaurantDto(Restaurant restaurant);
+    RestaurantDto toRestaurantDtoForOwner(Restaurant restaurant);
 
-    @Mapping(target = "meals", ignore = true)
     @Mapping(target = "nip", ignore = true)
     @Mapping(target = "regon", ignore = true)
     @Mapping(target = "open", ignore = true)
     @Mapping(target = "rate", source = "rate", qualifiedByName = "scaleRate")
     RestaurantDto toRestaurantPublicDto(Restaurant restaurant);
 
+    @Mapping(target = "meals", ignore = true)
+    @Mapping(target = "nip", ignore = true)
+    @Mapping(target = "regon", ignore = true)
+    @Mapping(target = "open", ignore = true)
+    @Mapping(target = "worksTime", ignore = true)
+    @Mapping(target = "rate", source = "rate", qualifiedByName = "scaleRate")
+    RestaurantDto toRestaurantPublicDtoNoDetails(Restaurant restaurant);
+
+    List<WorkTime> toWorkTime(List<WorkTimeDto> workTimeDto);
+
     @Named("scaleRate")
     default BigDecimal setScaleBigDecimal(BigDecimal value ) {
         return isNull(value) ? null : BigDecimal.valueOf(Math.ceil(value.floatValue() * 2 - 1) / 2);
     }
-
-    List<WorkTime> toWorkTime(List<WorkTimeDto> workTimeDto);
 }

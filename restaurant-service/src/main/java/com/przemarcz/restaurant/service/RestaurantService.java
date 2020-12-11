@@ -39,17 +39,18 @@ public class RestaurantService {
     public Page<RestaurantDto> getAllRestaurants(Pageable pageable, RestaurantDto restaurantDto) {
         RestaurantSpecification specification = new RestaurantSpecification(restaurantDto);
         Page<Restaurant> restaurants = restaurantRepository.findAll(specification, pageable);
-        return restaurants.map(restaurantMapper::toRestaurantPublicDto);
+        return restaurants.map(restaurantMapper::toRestaurantPublicDtoNoDetails);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<RestaurantDto> getAllRestaurantForOwner(String ownerId, Pageable pageable) {
-        return restaurantRepository.findAllByOwnerId(textMapper.toUUID(ownerId), pageable).map(restaurantMapper::toRestaurantDto);
+    public Page<RestaurantDto> getAllRestaurantForOwner(String ownerId, RestaurantDto restaurantDto, Pageable pageable) {
+        RestaurantSpecification specification = new RestaurantSpecification(textMapper.toUUID(ownerId), restaurantDto);
+        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toRestaurantDtoForOwner);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
     public RestaurantDto getRestaurant(UUID restaurantId) {
-        return restaurantMapper.toRestaurantDto(
+        return restaurantMapper.toRestaurantPublicDto(
                 getRestaurantFromDatabase(restaurantId)
         );
     }
@@ -61,7 +62,7 @@ public class RestaurantService {
         restaurant.setWorkTime(worksTime);
         restaurantRepository.save(restaurant);
         sendMessageAddRestaurant(userId, restaurant);
-        return restaurantMapper.toRestaurantDto(restaurant);
+        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
     }
 
     private void sendMessageAddRestaurant(String userId, Restaurant restaurant) {
@@ -74,15 +75,17 @@ public class RestaurantService {
         restaurantMapper.updateRestaurant(restaurant,restaurantDto);
         restaurant.updateWorkTime(restaurantDto.getWorksTime());
         restaurantRepository.save(restaurant);
-        return restaurantMapper.toRestaurantDto(restaurant);
+        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
     }
 
     public void delRestaurant(UUID restaurantId) {
-        //TODO
+        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
+        restaurant.delete();
+        restaurantRepository.save(restaurant);
     }
 
     public Restaurant getRestaurantFromDatabase(UUID restaurantId) {
-        return restaurantRepository.findById(restaurantId)
+        return restaurantRepository.findByIdAndIsDeleted(restaurantId,false)
                 .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));
     }
 }

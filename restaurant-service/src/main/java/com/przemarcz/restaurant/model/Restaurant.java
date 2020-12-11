@@ -43,10 +43,10 @@ public class Restaurant {
     private String houseNumber;
     @Column(name = "phone_number")
     private String phoneNumber;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private List<Meal> meals = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private List<WorkTime> worksTime = new ArrayList<>();
     @Column(name = "deleted")
@@ -126,6 +126,10 @@ public class Restaurant {
 
     private boolean isRateOpinionInRange(BigDecimal rate) {
         return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
+    }
+
+    public void delete() {
+        isDeleted=true;
     }
 
     public void setWorkTime(List<WorkTime> incomingTime) {

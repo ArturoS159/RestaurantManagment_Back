@@ -13,7 +13,6 @@ import org.springframework.util.CollectionUtils;
 import javax.persistence.criteria.*;
 import javax.ws.rs.NotFoundException;
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -26,6 +25,7 @@ public class RestaurantSpecification implements Specification<Restaurant> {
     private final Set<RestaurantCategory> category;
     private final boolean open;
     private final BigDecimal rate;
+    private UUID ownerId;
 
     public RestaurantSpecification(RestaurantDto restaurantDto) {
         name = restaurantDto.getName();
@@ -33,6 +33,11 @@ public class RestaurantSpecification implements Specification<Restaurant> {
         category = restaurantDto.getCategory();
         open = restaurantDto.isOpen();
         rate = restaurantDto.getRate();
+    }
+
+    public RestaurantSpecification(UUID ownerId, RestaurantDto restaurantDto) {
+        this(restaurantDto);
+        this.ownerId = ownerId;
     }
 
     @Override
@@ -65,6 +70,10 @@ public class RestaurantSpecification implements Specification<Restaurant> {
         if(nonNull(rate)){
             predicates.add(builder.greaterThanOrEqualTo(root.get(Restaurant_.rate), rate));
         }
+        if(nonNull(ownerId)){
+            predicates.add(builder.equal(root.get(Restaurant_.ownerId), ownerId));
+        }
+        predicates.add(builder.equal(root.get(Restaurant_.isDeleted), false));
         Predicate[] predicatesArray = new Predicate[predicates.size()];
         Predicate[] finalPredicates = predicates.toArray(predicatesArray);
         return builder.and(finalPredicates);
