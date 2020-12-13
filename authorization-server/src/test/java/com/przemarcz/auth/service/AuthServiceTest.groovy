@@ -1,8 +1,6 @@
 package com.przemarcz.auth.service
 
-import com.przemarcz.auth.dto.RegisterUser
-import com.przemarcz.auth.dto.UserActivation
-import com.przemarcz.auth.dto.UserDto
+
 import com.przemarcz.auth.exception.AlreadyExistException
 import com.przemarcz.auth.exception.NotFoundException
 import com.przemarcz.auth.model.User
@@ -14,6 +12,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static com.przemarcz.auth.dto.UserDto.*
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -37,18 +37,14 @@ class AuthServiceTest extends Specification {
         return user
     }
 
-    RegisterUser prepareRegisterUser(String login, String email, String password) {
-        RegisterUser user = new RegisterUser()
-        user.login = login
-        user.email = email
-        user.password = password
-        return user
+    UserRegisterRequest prepareRegisterUser(String login, String email, String password) {
+        return new UserRegisterRequest(login,email,password)
     }
 
     @Unroll
     def "should create User"() {
         given:
-        RegisterUser registerUser = prepareRegisterUser(login, email, password)
+        UserRegisterRequest registerUser = new UserRegisterRequest(login,email,password)
         when:
         authService.register(registerUser)
         then:
@@ -62,8 +58,8 @@ class AuthServiceTest extends Specification {
     @Unroll
     def "should throw exception when user is exist"() {
         given:
-        RegisterUser registerUser = prepareRegisterUser(login, email, password)
-        RegisterUser userIdDB = prepareRegisterUser("login", "email@wp.pl", "password")
+        UserRegisterRequest registerUser = prepareRegisterUser(login, email, password)
+        UserRegisterRequest userIdDB = new UserRegisterRequest("login", "email@wp.pl", "password")
         authService.register(userIdDB)
         when:
         authService.register(registerUser)
@@ -81,9 +77,7 @@ class AuthServiceTest extends Specification {
         User user = prepareUser("login", "email@wp.pl")
         user.generateUserActivationKey()
         userRepository.save(user)
-        UserActivation userActivation = new UserActivation()
-        userActivation.setLogin("login")
-        userActivation.setActivationKey(user.getUserAuthorization().getActivationKey())
+        UserActivationRequest userActivation = new UserActivationRequest("login", user.getUserAuthorization().getActivationKey())
         when:
         authService.active(userActivation)
         then:
@@ -97,7 +91,7 @@ class AuthServiceTest extends Specification {
         userRepository.save(user)
         userRepository.save(user1)
         when:
-        UserDto userFromDb = authService.getUser(user.getId().toString())
+        UserResponse userFromDb = authService.getUser(user.getId().toString())
         then:
         userFromDb.login=="login"
         userFromDb.email=="email@wp.pl"
@@ -158,12 +152,9 @@ class AuthServiceTest extends Specification {
         given:
         User user = prepareUser("login", "email@wp.pl")
         userRepository.save(user)
-        UserDto userDto = new UserDto()
-        userDto.login = "loginNew"
-        userDto.email = "emailNew@wp.pl"
-        userDto.city = "cityNew"
+        UserUpdateRequest userDto = new UserUpdateRequest(null,null,null,"cityNew",null,null,null)
         when:
-        authService.updateUser(user.id.toString(),userDto)
+        authService.updateUser(userDto, user.id.toString())
         then:
         userRepository.findById(user.id).get().login=="login"
         userRepository.findById(user.id).get().email=="email@wp.pl"

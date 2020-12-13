@@ -14,8 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,8 +46,6 @@ public class User implements UserDetails, Serializable {
     private String email;
     @Column(unique = true)
     private String login;
-    @NotNull
-    @Size(min = 3, message = "aaa")
     private String password;
     private String forename;
     private String surname;

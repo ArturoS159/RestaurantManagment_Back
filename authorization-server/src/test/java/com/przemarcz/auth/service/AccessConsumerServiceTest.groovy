@@ -54,7 +54,7 @@ class AccessConsumerServiceTest extends Specification {
         userRepository.findById(user.id).get().getRestaurantRoles().get(0).getRestaurantId().toString()==restaurantId
     }
 
-    def "should throw exception when remove not exist user"(){
+    def "should throw exception when try to remove not exist user"(){
         given:
         User user = prepareUser("login", "email@wp.pl")
         String restaurantId = UUID.randomUUID().toString()

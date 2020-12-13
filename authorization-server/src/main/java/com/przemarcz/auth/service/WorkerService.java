@@ -1,6 +1,5 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.UserMapper;
@@ -20,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.przemarcz.auth.dto.UserDto.*;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -30,11 +31,11 @@ public class WorkerService {
     private final UserMapper userMapper;
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<UserDto> getAllRestaurantWorkers(UUID restaurantId, Pageable pageable) {
+    public Page<WorkerResponse> getAllRestaurantWorkers(UUID restaurantId, Pageable pageable) {
         List<UUID> workersId = getWorkersByRestaurantId(restaurantId);
 
         return userRepository.findByIdIn(workersId, pageable)
-                .map(userMapper::toUserWorkerDto);
+                .map(userMapper::toWorkerDto);
     }
 
     private List<UUID> getWorkersByRestaurantId(UUID restaurantId) {
@@ -45,29 +46,29 @@ public class WorkerService {
     }
 
     @Transactional(value = "transactionManager")
-    public UserDto addRestaurantWorker(UUID restaurantId, String email) {
-        User user = getUserFromDatabase(email.toLowerCase());
+    public WorkerResponse addRestaurantWorker(UUID restaurantId, String email) {
+        User user = getUserFromDatabaseByEmail(email.toLowerCase());
         if (isWorkerAddedBefore(restaurantId, user.getId())) {
             throw new AlreadyExistException(String.format("User %s is added before!", email));
         }
         user.addRole(Role.WORKER, restaurantId);
         userRepository.save(user);
-        return userMapper.toUserWorkerDto(user);
+        return userMapper.toWorkerDto(user);
     }
 
     private boolean isWorkerAddedBefore(UUID restaurantId, UUID userId) {
         return userRoleRepository.findByRestaurantIdAndUserIdAndRole(restaurantId, userId, Role.WORKER).isPresent();
     }
 
-    public User getUserFromDatabase(String email) {
+    public User getUserFromDatabaseByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException(String.format("User %s not found!", email))
+                NotFoundException::new
         );
     }
 
     public void deleteRestaurantWorker(UUID restaurantId, UUID workerId) {
         User user = userRepository.findById(workerId).orElseThrow(
-                () -> new NotFoundException(String.format("User %s not found!", workerId)));
+                NotFoundException::new);
         user.delRole(Role.WORKER, restaurantId);
         userRepository.save(user);
     }

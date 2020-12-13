@@ -1,8 +1,9 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.dto.RegisterUser;
-import com.przemarcz.auth.dto.UserActivation;
-import com.przemarcz.auth.dto.UserDto;
+import com.przemarcz.auth.dto.UserDto.UserActivationRequest;
+import com.przemarcz.auth.dto.UserDto.UserRegisterRequest;
+import com.przemarcz.auth.dto.UserDto.UserResponse;
+import com.przemarcz.auth.dto.UserDto.UserUpdateRequest;
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.TextMapper;
@@ -31,19 +32,19 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String value) {
         try {
-            return getUserFromDbById(value);
+            return getUserFromDatabaseById(value);
         } catch (Exception err) {
             return getUserFormDbByLogin(value);
         }
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public UserDto getUser(String id) {
-        return userMapper.toUserDto(getUserFromDbById(id));
+    public UserResponse getUser(String id) {
+        return userMapper.toUserDto(getUserFromDatabaseById(id));
     }
 
     @Transactional(value = "transactionManager")
-    public void register(RegisterUser registerUser) throws EmailException {
+    public void register(UserRegisterRequest registerUser) throws EmailException {
         if (isUserExist(registerUser)) {
             throw new AlreadyExistException();
         }
@@ -54,35 +55,29 @@ public class AuthService implements UserDetailsService {
         log.info(String.format("User %s registered!", user.getLogin()));
     }
 
-    private boolean isUserExist(RegisterUser user) {
+    private boolean isUserExist(UserRegisterRequest user) {
         return userRepository.findByLoginOrEmail(user.getLogin(), user.getEmail()).isPresent();
     }
 
     @Transactional(value = "transactionManager")
-    public void updateUser(String userId, UserDto userDto) {
-        User user = getUserFromDbById(userId);
-        userMapper.updateUser(user, userDto);
-        userRepository.save(user);
+    public UserResponse updateUser(UserUpdateRequest userRequest, String userId) {
+        User user = getUserFromDatabaseById(userId);
+        userMapper.updateUser(user, userRequest);
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
-    private User getUserFromDbById(String value) {
-        return userRepository.findById(textMapper.toUUID(value))
-                .orElseThrow(
-                        () -> new NotFoundException(String.format("User %s not found!", value))
-                );
+    public User getUserFromDatabaseById(String value) {
+        return userRepository.findById(textMapper.toUUID(value)).orElseThrow(NotFoundException::new);
     }
 
     @Transactional(value = "transactionManager")
-    public void active(UserActivation userActivation) {
+    public void active(UserActivationRequest userActivation) {
         User user = getUserFormDbByLogin(userActivation.getLogin());
         user.activeAccount(userActivation.getActivationKey());
         userRepository.save(user);
     }
 
     private User getUserFormDbByLogin(String value) {
-        return userRepository.findByLogin(value.toLowerCase())
-                .orElseThrow(
-                        () -> new NotFoundException(String.format("User %s not found!", value))
-                );
+        return userRepository.findByLogin(value.toLowerCase()).orElseThrow(NotFoundException::new);
     }
 }

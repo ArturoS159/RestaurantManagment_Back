@@ -40,7 +40,6 @@ public class AccessConsumerService {
     }
 
     private User getUserFromDatabase(UUID userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException(String.format("User %s not found!", userId)));
+        return userRepository.findById(userId).orElseThrow(NotFoundException::new);
     }
 }
