@@ -37,14 +37,14 @@ class AuthServiceTest extends Specification {
         return user
     }
 
-    UserRegisterRequest prepareRegisterUser(String login, String email, String password) {
-        return new UserRegisterRequest(login,email,password)
+    RegisterUserRequest prepareRegisterUser(String login, String email, String password) {
+        return new RegisterUserRequest(login,email,password)
     }
 
     @Unroll
     def "should create User"() {
         given:
-        UserRegisterRequest registerUser = new UserRegisterRequest(login,email,password)
+        RegisterUserRequest registerUser = new RegisterUserRequest(login,email,password)
         when:
         authService.register(registerUser)
         then:
@@ -58,8 +58,8 @@ class AuthServiceTest extends Specification {
     @Unroll
     def "should throw exception when user is exist"() {
         given:
-        UserRegisterRequest registerUser = prepareRegisterUser(login, email, password)
-        UserRegisterRequest userIdDB = new UserRegisterRequest("login", "email@wp.pl", "password")
+        RegisterUserRequest registerUser = prepareRegisterUser(login, email, password)
+        RegisterUserRequest userIdDB = new RegisterUserRequest("login", "email@wp.pl", "password")
         authService.register(userIdDB)
         when:
         authService.register(registerUser)
@@ -77,7 +77,7 @@ class AuthServiceTest extends Specification {
         User user = prepareUser("login", "email@wp.pl")
         user.generateUserActivationKey()
         userRepository.save(user)
-        UserActivationRequest userActivation = new UserActivationRequest("login", user.getUserAuthorization().getActivationKey())
+        ActivationUserRequest userActivation = new ActivationUserRequest("login", user.getUserAuthorization().getActivationKey())
         when:
         authService.active(userActivation)
         then:
@@ -152,7 +152,7 @@ class AuthServiceTest extends Specification {
         given:
         User user = prepareUser("login", "email@wp.pl")
         userRepository.save(user)
-        UserUpdateRequest userDto = new UserUpdateRequest(null,null,null,"cityNew",null,null,null)
+        UpdateUserRequest userDto = new UpdateUserRequest(null,null,null,"cityNew",null,null,null)
         when:
         authService.updateUser(userDto, user.id.toString())
         then:

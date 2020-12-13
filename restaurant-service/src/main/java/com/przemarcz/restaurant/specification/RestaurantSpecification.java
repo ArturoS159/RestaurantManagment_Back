@@ -1,6 +1,5 @@
 package com.przemarcz.restaurant.specification;
 
-import com.przemarcz.restaurant.dto.RestaurantDto;
 import com.przemarcz.restaurant.model.Restaurant;
 import com.przemarcz.restaurant.model.Restaurant_;
 import com.przemarcz.restaurant.model.WorkTime;
@@ -16,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.*;
 
+import static com.przemarcz.restaurant.dto.RestaurantDto.RestaurantFilter;
 import static java.util.Objects.nonNull;
 
 public class RestaurantSpecification implements Specification<Restaurant> {
@@ -23,20 +23,20 @@ public class RestaurantSpecification implements Specification<Restaurant> {
     private final String name;
     private final String city;
     private final Set<RestaurantCategory> category;
-    private final boolean open;
+    private final Boolean open;
     private final BigDecimal rate;
     private UUID ownerId;
 
-    public RestaurantSpecification(RestaurantDto restaurantDto) {
-        name = restaurantDto.getName();
-        city = restaurantDto.getCity();
-        category = restaurantDto.getCategory();
-        open = restaurantDto.isOpen();
-        rate = restaurantDto.getRate();
+    public RestaurantSpecification(RestaurantFilter restaurantFilter) {
+        name = restaurantFilter.getName();
+        city = restaurantFilter.getCity();
+        category = restaurantFilter.getCategory();
+        open = restaurantFilter.getOpen();
+        rate = restaurantFilter.getRate();
     }
 
-    public RestaurantSpecification(UUID ownerId, RestaurantDto restaurantDto) {
-        this(restaurantDto);
+    public RestaurantSpecification(UUID ownerId, RestaurantFilter restaurantFilter) {
+        this(restaurantFilter);
         this.ownerId = ownerId;
     }
 
@@ -54,7 +54,7 @@ public class RestaurantSpecification implements Specification<Restaurant> {
                     restaurantCategory -> predicates.add(builder.like(root.get(Restaurant_.category), "%"+restaurantCategory.toString()+"%"))
             );
         }
-        if(open){
+        if(nonNull(open)&&open){
             final LocalTime now = LocalTime.now();
             final Days day = Days.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)).orElseThrow(NotFoundException::new);
 

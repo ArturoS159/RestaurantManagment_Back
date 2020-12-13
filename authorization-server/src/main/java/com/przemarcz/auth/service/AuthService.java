@@ -1,9 +1,9 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.dto.UserDto.UserActivationRequest;
-import com.przemarcz.auth.dto.UserDto.UserRegisterRequest;
+import com.przemarcz.auth.dto.UserDto;
+import com.przemarcz.auth.dto.UserDto.ActivationUserRequest;
+import com.przemarcz.auth.dto.UserDto.RegisterUserRequest;
 import com.przemarcz.auth.dto.UserDto.UserResponse;
-import com.przemarcz.auth.dto.UserDto.UserUpdateRequest;
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.TextMapper;
@@ -40,11 +40,11 @@ public class AuthService implements UserDetailsService {
 
     @Transactional(value = "transactionManager", readOnly = true)
     public UserResponse getUser(String id) {
-        return userMapper.toUserDto(getUserFromDatabaseById(id));
+        return userMapper.toUserResponse(getUserFromDatabaseById(id));
     }
 
     @Transactional(value = "transactionManager")
-    public void register(UserRegisterRequest registerUser) throws EmailException {
+    public void register(RegisterUserRequest registerUser) throws EmailException {
         if (isUserExist(registerUser)) {
             throw new AlreadyExistException();
         }
@@ -55,15 +55,15 @@ public class AuthService implements UserDetailsService {
         log.info(String.format("User %s registered!", user.getLogin()));
     }
 
-    private boolean isUserExist(UserRegisterRequest user) {
+    private boolean isUserExist(UserDto.RegisterUserRequest user) {
         return userRepository.findByLoginOrEmail(user.getLogin(), user.getEmail()).isPresent();
     }
 
     @Transactional(value = "transactionManager")
-    public UserResponse updateUser(UserUpdateRequest userRequest, String userId) {
+    public UserResponse updateUser(UserDto.UpdateUserRequest userRequest, String userId) {
         User user = getUserFromDatabaseById(userId);
         userMapper.updateUser(user, userRequest);
-        return userMapper.toUserDto(userRepository.save(user));
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public User getUserFromDatabaseById(String value) {
@@ -71,7 +71,7 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional(value = "transactionManager")
-    public void active(UserActivationRequest userActivation) {
+    public void active(ActivationUserRequest userActivation) {
         User user = getUserFormDbByLogin(userActivation.getLogin());
         user.activeAccount(userActivation.getActivationKey());
         userRepository.save(user);

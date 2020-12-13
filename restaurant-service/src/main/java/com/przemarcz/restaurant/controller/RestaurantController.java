@@ -1,6 +1,7 @@
 package com.przemarcz.restaurant.controller;
 
 import com.przemarcz.restaurant.dto.RestaurantDto;
+import com.przemarcz.restaurant.model.Restaurant;
 import com.przemarcz.restaurant.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.UUID;
 
+import static com.przemarcz.restaurant.dto.RestaurantDto.*;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/restaurants")
@@ -21,13 +24,16 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @GetMapping("/public")
-    public ResponseEntity<Page<RestaurantDto>> getAllRestaurant(Pageable pageable, @ModelAttribute("restaurantDto") RestaurantDto restaurantDto){
-        return new ResponseEntity<>(restaurantService.getAllRestaurants(pageable, restaurantDto), HttpStatus.OK);
+    public ResponseEntity<Page<AllRestaurantResponse>> getAllRestaurant(@ModelAttribute("restaurantFilter") RestaurantFilter restaurantFilter,
+                                                                        Pageable pageable){
+        return new ResponseEntity<>(restaurantService.getAllRestaurants(restaurantFilter, pageable), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<Page<RestaurantDto>> getAllRestaurantForOwner(Principal user, @ModelAttribute("restaurantDto") RestaurantDto restaurantDto, Pageable pageable){
-        return new ResponseEntity<>(restaurantService.getAllRestaurantForOwner(user.getName(), restaurantDto, pageable), HttpStatus.OK);
+    public ResponseEntity<Page<AllRestaurantOwnerResponse>> getAllRestaurantForOwner(@ModelAttribute("restaurantFilter") RestaurantFilter restaurantFilter,
+                                                                                     Principal user,
+                                                                                     Pageable pageable){
+        return new ResponseEntity<>(restaurantService.getAllRestaurantForOwner(restaurantFilter, user.getName(), pageable), HttpStatus.OK);
     }
 
     @GetMapping("/{restaurantId}/public")
@@ -43,7 +49,7 @@ public class RestaurantController {
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}")
     public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable UUID restaurantId,
-                                                 @RequestBody RestaurantDto restaurantDto) {
+                                                          @RequestBody RestaurantDto restaurantDto) {
         return new ResponseEntity<>(restaurantService.updateRestaurant(restaurantId, restaurantDto),HttpStatus.OK);
     }
 

@@ -2,6 +2,7 @@ package com.przemarcz.restaurant.controller;
 
 import com.przemarcz.avro.PaymentAvro;
 import com.przemarcz.restaurant.dto.OrderDto;
+import com.przemarcz.restaurant.dto.OrderDto.CreateOrderUserRequest;
 import com.przemarcz.restaurant.service.OrderService;
 import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -11,8 +12,11 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.UUID;
+
+import static com.przemarcz.restaurant.dto.OrderDto.*;
 
 @AllArgsConstructor
 @RequestMapping("/restaurants")
@@ -23,15 +27,18 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/{restaurantId}/order")
-    public ResponseEntity<Void> orderMeals(Principal principal, @PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
-        orderService.orderMeals(restaurantId, orderDto, principal.getName());
+    public ResponseEntity<Void> orderMeals(@PathVariable UUID restaurantId,
+                                           @Valid @RequestBody CreateOrderUserRequest createOrderUserRequest,
+                                           Principal principal) {
+        orderService.orderMeals(restaurantId, createOrderUserRequest, principal.getName());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/order-personal")
-    public ResponseEntity<Void> orderMealsByPersonal(@PathVariable UUID restaurantId, @RequestBody OrderDto orderDto) {
-        orderService.orderMealsByStaff(restaurantId, orderDto);
+    public ResponseEntity<Void> orderMealsByPersonal(@PathVariable UUID restaurantId,
+                                                     @RequestBody CreateOrderPersonalRequest createOrderPersonalRequest) {
+        orderService.orderMealsByPersonal(restaurantId, createOrderPersonalRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

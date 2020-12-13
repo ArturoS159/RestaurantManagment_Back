@@ -1,12 +1,9 @@
 package com.przemarcz.restaurant.service;
 
-import com.przemarcz.restaurant.dto.MealDto;
-import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.mapper.MealMapper;
 import com.przemarcz.restaurant.model.Meal;
 import com.przemarcz.restaurant.model.Restaurant;
 import com.przemarcz.restaurant.repository.MealRepository;
-import com.przemarcz.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.przemarcz.restaurant.dto.MealDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,29 +23,29 @@ public class MealService {
     private final RestaurantService restaurantService;
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public List<MealDto> getAllRestaurantMeals(UUID restaurantId) {
+    public List<MealResponse> getAllRestaurantMeals(UUID restaurantId) {
         return restaurantService.getRestaurantFromDatabase(restaurantId)
                 .getMeals().stream()
-                .map(mealMapper::toMealDto).
+                .map(mealMapper::toMealResponse).
                         collect(Collectors.toList());
     }
 
     @Transactional(value = "transactionManager")
-    public MealDto addMeal(UUID restaurantId, MealDto mealDto) {
+    public MealResponse addMeal(UUID restaurantId, CreateMealRequest mealRequest) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        Meal meal = mealMapper.toMeal(mealDto, restaurantId);
+        Meal meal = mealMapper.toMeal(mealRequest, restaurantId);
         restaurant.addMeal(meal);
-        return mealMapper.toMealDto(meal);
+        return mealMapper.toMealResponse(meal);
     }
 
     @Transactional(value = "transactionManager")
-    public MealDto updateMeal(UUID restaurantId, UUID mealId, MealDto mealDto) {
+    public MealResponse updateMeal(UUID restaurantId, UUID mealId, UpdateMealRequest mealDto) {
         Meal meal = restaurantService
                 .getRestaurantFromDatabase(restaurantId)
                 .getMeal(mealId);
         mealMapper.updateMeal(meal, mealDto);
         mealRepository.save(meal);
-        return mealMapper.toMealDto(meal);
+        return mealMapper.toMealResponse(meal);
     }
 
     @Transactional(value = "transactionManager")

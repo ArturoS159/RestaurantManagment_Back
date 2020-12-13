@@ -30,13 +30,15 @@ public class WorkerController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/workers")
-    public ResponseEntity<WorkerResponse> addRestaurantWorker(@PathVariable UUID restaurantId, @RequestParam String email) {
+    public ResponseEntity<WorkerResponse> addRestaurantWorker(@PathVariable UUID restaurantId,
+                                                              @RequestParam String email) {
         return new ResponseEntity<>(workerService.addRestaurantWorker(restaurantId, email), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @DeleteMapping("/{restaurantId}/workers/{workerId}")
-    public ResponseEntity<Void> deleteRestaurantWorker(@PathVariable UUID restaurantId, @PathVariable UUID workerId) {
+    public ResponseEntity<Void> deleteRestaurantWorker(@PathVariable UUID restaurantId,
+                                                       @PathVariable UUID workerId) {
         workerService.deleteRestaurantWorker(restaurantId, workerId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

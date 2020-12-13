@@ -1,9 +1,8 @@
 package com.przemarcz.auth.controller;
 
-import com.przemarcz.auth.dto.UserDto.UserActivationRequest;
-import com.przemarcz.auth.dto.UserDto.UserRegisterRequest;
+import com.przemarcz.auth.dto.UserDto;
+import com.przemarcz.auth.dto.UserDto.ActivationUserRequest;
 import com.przemarcz.auth.dto.UserDto.UserResponse;
-import com.przemarcz.auth.dto.UserDto.UserUpdateRequest;
 import com.przemarcz.auth.service.AccessConsumerService;
 import com.przemarcz.auth.service.AuthService;
 import com.przemarcz.avro.AccessAvro;
@@ -33,18 +32,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody UserRegisterRequest user) throws EmailException {
+    public ResponseEntity<Void> register(@Valid @RequestBody UserDto.RegisterUserRequest user) throws EmailException {
         authService.register(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UserUpdateRequest userRequest, Principal user) {
-        return new ResponseEntity<>(authService.updateUser(userRequest, user.getName()),HttpStatus.OK);
+    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UserDto.UpdateUserRequest userRequest, Principal user) {
+        return new ResponseEntity<>(authService.updateUser(userRequest, user.getName()), HttpStatus.OK);
     }
 
     @PostMapping("/active")
-    public ResponseEntity<Void> activeAccount(@RequestBody UserActivationRequest userActivation) {
+    public ResponseEntity<Void> activeAccount(@RequestBody ActivationUserRequest userActivation) {
         authService.active(userActivation);
         return new ResponseEntity<>(HttpStatus.OK);
     }

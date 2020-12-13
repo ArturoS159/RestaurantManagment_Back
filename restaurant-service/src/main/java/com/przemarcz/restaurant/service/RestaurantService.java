@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+import static com.przemarcz.restaurant.dto.RestaurantDto.*;
+
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
@@ -36,33 +38,36 @@ public class RestaurantService {
     private String topicAccess;
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<RestaurantDto> getAllRestaurants(Pageable pageable, RestaurantDto restaurantDto) {
-        RestaurantSpecification specification = new RestaurantSpecification(restaurantDto);
+    public Page<AllRestaurantResponse> getAllRestaurants(RestaurantFilter allRestaurantResponse, Pageable pageable) {
+        RestaurantSpecification specification = new RestaurantSpecification(allRestaurantResponse);
         Page<Restaurant> restaurants = restaurantRepository.findAll(specification, pageable);
-        return restaurants.map(restaurantMapper::toRestaurantPublicDtoNoDetails);
+        return restaurants.map(restaurantMapper::toAllRestaurantPublic);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<RestaurantDto> getAllRestaurantForOwner(String ownerId, RestaurantDto restaurantDto, Pageable pageable) {
-        RestaurantSpecification specification = new RestaurantSpecification(textMapper.toUUID(ownerId), restaurantDto);
-        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toRestaurantDtoForOwner);
+    public Page<AllRestaurantOwnerResponse> getAllRestaurantForOwner(RestaurantFilter restaurantFilter, String ownerId, Pageable pageable) {
+        RestaurantSpecification specification = new RestaurantSpecification(textMapper.toUUID(ownerId), restaurantFilter);
+//        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toRestaurantDtoForOwner);
+        return null;
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
     public RestaurantDto getRestaurant(UUID restaurantId) {
-        return restaurantMapper.toRestaurantPublicDto(
-                getRestaurantFromDatabase(restaurantId)
-        );
+//        return restaurantMapper.toRestaurantPublicDto(
+//                getRestaurantFromDatabase(restaurantId)
+//        );
+        return null;
     }
 
     @Transactional("chainedKafkaTransactionManager")
     public RestaurantDto addRestaurant(String userId, RestaurantDto restaurantDto) {
-        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId));
-        List<WorkTime> worksTime = restaurantMapper.toWorkTime(restaurantDto.getWorksTime());
-        restaurant.setWorkTime(worksTime);
-        restaurantRepository.save(restaurant);
-        sendMessageAddRestaurant(userId, restaurant);
-        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
+//        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId));
+//        List<WorkTime> worksTime = restaurantMapper.toWorkTime(restaurantDto.getWorksTime());
+//        restaurant.setWorkTime(worksTime);
+//        restaurantRepository.save(restaurant);
+//        sendMessageAddRestaurant(userId, restaurant);
+//        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
+        return null;
     }
 
     private void sendMessageAddRestaurant(String userId, Restaurant restaurant) {
@@ -71,11 +76,12 @@ public class RestaurantService {
     }
 
     public RestaurantDto updateRestaurant(UUID restaurantId, RestaurantDto restaurantDto) {
-        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
-        restaurantMapper.updateRestaurant(restaurant,restaurantDto);
-        restaurant.updateWorkTime(restaurantDto.getWorksTime());
-        restaurantRepository.save(restaurant);
-        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
+//        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
+//        restaurantMapper.updateRestaurant(restaurant,restaurantDto);
+//        restaurant.updateWorkTime(restaurantDto.getWorksTime());
+//        restaurantRepository.save(restaurant);
+//        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
+        return null;
     }
 
     public void delRestaurant(UUID restaurantId) {

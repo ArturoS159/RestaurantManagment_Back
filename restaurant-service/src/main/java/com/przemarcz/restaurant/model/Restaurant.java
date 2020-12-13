@@ -43,10 +43,10 @@ public class Restaurant {
     private String houseNumber;
     @Column(name = "phone_number")
     private String phoneNumber;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
     private List<Meal> meals = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
     private List<WorkTime> worksTime = new ArrayList<>();
     @Column(name = "deleted")
@@ -60,8 +60,7 @@ public class Restaurant {
     private String postCode;
     @OneToMany(
             cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER
+            orphanRemoval = true
     )
     @JoinColumn(name = "restaurant_id")
     private List<Opinion> opinions;

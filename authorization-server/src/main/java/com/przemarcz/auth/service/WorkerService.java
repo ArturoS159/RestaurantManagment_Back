@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.przemarcz.auth.dto.UserDto.*;
+import static com.przemarcz.auth.dto.UserDto.WorkerResponse;
 
 @Service
 @AllArgsConstructor
@@ -35,7 +35,7 @@ public class WorkerService {
         List<UUID> workersId = getWorkersByRestaurantId(restaurantId);
 
         return userRepository.findByIdIn(workersId, pageable)
-                .map(userMapper::toWorkerDto);
+                .map(userMapper::toWorkerResponse);
     }
 
     private List<UUID> getWorkersByRestaurantId(UUID restaurantId) {
@@ -53,7 +53,7 @@ public class WorkerService {
         }
         user.addRole(Role.WORKER, restaurantId);
         userRepository.save(user);
-        return userMapper.toWorkerDto(user);
+        return userMapper.toWorkerResponse(user);
     }
 
     private boolean isWorkerAddedBefore(UUID restaurantId, UUID userId) {

@@ -1,7 +1,5 @@
 package com.przemarcz.restaurant.service;
 
-import com.przemarcz.restaurant.dto.OpinionDto;
-import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.mapper.OpinionMapper;
 import com.przemarcz.restaurant.mapper.TextMapper;
 import com.przemarcz.restaurant.model.Opinion;
@@ -15,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.przemarcz.restaurant.dto.OpinionDto.CreateOpinionRequest;
+import static com.przemarcz.restaurant.dto.OpinionDto.OpinionResponse;
+
 @Service
 @RequiredArgsConstructor
 public class OpinionService {
@@ -25,15 +26,15 @@ public class OpinionService {
     private final TextMapper textMapper;
     private final RestaurantService restaurantService;
 
-    public Page<OpinionDto> getAllRestaurantOpinions(UUID restaurantId, Pageable pageable) {
-        return opinionRepository.findAllByRestaurantId(restaurantId,pageable).map(opinionMapper::toOpinionDto);
+    public Page<OpinionResponse> getAllRestaurantOpinions(UUID restaurantId, Pageable pageable) {
+        return opinionRepository.findAllByRestaurantId(restaurantId,pageable).map(opinionMapper::toOpinionResponse);
     }
 
-    public OpinionDto addRestaurantOpinion(OpinionDto opinionDto, UUID restaurantId, String userId) {
+    public OpinionResponse addRestaurantOpinion(CreateOpinionRequest opinionRequest, UUID restaurantId, String userId) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        Opinion opinion = opinionMapper.toOpinion(opinionDto, textMapper.toUUID(userId));
+        Opinion opinion = opinionMapper.toOpinion(opinionRequest, textMapper.toUUID(userId));
         restaurant.addOpinion(opinion);
         restaurantRepository.save(restaurant);
-        return opinionDto;
+        return opinionMapper.toOpinionResponse(opinion);
     }
 }
