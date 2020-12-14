@@ -1,15 +1,26 @@
 package com.przemarcz.restaurant.dto;
 
 import com.przemarcz.restaurant.model.enums.Days;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
 import java.time.LocalTime;
 
-@Getter
-@Setter
+
 public class WorkTimeDto {
-    private Days day;
-    private LocalTime from;
-    private LocalTime to;
+    private WorkTimeDto(){
+    }
+
+    @Value
+    public static class WorkTimeRequest {
+        Days day;
+        LocalTime from;
+        LocalTime to;
+    }
+
+    @Value
+    public static class WorkTimeResponse {
+        Days day;
+        LocalTime from;
+        LocalTime to;
+    }
 }

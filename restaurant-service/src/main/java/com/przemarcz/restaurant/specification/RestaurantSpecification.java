@@ -6,6 +6,7 @@ import com.przemarcz.restaurant.model.WorkTime;
 import com.przemarcz.restaurant.model.WorkTime_;
 import com.przemarcz.restaurant.model.enums.Days;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
+import io.micrometer.core.lang.NonNullApi;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 
@@ -18,6 +19,7 @@ import java.util.*;
 import static com.przemarcz.restaurant.dto.RestaurantDto.RestaurantFilter;
 import static java.util.Objects.nonNull;
 
+@NonNullApi
 public class RestaurantSpecification implements Specification<Restaurant> {
 
     private final String name;

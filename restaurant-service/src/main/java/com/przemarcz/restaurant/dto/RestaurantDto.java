@@ -1,5 +1,7 @@
 package com.przemarcz.restaurant.dto;
 
+import com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
+import com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeResponse;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.Value;
 
@@ -9,12 +11,88 @@ import java.util.Set;
 import java.util.UUID;
 
 public class RestaurantDto {
+    private RestaurantDto(){
+    }
 
     @Value
     public static class CreateRestaurantRequest {
         String name;
         Set<RestaurantCategory> category;
-        List<WorkTimeDto> worksTime;
+        List<WorkTimeRequest> worksTime;
+        String image;
+        String description;
+        String nip;
+        String regon;
+        String city;
+        String street;
+        String postCode;
+        String houseNumber;
+        String phoneNumber;
+    }
+
+    @Value
+    public static class UpdateRestaurantRequest {
+        String name;
+        Set<RestaurantCategory> category;
+        List<WorkTimeRequest> worksTime;
+        String image;
+        String description;
+        String city;
+        String street;
+        String postCode;
+        String houseNumber;
+        String phoneNumber;
+    }
+
+    @Value
+    public static class AllRestaurantResponse {
+        UUID id;
+        String name;
+        Set<RestaurantCategory> category;
+        String image;
+        String city;
+        String street;
+        String postCode;
+        String houseNumber;
+        String phoneNumber;
+        BigDecimal rate;
+    }
+
+    @Value
+    public static class RestaurantResponse {
+        UUID id;
+        String name;
+        Set<RestaurantCategory> category;
+        String image;
+        String description;
+        String city;
+        String street;
+        String postCode;
+        String houseNumber;
+        String phoneNumber;
+        BigDecimal rate;
+    }
+
+    @Value
+    public static class AllRestaurantOwnerResponse {
+        UUID id;
+        String name;
+        Set<RestaurantCategory> category;
+        String image;
+        String city;
+        String street;
+        String postCode;
+        String houseNumber;
+        String phoneNumber;
+        BigDecimal rate;
+    }
+
+    @Value
+    public static class RestaurantOwnerResponse {
+        UUID id;
+        String name;
+        Set<RestaurantCategory> category;
+        List<WorkTimeResponse> worksTime;
         String image;
         String description;
         String nip;
@@ -27,31 +105,7 @@ public class RestaurantDto {
         BigDecimal rate;
     }
 
-    @Value
-    public static class AllRestaurantResponse {
-        String name;
-        Set<RestaurantCategory> category;
-        String image;
-        String city;
-        String street;
-        String postCode;
-        String houseNumber;
-        String phoneNumber;
-        BigDecimal rate;
-    }
 
-    @Value
-    public static class AllRestaurantOwnerResponse {
-        String name;
-        Set<RestaurantCategory> category;
-        String image;
-        String city;
-        String street;
-        String postCode;
-        String houseNumber;
-        String phoneNumber;
-        BigDecimal rate;
-    }
 
     @Value
     public static class RestaurantFilter {
@@ -61,21 +115,4 @@ public class RestaurantDto {
         BigDecimal rate;
         Boolean open;
     }
-
-    private UUID id;
-    private String name;
-    private Set<RestaurantCategory> category;
-    private List<MealDto> meals;
-    private List<WorkTimeDto> worksTime;
-    private String image;
-    private String description;
-    private String nip;
-    private String regon;
-    private String city;
-    private String street;
-    private String postCode;
-    private String houseNumber;
-    private String phoneNumber;
-    private boolean open;
-    private BigDecimal rate;
 }

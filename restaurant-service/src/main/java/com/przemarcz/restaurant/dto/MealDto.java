@@ -6,6 +6,7 @@ import lombok.Value;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Setter
@@ -15,13 +16,8 @@ public class MealDto {
     }
 
     @Value
-    public static class OrderMealRequest {
-        UUID id;
-        Integer quantity;
-    }
-
-    @Value
     public static class CreateMealRequest {
+        @NotBlank(message = "Name must be not blank")
         @Size(min = 2, max = 50, message = "Name must be in range 4-50")
         String name;
         @NotNull(message = "Price must be not null")
@@ -30,11 +26,15 @@ public class MealDto {
         BigDecimal price;
         String image;
         @NotBlank(message = "Ingredients must be not blank")
+        @Size(max = 300, message = "Ingredients must be lower than 300")
         String ingredients;
         @NotNull(message = "Time must be not null")
 //        @Digits(integer = 2, fraction = 2, message = "Time bad format") //TODO look at frontend
         @DecimalMin(value = "0.0", inclusive = false, message = "Time must be greater than 0.0")
         BigDecimal timeToDo;
+        @NotBlank(message = "Category must be not blank")
+        @Size(max = 30, message = "Category must be lower than 30")
+        String category;
     }
 
     @Value
@@ -48,6 +48,23 @@ public class MealDto {
         String ingredients;
         @DecimalMin(value = "0.0", inclusive = false, message = "Time must be greater than 0.0")
         BigDecimal timeToDo;
+        @Size(max = 30, message = "Category must be lower than 30")
+        String category;
+    }
+
+    @Value
+    public static class OrderMealRequest {
+        UUID id;
+        Integer quantity;
+    }
+
+    @Value
+    public static class MealFilter {
+        String category;
+        BigDecimal fromPrice;
+        BigDecimal toPrice;
+        BigDecimal fromTime;
+        BigDecimal toTime;
     }
 
     @Value
@@ -58,5 +75,6 @@ public class MealDto {
         String image;
         String ingredients;
         BigDecimal timeToDo;
+        String category;
     }
 }

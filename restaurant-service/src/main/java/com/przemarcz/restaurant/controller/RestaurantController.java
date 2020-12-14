@@ -1,7 +1,5 @@
 package com.przemarcz.restaurant.controller;
 
-import com.przemarcz.restaurant.dto.RestaurantDto;
-import com.przemarcz.restaurant.model.Restaurant;
 import com.przemarcz.restaurant.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,9 +10,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import static com.przemarcz.restaurant.dto.RestaurantDto.*;
+import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeResponse;
 
 @RestController
 @AllArgsConstructor
@@ -29,6 +29,11 @@ public class RestaurantController {
         return new ResponseEntity<>(restaurantService.getAllRestaurants(restaurantFilter, pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/{restaurantId}/public")
+    public ResponseEntity<RestaurantResponse> getRestaurant(@PathVariable UUID restaurantId) {
+        return new ResponseEntity<>(restaurantService.getRestaurant(restaurantId), HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<Page<AllRestaurantOwnerResponse>> getAllRestaurantForOwner(@ModelAttribute("restaurantFilter") RestaurantFilter restaurantFilter,
                                                                                      Principal user,
@@ -36,21 +41,28 @@ public class RestaurantController {
         return new ResponseEntity<>(restaurantService.getAllRestaurantForOwner(restaurantFilter, user.getName(), pageable), HttpStatus.OK);
     }
 
-    @GetMapping("/{restaurantId}/public")
-    public ResponseEntity<RestaurantDto> getRestaurant(@PathVariable UUID restaurantId) {
-        return new ResponseEntity<>(restaurantService.getRestaurant(restaurantId), HttpStatus.OK);
+    @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
+    @GetMapping("/{restaurantId}")
+    public ResponseEntity<RestaurantOwnerResponse> getRestaurantForOwner(@PathVariable UUID restaurantId){
+        return new ResponseEntity<>(restaurantService.getRestaurantForOwner(restaurantId), HttpStatus.OK);
+    }
+
+    @GetMapping("/{restaurantId}/time/public")
+    public ResponseEntity<List<WorkTimeResponse>> getRestaurantWorkTime(@PathVariable UUID restaurantId){
+        return new ResponseEntity<>(restaurantService.getRestaurantWorkTime(restaurantId), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<RestaurantDto> addRestaurant(Principal user, @RequestBody RestaurantDto restaurantDto) {
-        return new ResponseEntity<>(restaurantService.addRestaurant(user.getName(), restaurantDto),HttpStatus.CREATED);
+    public ResponseEntity<RestaurantOwnerResponse> addRestaurant(@RequestBody CreateRestaurantRequest createRestaurantRequest,
+                                                       Principal user) {
+        return new ResponseEntity<>(restaurantService.addRestaurant(createRestaurantRequest, user.getName()),HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable UUID restaurantId,
-                                                          @RequestBody RestaurantDto restaurantDto) {
-        return new ResponseEntity<>(restaurantService.updateRestaurant(restaurantId, restaurantDto),HttpStatus.OK);
+    public ResponseEntity<RestaurantOwnerResponse> updateRestaurant(@PathVariable UUID restaurantId,
+                                                          @RequestBody UpdateRestaurantRequest updateRestaurantRequest) {
+        return new ResponseEntity<>(restaurantService.updateRestaurant(restaurantId, updateRestaurantRequest),HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

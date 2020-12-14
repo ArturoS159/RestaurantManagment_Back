@@ -1,17 +1,15 @@
 package com.przemarcz.restaurant.controller;
 
-import com.przemarcz.avro.OrderAvro;
-import com.przemarcz.restaurant.dto.MealDto;
 import com.przemarcz.restaurant.service.MealService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 import static com.przemarcz.restaurant.dto.MealDto.*;
@@ -23,17 +21,18 @@ import static com.przemarcz.restaurant.dto.MealDto.*;
 public class MealController {
 
     private final MealService mealService;
-    private final KafkaTemplate<String, OrderAvro> orderKafkaTemplate;
 
-    @GetMapping("/{restaurantId}/meals")
-    public ResponseEntity<List<MealResponse>> getRestaurantMeals(@PathVariable UUID restaurantId) {
-        return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId), HttpStatus.OK);
+    @GetMapping("/{restaurantId}/meals/public")
+    public ResponseEntity<Page<MealResponse>> getRestaurantMeals(@PathVariable UUID restaurantId,
+                                                                 @ModelAttribute("mealFilter") MealFilter mealFilter,
+                                                                 Pageable pageable) {
+        return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId, mealFilter, pageable), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/meals")
     public ResponseEntity<MealResponse> addMeal(@PathVariable UUID restaurantId,
-                                                @Valid @RequestBody MealDto.CreateMealRequest meal) {
+                                                @Valid @RequestBody CreateMealRequest meal) {
         return new ResponseEntity<>(mealService.addMeal(restaurantId, meal),HttpStatus.CREATED);
     }
 
@@ -41,7 +40,7 @@ public class MealController {
     @PutMapping("/{restaurantId}/meals/{mealId}")
     public ResponseEntity<MealResponse> updateMeal(@PathVariable UUID restaurantId,
                                                    @PathVariable UUID mealId,
-                                                   @Valid @RequestBody MealDto.UpdateMealRequest mealRequest) {
+                                                   @Valid @RequestBody UpdateMealRequest mealRequest) {
         return new ResponseEntity<>(mealService.updateMeal(restaurantId, mealId, mealRequest),HttpStatus.OK);
     }
 

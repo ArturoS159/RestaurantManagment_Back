@@ -2,13 +2,13 @@ package com.przemarcz.restaurant.service;
 
 import com.przemarcz.avro.AccessAvro;
 import com.przemarcz.avro.AddDelete;
-import com.przemarcz.restaurant.dto.RestaurantDto;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.mapper.RestaurantMapper;
 import com.przemarcz.restaurant.mapper.TextMapper;
 import com.przemarcz.restaurant.model.Restaurant;
 import com.przemarcz.restaurant.model.WorkTime;
 import com.przemarcz.restaurant.repository.RestaurantRepository;
+import com.przemarcz.restaurant.repository.WorkTimeRepository;
 import com.przemarcz.restaurant.specification.RestaurantSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.przemarcz.restaurant.dto.RestaurantDto.*;
+import static com.przemarcz.restaurant.dto.WorkTimeDto.*;
 
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final WorkTimeRepository workTimeRepository;
     private final RestaurantMapper restaurantMapper;
     private final TextMapper textMapper;
     private final KafkaTemplate<String, AccessAvro> accessKafkaTemplate;
@@ -41,33 +43,42 @@ public class RestaurantService {
     public Page<AllRestaurantResponse> getAllRestaurants(RestaurantFilter allRestaurantResponse, Pageable pageable) {
         RestaurantSpecification specification = new RestaurantSpecification(allRestaurantResponse);
         Page<Restaurant> restaurants = restaurantRepository.findAll(specification, pageable);
-        return restaurants.map(restaurantMapper::toAllRestaurantPublic);
+        return restaurants.map(restaurantMapper::toAllRestaurantResponse);
+    }
+
+    @Transactional(value = "transactionManager", readOnly = true)
+    public RestaurantResponse getRestaurant(UUID restaurantId) {
+        return restaurantMapper.toRestaurantResponse(
+                getRestaurantFromDatabase(restaurantId)
+        );
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<AllRestaurantOwnerResponse> getAllRestaurantForOwner(RestaurantFilter restaurantFilter, String ownerId, Pageable pageable) {
         RestaurantSpecification specification = new RestaurantSpecification(textMapper.toUUID(ownerId), restaurantFilter);
-//        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toRestaurantDtoForOwner);
-        return null;
+        return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toAllRestaurantOwnerResponse);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public RestaurantDto getRestaurant(UUID restaurantId) {
-//        return restaurantMapper.toRestaurantPublicDto(
-//                getRestaurantFromDatabase(restaurantId)
-//        );
-        return null;
+    public RestaurantOwnerResponse getRestaurantForOwner(UUID restaurantId) {
+        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
+        return restaurantMapper.toRestaurantOwnerResponse(restaurant);
+    }
+
+    @Transactional(value = "transactionManager", readOnly = true)
+    public List<WorkTimeResponse> getRestaurantWorkTime(UUID restaurantId) {
+        List<WorkTime> worksTime = workTimeRepository.findAllByRestaurantId(restaurantId);
+        return restaurantMapper.toWorkTimeResponse(worksTime);
     }
 
     @Transactional("chainedKafkaTransactionManager")
-    public RestaurantDto addRestaurant(String userId, RestaurantDto restaurantDto) {
-//        Restaurant restaurant = restaurantMapper.toRestaurant(restaurantDto, textMapper.toUUID(userId));
-//        List<WorkTime> worksTime = restaurantMapper.toWorkTime(restaurantDto.getWorksTime());
-//        restaurant.setWorkTime(worksTime);
-//        restaurantRepository.save(restaurant);
-//        sendMessageAddRestaurant(userId, restaurant);
-//        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
-        return null;
+    public RestaurantOwnerResponse addRestaurant(CreateRestaurantRequest createRestaurantRequest, String userId) {
+        Restaurant restaurant = restaurantMapper.toRestaurant(createRestaurantRequest, textMapper.toUUID(userId));
+        List<WorkTime> worksTime = restaurantMapper.toWorkTime(createRestaurantRequest.getWorksTime());
+        restaurant.setWorkTime(worksTime);
+        restaurantRepository.save(restaurant);
+        sendMessageAddRestaurant(userId, restaurant);
+        return restaurantMapper.toRestaurantOwnerResponse(restaurant);
     }
 
     private void sendMessageAddRestaurant(String userId, Restaurant restaurant) {
@@ -75,18 +86,20 @@ public class RestaurantService {
         accessKafkaTemplate.send(topicAccess, accessAvro);
     }
 
-    public RestaurantDto updateRestaurant(UUID restaurantId, RestaurantDto restaurantDto) {
-//        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
-//        restaurantMapper.updateRestaurant(restaurant,restaurantDto);
-//        restaurant.updateWorkTime(restaurantDto.getWorksTime());
-//        restaurantRepository.save(restaurant);
-//        return restaurantMapper.toRestaurantDtoForOwner(restaurant);
-        return null;
+    @Transactional(value = "transactionManager")
+    public RestaurantOwnerResponse updateRestaurant(UUID restaurantId, UpdateRestaurantRequest updateRestaurantRequest) {
+        Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
+        restaurantMapper.updateRestaurant(restaurant,updateRestaurantRequest);
+        restaurant.updateWorkTime(updateRestaurantRequest.getWorksTime());
+        restaurantRepository.save(restaurant);
+        return restaurantMapper.toRestaurantOwnerResponse(restaurant);
     }
 
+    @Transactional(value = "transactionManager")
     public void delRestaurant(UUID restaurantId) {
         Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
         restaurant.delete();
+        //TODO send kafka to order-service
         restaurantRepository.save(restaurant);
     }
 

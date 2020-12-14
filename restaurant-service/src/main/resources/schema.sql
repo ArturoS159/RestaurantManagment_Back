@@ -35,7 +35,8 @@ create table if not exists meals (
   image VARCHAR(256),
   price NUMERIC,
   ingredients VARCHAR(256),
-  time_to_do NUMERIC
+  time_to_do NUMERIC,
+  category VARCHAR(256)
 );
 
 create table if not exists restaurant_category (

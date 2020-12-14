@@ -60,8 +60,8 @@ class MealServiceTest extends Specification {
         restaurantRepository.save(restaurant1)
         restaurantRepository.save(restaurant2)
         when:
-        List<MealDto> meals = mealService.getAllRestaurantMeals(restaurantId1)
-        List<MealDto> meals2 = mealService.getAllRestaurantMeals(restaurantId2)
+        List<MealDto> meals = mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable)
+        List<MealDto> meals2 = mealService.getAllRestaurantMeals(restaurantId2, mealFilter, pageable)
         then:
         meals.size()==2
         meals2.size()==1
@@ -81,8 +81,8 @@ class MealServiceTest extends Specification {
         mealService.addMeal(restaurantId2,prepareMealDto("Meal2", new BigDecimal("2.22")))
         then:
         mealRepository.findAll().size()==3
-        mealService.getAllRestaurantMeals(restaurantId1).size()==2
-        mealService.getAllRestaurantMeals(restaurantId2).size()==1
+        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).size()==2
+        mealService.getAllRestaurantMeals(restaurantId2, mealFilter, pageable).size()==1
     }
 
     def "should update meal"() {
@@ -99,8 +99,8 @@ class MealServiceTest extends Specification {
         mealService.updateMeal(restaurantId1,meal.id,updateMeal)
         then:
         mealRepository.findAll().size()==2
-        mealService.getAllRestaurantMeals(restaurantId1).get(0).name=="MealUpdated"
-        mealService.getAllRestaurantMeals(restaurantId1).get(0).price.toString() == "5.20"
+        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).get(0).name=="MealUpdated"
+        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).get(0).price.toString() == "5.20"
     }
 
     def "should delete meal"() {
@@ -116,6 +116,6 @@ class MealServiceTest extends Specification {
         mealService.deleteMeal(restaurantId1,meal.getId())
         then:
         mealRepository.findAll().size()==1
-        mealService.getAllRestaurantMeals(restaurantId1).size()==1
+        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).size()==1
     }
 }

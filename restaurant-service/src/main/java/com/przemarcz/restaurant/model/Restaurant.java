@@ -1,6 +1,5 @@
 package com.przemarcz.restaurant.model;
 
-import com.przemarcz.restaurant.dto.WorkTimeDto;
 import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
@@ -13,6 +12,7 @@ import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.util.*;
 
+import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -149,7 +149,7 @@ public class Restaurant {
         worksTime=finalWorksTime;
     }
 
-    public void updateWorkTime(List<WorkTimeDto> timeIncoming) {
+    public void updateWorkTime(List<WorkTimeRequest> timeIncoming) {
         timeIncoming.forEach(workTimeDto -> {
             WorkTime day = getCorrectDay(workTimeDto);
             LocalTime from = workTimeDto.getFrom();
@@ -161,9 +161,9 @@ public class Restaurant {
         });
     }
 
-    private WorkTime getCorrectDay(WorkTimeDto workTimeDto) {
+    private WorkTime getCorrectDay(WorkTimeRequest workTimeRequest) {
         return this.worksTime.stream().filter(
-                workTime -> workTimeDto.getDay().equals(workTime.getDay())
+                workTime -> workTimeRequest.getDay().equals(workTime.getDay())
         ).findFirst().orElseThrow(() -> new IllegalArgumentException("Something gone wrong!"));
     }
 

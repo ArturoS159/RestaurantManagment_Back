@@ -29,4 +29,5 @@ public class Meal {
     private String ingredients;
     @Column(name = "time_to_do")
     private BigDecimal timeToDo;
+    private String category;
 }
