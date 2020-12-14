@@ -1,5 +1,6 @@
 package com.przemarcz.restaurant.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
@@ -70,6 +71,7 @@ public class MealDto {
     public static class MealResponse {
         UUID id;
         String name;
+        @JsonFormat(shape=JsonFormat.Shape.STRING)
         BigDecimal price;
         String image;
         String ingredients;

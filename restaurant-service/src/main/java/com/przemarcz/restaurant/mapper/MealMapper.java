@@ -8,21 +8,22 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
 
-import static com.przemarcz.restaurant.dto.MealDto.*;
+import static com.przemarcz.restaurant.dto.MealDto.CreateMealRequest;
 import static com.przemarcz.restaurant.dto.MealDto.MealResponse;
 import static java.util.Objects.isNull;
 
 @Mapper(componentModel = "spring")
 public interface MealMapper {
 
-    @Mapping(target = "price", source = "mealDto.price", qualifiedByName = "scaleBigDecimal")
-    Meal toMeal(CreateMealRequest mealDto, UUID restaurantId);
+    @Mapping(target = "price", source = "createMealRequest.price", qualifiedByName = "scaleBigDecimal")
+    Meal toMeal(CreateMealRequest createMealRequest, UUID restaurantId);
 
-    @Mapping(target = "price", source = "mealDto.price", qualifiedByName = "scaleBigDecimal")
+    @Mapping(target = "price", source = "updateMealRequest.price", qualifiedByName = "scaleBigDecimal")
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateMeal(@MappingTarget Meal meal, UpdateMealRequest mealDto);
+    void updateMeal(@MappingTarget Meal meal, UpdateMealRequest updateMealRequest);
 
+    @Mapping(target = "price", source = "price", qualifiedByName = "scaleBigDecimal")
     MealResponse toMealResponse(Meal meal);
 
     @Named("scaleBigDecimal")
