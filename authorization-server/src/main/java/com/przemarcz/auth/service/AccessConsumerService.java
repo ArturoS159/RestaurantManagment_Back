@@ -1,10 +1,10 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
+import com.przemarcz.auth.repository.UserRoleRepository;
 import com.przemarcz.avro.AccessAvro;
 import com.przemarcz.avro.AddDelete;
 import lombok.RequiredArgsConstructor;
@@ -19,27 +19,29 @@ import java.util.UUID;
 public class AccessConsumerService {
 
     private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final AuthService authService;
     private final TextMapper textMapper;
 
     public void addOrDeleteOwnerRole(AccessAvro accessAvro) {
-        final UUID userId = textMapper.toUUID(accessAvro.getUserId());
+        final String userId = accessAvro.getUserId().toString();
         final UUID restaurantId = textMapper.toUUID(accessAvro.getRestaurantId());
 
-        User user = getUserFromDatabase(userId);
         if (isRestaurantAdded(accessAvro.getType())) {
+            User user = authService.getUserFromDatabaseById(userId);
             user.addRole(Role.OWNER, restaurantId);
+            userRepository.save(user);
         } else {
-            user.delRole(Role.OWNER, restaurantId);
+            deleteAllRolesFromRestaurant(restaurantId);
         }
-        userRepository.save(user);
         log.info(String.format("Owner role update to user: %s", userId));
+    }
+
+    void deleteAllRolesFromRestaurant(UUID restaurantId){
+        userRoleRepository.deleteByRestaurantId(restaurantId);
     }
 
     private boolean isRestaurantAdded(AddDelete type) {
         return type.equals(AddDelete.ADD);
-    }
-
-    private User getUserFromDatabase(UUID userId) {
-        return userRepository.findById(userId).orElseThrow(NotFoundException::new);
     }
 }

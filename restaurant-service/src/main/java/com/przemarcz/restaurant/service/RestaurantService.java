@@ -77,13 +77,8 @@ public class RestaurantService {
         List<WorkTime> worksTime = restaurantMapper.toWorkTime(createRestaurantRequest.getWorksTime());
         restaurant.setWorkTime(worksTime);
         restaurantRepository.save(restaurant);
-        sendMessageAddRestaurant(userId, restaurant);
+        sendMessageAccess(AddDelete.ADD, userId, restaurant.getId());
         return restaurantMapper.toRestaurantOwnerResponse(restaurant);
-    }
-
-    private void sendMessageAddRestaurant(String userId, Restaurant restaurant) {
-        AccessAvro accessAvro = new AccessAvro(AddDelete.ADD, restaurant.getId().toString(), userId);
-        accessKafkaTemplate.send(topicAccess, accessAvro);
     }
 
     @Transactional(value = "transactionManager")
@@ -99,9 +94,15 @@ public class RestaurantService {
     public void delRestaurant(UUID restaurantId) {
         Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
         restaurant.delete();
-        //TODO send kafka to order-service
-        restaurantRepository.save(restaurant);
+        sendMessageAccess(AddDelete.DEL, "", restaurantId);
     }
+
+    private void sendMessageAccess(AddDelete addDelete, String userId, UUID restaurantId) {
+        AccessAvro accessAvro = new AccessAvro(addDelete, restaurantId.toString(), userId);
+        accessKafkaTemplate.send(topicAccess, accessAvro);
+    }
+
+
 
     public Restaurant getRestaurantFromDatabase(UUID restaurantId) {
         return restaurantRepository.findByIdAndIsDeleted(restaurantId,false)

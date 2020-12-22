@@ -66,15 +66,15 @@ public class AuthService implements UserDetailsService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public User getUserFromDatabaseById(String value) {
-        return userRepository.findById(textMapper.toUUID(value)).orElseThrow(NotFoundException::new);
-    }
-
     @Transactional(value = "transactionManager")
     public void active(ActivationUserRequest userActivation) {
         User user = getUserFormDbByLogin(userActivation.getLogin());
         user.activeAccount(userActivation.getActivationKey());
         userRepository.save(user);
+    }
+
+    public User getUserFromDatabaseById(String value) {
+        return userRepository.findById(textMapper.toUUID(value)).orElseThrow(NotFoundException::new);
     }
 
     private User getUserFormDbByLogin(String value) {

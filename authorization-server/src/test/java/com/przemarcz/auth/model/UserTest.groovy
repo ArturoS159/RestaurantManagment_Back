@@ -1,8 +1,6 @@
 package com.przemarcz.auth.model
 
-
 import com.przemarcz.auth.exception.AlreadyExistException
-import com.przemarcz.auth.exception.NotFoundException
 import com.przemarcz.auth.model.enums.Role
 import spock.lang.Specification
 
@@ -23,41 +21,6 @@ class UserTest extends Specification {
         user.addRole(Role.OWNER,UUID.randomUUID())
         then:
         user.getRestaurantRoles().size()==1
-    }
-
-    def "should remove role from User"() {
-        given:
-        User user = prepareUser("login", "email@wp.pl", "password")
-        UUID restaurant1 = UUID.randomUUID()
-        UUID restaurant2 = UUID.randomUUID()
-        UUID restaurant3 = UUID.randomUUID()
-        UUID restaurant4 = UUID.randomUUID()
-        user.addRole(Role.OWNER,restaurant1)
-        user.addRole(Role.OWNER,restaurant2)
-        user.addRole(Role.WORKER,restaurant3)
-        user.addRole(Role.WORKER,restaurant4)
-        when:
-        user.delRole(Role.OWNER,restaurant1)
-        then:
-        user.getRestaurantRoles().size()==3
-        user.getRestaurantRoles().get(0).getRole()==Role.OWNER
-        user.getRestaurantRoles().get(0).getRestaurantId()==restaurant2
-        user.getRestaurantRoles().get(1).getRole()==Role.WORKER
-        user.getRestaurantRoles().get(1).getRestaurantId()==restaurant3
-        user.getRestaurantRoles().get(2).getRole()==Role.WORKER
-        user.getRestaurantRoles().get(2).getRestaurantId()==restaurant4
-    }
-
-    def "should throw exception when role in user not found"() {
-        given:
-        User user = prepareUser("login", "email@wp.pl", "password")
-        UUID restaurant1 = UUID.randomUUID()
-        user.addRole(Role.OWNER,restaurant1)
-        when:
-        user.delRole(Role.OWNER,UUID.randomUUID())
-        then:
-        user.getRestaurantRoles().size()==1
-        thrown(NotFoundException)
     }
 
     def "should active user account"(){

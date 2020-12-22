@@ -66,6 +66,7 @@ public class WorkerService {
         );
     }
 
+    @Transactional(value = "transactionManager")
     public void deleteRestaurantWorker(UUID restaurantId, UUID workerId) {
         User user = userRepository.findById(workerId).orElseThrow(
                 NotFoundException::new);

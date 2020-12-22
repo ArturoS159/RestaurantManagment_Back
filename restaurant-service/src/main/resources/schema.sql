@@ -39,11 +39,6 @@ create table if not exists meals (
   category VARCHAR(256)
 );
 
-create table if not exists restaurant_category (
-  restaurant_id UUID REFERENCES restaurants(id),
-  category VARCHAR(256)
-);
-
 create table if not exists work_time (
   id UUID PRIMARY KEY,
   restaurant_id UUID REFERENCES restaurants(id),
