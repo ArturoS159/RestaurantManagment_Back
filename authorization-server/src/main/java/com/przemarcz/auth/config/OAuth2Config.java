@@ -73,7 +73,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
                 .authorizedGrantTypes("password", "refresh_token")
                 .authorities("USER")
                 .scopes("read", "write")
-                .autoApprove(true);
+                .accessTokenValiditySeconds(43200)
+                .refreshTokenValiditySeconds(86400);
     }
 
     @Override
@@ -87,6 +88,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public DefaultTokenServices tokenServices() {
         DefaultTokenServices tokenServices = new DefaultTokenServices();
         tokenServices.setSupportRefreshToken(true);
+        tokenServices.setRefreshTokenValiditySeconds(86400);
         tokenServices.setTokenStore(tokenStore());
         return tokenServices;
     }

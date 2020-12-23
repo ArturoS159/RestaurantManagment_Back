@@ -8,6 +8,7 @@ create table if not exists orders (
   street VARCHAR(256),
   post_code VARCHAR(256),
   phone_number VARCHAR(256),
+  house_number VARCHAR(256),
   email VARCHAR(256),
   comment VARCHAR(256),
   payment_method VARCHAR(256),

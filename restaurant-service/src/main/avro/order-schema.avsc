@@ -31,6 +31,11 @@
       "default": null
     },
     {
+      "name": "houseNumber",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
       "name": "postCode",
       "type": ["null", "string"],
       "default": null
