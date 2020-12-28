@@ -38,7 +38,8 @@ public class PaymentService {
         RestaurantPayment restaurantPayment = paymentMapper.toPayment(paymentDto, restaurantId);
         paymentRepository.save(restaurantPayment);
         sendPayment(restaurantId, AddDelete.ADD);
-        return paymentMapper.toPaymentDto(restaurantPayment);
+//        return paymentMapper.toPaymentDto(restaurantPayment);
+        return null;
     }
 
     private boolean hasRestaurantPayment(UUID restaurantId) {
@@ -46,12 +47,14 @@ public class PaymentService {
     }
 
     private boolean isWrongPaymentDetails(PaymentDto paymentDto) {
-        return isNull(paymentHelper.getAuthorizationToken(paymentDto.getClientId(),paymentDto.getClientSecret()));
+        return false;
+//        return isNull(paymentHelper.getAuthorizationToken(paymentDto.getClientId(),paymentDto.getClientSecret()));
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
     public PaymentDto getPayment(UUID restaurantId) {
-        return paymentMapper.toPaymentDto(getRestaurantPayment(restaurantId));
+        return null;
+//        return paymentMapper.toPaymentDto(getRestaurantPayment(restaurantId));
     }
 
     @Transactional(value = "transactionManager")
@@ -62,7 +65,8 @@ public class PaymentService {
             throw new IllegalArgumentException("Payment not valid!");
         }
         paymentRepository.save(restaurantPayment);
-        return paymentMapper.toPaymentDto(restaurantPayment);
+//        return paymentMapper.toPaymentDto(restaurantPayment);
+        return null;
     }
 
     @Transactional(value = "transactionManager")

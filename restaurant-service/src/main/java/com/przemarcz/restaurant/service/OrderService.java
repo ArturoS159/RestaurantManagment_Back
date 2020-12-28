@@ -13,6 +13,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,9 +36,9 @@ public class OrderService {
     private String topicOrders;
 
     @Transactional("chainedKafkaTransactionManager")
-    public void orderMeals(UUID restaurantId, CreateOrderUserRequest order, String userId) {
+    public void orderMealsByClient(UUID restaurantId, CreateOrderUserRequest order, String userId) {
         if(order.getPaymentMethod()== PaymentMethod.ONLINE&&!isPaymentAvailable(restaurantId)){
-            throw new NotFoundException("Payment not found!");
+            throw new NotFoundException("Restaurant payment not found!");
         }
         if(order.getOrderType()== OrderType.IN_LOCAL){
             throw new IllegalArgumentException("Only restaurant staff may order local!");
@@ -48,6 +49,11 @@ public class OrderService {
         sendMessageOrder(orderAvro);
     }
 
+    private boolean isPaymentAvailable(UUID restaurantId) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        return restaurant.isPaymentOnline();
+    }
+
     @Transactional("chainedKafkaTransactionManager")
     public void orderMealsByPersonal(UUID restaurantId, CreateOrderPersonalRequest order) {
         OrderAvro orderAvro = avroMapper.toOrderByPersonal(order, restaurantId);
@@ -56,8 +62,24 @@ public class OrderService {
         sendMessageOrder(orderAvro);
     }
 
-    private List<MealAvro> getMealsFromDatabase(UUID restaurantId, List<OrderMealRequest> mealRequest) {
-        return mealRequest.stream()
+    private List<MealAvro> getMealsFromDatabase(UUID restaurantId, List<OrderMealRequest> orderMealRequests) {
+        List<Meal> meals = restaurantService.getRestaurantFromDatabase(restaurantId).getMeals();
+        List<MealAvro> mealsAvro = new ArrayList<>();
+
+        for(OrderMealRequest mealRequest : orderMealRequests){
+            for(Meal meal : meals){
+                if(mealRequest.getId().equals(meal.getId())){
+                    mealsAvro.add(avroMapper.toMealAvro(mealRequest,meal));
+                }
+            }
+        }
+
+        orderMealRequests
+                .stream()
+                .filter(mealRequest -> meals.stream().anyMatch(meal -> meal.getId().equals(mealRequest.getId())))
+                .map(OrderMealRequest::getQuantity);
+
+        return orderMealRequests.stream()
                 .map(mealDto -> {
                     Meal meal = mealRepository.findByIdAndRestaurantId(mealDto.getId(),restaurantId)
                             .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealDto.getId())));
@@ -67,12 +89,6 @@ public class OrderService {
 
     private void sendMessageOrder(OrderAvro order) {
         orderKafkaTemplate.send(topicOrders, order);
-    }
-
-    @Transactional(value = "transactionManager", readOnly = true)
-    public boolean isPaymentAvailable(UUID restaurantId) {
-        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        return restaurant.isPaymentOnline();
     }
 
     public void addOrDeletePayment(PaymentAvro paymentAvro) {

@@ -2,7 +2,9 @@ package com.przemarcz.order.service;
 
 import com.przemarcz.avro.OrderAvro;
 import com.przemarcz.order.dto.OrderDto;
+import com.przemarcz.order.dto.OrderDto.OrderResponse;
 import com.przemarcz.order.exception.NotFoundException;
+import com.przemarcz.order.mapper.AvroMapper;
 import com.przemarcz.order.mapper.OrderMapper;
 import com.przemarcz.order.mapper.PayUMapper;
 import com.przemarcz.order.model.Order;
@@ -10,11 +12,10 @@ import com.przemarcz.order.model.RestaurantPayment;
 import com.przemarcz.order.repository.OrderRepository;
 import com.przemarcz.order.repository.PaymentRepository;
 import com.przemarcz.order.util.OrderHelper;
-import com.przemarcz.order.util.payumodels.Payment;
 import com.przemarcz.order.util.PaymentHelper;
+import com.przemarcz.order.util.payumodels.Payment;
 import com.przemarcz.order.util.payumodels.PaymentResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,15 +36,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final OrderMapper orderMapper;
+    private final AvroMapper avroMapper;
     private final OrderHelper orderHelper;
     private final PaymentHelper paymentHelper;
     private final PayUMapper payUMapper;
 
-    public Page<OrderDto> getAllOrders(UUID restaurantId, Pageable pageable) {
+    public Page<OrderResponse> getAllOrdersForWorkers(UUID restaurantId, Pageable pageable) {
         return orderRepository.findAllByRestaurantId(restaurantId, pageable).map(orderMapper::toOrderDto);
     }
 
-    public void checkOrdersStatus(UUID restaurantId) {
+    public void refreshOrdersStatus(UUID restaurantId) {
         List<Order> orders = orderRepository.findAllByRestaurantId(restaurantId);
         //TODO get orders from today delete orders expired
         RestaurantPayment restaurantPayment = getRestaurantPayment(restaurantId);
@@ -65,19 +67,14 @@ public class OrderService {
         return orderTime.plusMinutes(ORDER_MAX_TIME).isBefore(orderTime);
     }
 
-    @Transactional(value = "transactionManager", readOnly = true)
-    public OrderDto getOrder(UUID restaurantId, UUID orderId) {
-        return orderMapper.toOrderDto(getOrderFromDb(restaurantId, orderId));
-    }
-
     @Transactional("chainedKafkaTransactionManager")
-    public void addOrder(ConsumerRecord<String, OrderAvro> orderAvro) {
-        Order order = orderMapper.toOrder(orderAvro.value());
+    public void addOrder(OrderAvro orderAvro) {
+        Order order = avroMapper.toOrder(orderAvro);
         order.setPrice(orderHelper.countOrderPrice(order.getMeals()));
         orderRepository.save(order);
     }
 
-    public OrderDto payOrderAgain(UUID restaurantId, UUID orderId) throws IOException {
+    public OrderResponse payOrderAgain(UUID restaurantId, UUID orderId) throws IOException {
         Order order = getOrderFromDb(restaurantId,orderId);
         if(order.isPayed()){
             throw new IllegalArgumentException("");

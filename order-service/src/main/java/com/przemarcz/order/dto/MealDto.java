@@ -1,19 +1,22 @@
 package com.przemarcz.order.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Value;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Getter
-@Setter
 public class MealDto {
-    private UUID id;
-    private String name;
-    private BigDecimal price;
-    private String image;
-    private String ingredients;
-    private BigDecimal timeToDo;
-    private Integer quantity;
+    private MealDto() {
+    }
+
+    @Value
+    public static class MealResponse {
+        UUID id;
+        String name;
+        BigDecimal price;
+        String image;
+        String ingredients;
+        BigDecimal timeToDo;
+        Integer quantity;
+    }
 }

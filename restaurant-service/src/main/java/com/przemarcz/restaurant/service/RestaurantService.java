@@ -102,8 +102,6 @@ public class RestaurantService {
         accessKafkaTemplate.send(topicAccess, accessAvro);
     }
 
-
-
     public Restaurant getRestaurantFromDatabase(UUID restaurantId) {
         return restaurantRepository.findByIdAndIsDeleted(restaurantId,false)
                 .orElseThrow(() -> new NotFoundException(String.format("Restaurant %s not found!", restaurantId)));

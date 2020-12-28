@@ -8,12 +8,14 @@ import org.mapstruct.*;
 
 import java.util.UUID;
 
+import static com.przemarcz.order.dto.PaymentDto.*;
+
 @Mapper(componentModel = "spring")
 public interface PaymentMapper {
 
     RestaurantPayment toPayment(PaymentDto paymentDto, UUID id);
 
-    PaymentDto toPaymentDto(RestaurantPayment restaurantPayment);
+    PaymentResponse toPaymentDto(RestaurantPayment restaurantPayment);
 
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

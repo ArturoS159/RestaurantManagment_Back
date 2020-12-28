@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.przemarcz.order.dto.OrderDto.*;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/restaurants")
@@ -27,30 +29,25 @@ public class OrderController {
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/orders")
-    public ResponseEntity<Page<OrderDto>> getAllOrders(@PathVariable UUID restaurantId,
-                                                       Pageable pageable) {
-        return new ResponseEntity<>(orderService.getAllOrders(restaurantId, pageable), HttpStatus.OK);
+    public ResponseEntity<Page<OrderResponse>> getAllOrdersForWorkers(@PathVariable UUID restaurantId,
+                                                                      Pageable pageable) {
+        return new ResponseEntity<>(orderService.getAllOrdersForWorkers(restaurantId, pageable), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/orders/refresh")
-    public ResponseEntity<Void> checkOrdersStatus(@PathVariable UUID restaurantId){
-        orderService.checkOrdersStatus(restaurantId);
+    public ResponseEntity<Void> refreshOrdersStatus(@PathVariable UUID restaurantId){
+        orderService.refreshOrdersStatus(restaurantId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/{restaurantId}/orders/{orderId}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable UUID restaurantId,@PathVariable UUID orderId) {
-        return new ResponseEntity<>(orderService.getOrder(restaurantId, orderId), HttpStatus.OK);
-    }
-
     @PostMapping("/{restaurantId}/orders/{orderId}/pay")
-    public ResponseEntity<OrderDto> payOrderAgain(@PathVariable UUID restaurantId,@PathVariable UUID orderId) throws IOException {
+    public ResponseEntity<OrderResponse> payOrderAgain(@PathVariable UUID restaurantId,@PathVariable UUID orderId) throws IOException {
         return new ResponseEntity<>(orderService.payOrderAgain(restaurantId, orderId), HttpStatus.OK);
     }
 
     @KafkaListener(topics = TOPIC_ORDERS)
     public void consumeOrders(ConsumerRecord<String, OrderAvro> orderAvro) {
-        orderService.addOrder(orderAvro);
+        orderService.addOrder(orderAvro.value());
     }
 }
