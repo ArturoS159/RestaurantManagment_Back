@@ -2,8 +2,6 @@ package com.przemarcz.restaurant.controller;
 
 import com.przemarcz.restaurant.service.MealService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,10 +21,9 @@ public class MealController {
     private final MealService mealService;
 
     @GetMapping("/{restaurantId}/meals/public")
-    public ResponseEntity<Page<MealResponse>> getRestaurantMeals(@PathVariable UUID restaurantId,
-                                                                 @ModelAttribute("mealFilter") MealFilter mealFilter,
-                                                                 Pageable pageable) {
-        return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId, mealFilter, pageable), HttpStatus.OK);
+    public ResponseEntity<MealListResponse> getRestaurantMeals(@PathVariable UUID restaurantId,
+                                                                     @ModelAttribute("mealFilter") MealFilter mealFilter) {
+        return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId, mealFilter), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

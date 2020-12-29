@@ -1,5 +1,7 @@
 package com.przemarcz.restaurant.mapper;
 
+import com.przemarcz.restaurant.dto.MealDto.CreateMealRequest;
+import com.przemarcz.restaurant.dto.MealDto.MealResponse;
 import com.przemarcz.restaurant.dto.MealDto.UpdateMealRequest;
 import com.przemarcz.restaurant.model.Meal;
 import org.mapstruct.*;
@@ -8,8 +10,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
 
-import static com.przemarcz.restaurant.dto.MealDto.CreateMealRequest;
-import static com.przemarcz.restaurant.dto.MealDto.MealResponse;
 import static java.util.Objects.isNull;
 
 @Mapper(componentModel = "spring")

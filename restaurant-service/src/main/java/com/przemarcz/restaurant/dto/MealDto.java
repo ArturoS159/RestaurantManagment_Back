@@ -1,12 +1,15 @@
 package com.przemarcz.restaurant.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.przemarcz.restaurant.model.Meal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Setter
@@ -65,6 +68,12 @@ public class MealDto {
         BigDecimal toPrice;
         BigDecimal fromTime;
         BigDecimal toTime;
+    }
+
+    @Value
+    public static class MealListResponse {
+        Set<String> category;
+        List<Meal> meals;
     }
 
     @Value
