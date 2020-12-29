@@ -32,7 +32,7 @@ public class MealDto {
         @Size(max = 300, message = "Ingredients must be lower than 300")
         String ingredients;
         @NotNull(message = "Time must be not null")
-//        @Digits(integer = 2, fraction = 2, message = "Time bad format") //TODO look at frontend
+/////        @Digits(integer = 2, fraction = 2, message = "Time bad format") //TODO look at frontend
         @DecimalMin(value = "0.0", inclusive = false, message = "Time must be greater than 0.0")
         BigDecimal timeToDo;
         @NotBlank(message = "Category must be not blank")
