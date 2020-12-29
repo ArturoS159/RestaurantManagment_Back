@@ -3,6 +3,7 @@ package com.przemarcz.auth.dto;
 import lombok.Value;
 
 import javax.validation.constraints.*;
+import java.util.UUID;
 
 public class UserDto {
     private UserDto(){}
@@ -60,6 +61,7 @@ public class UserDto {
 
     @Value
     public static class WorkerResponse{
+        UUID id;
         String email;
         String forename;
         String surname;

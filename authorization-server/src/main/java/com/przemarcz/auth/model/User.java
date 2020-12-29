@@ -1,7 +1,6 @@
 package com.przemarcz.auth.model;
 
 import com.przemarcz.auth.exception.AlreadyExistException;
-import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.model.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -69,16 +68,6 @@ public class User implements UserDetails, Serializable {
     public void addRole(Role role, UUID restaurantId) {
         UserRole userRole = new UserRole(role, restaurantId);
         restaurantRoles.add(userRole);
-    }
-
-    public void delRole(Role role, UUID restaurantId) {
-        restaurantRoles.remove(restaurantRoles.stream().filter(userRole ->
-                isRestaurantAndRoleTheSame(role, restaurantId, userRole)).findFirst()
-                .orElseThrow(NotFoundException::new));
-    }
-
-    private boolean isRestaurantAndRoleTheSame(Role role, UUID restaurantId, UserRole userRole) {
-        return userRole.getRestaurantId().equals(restaurantId) && userRole.getRole() == (role);
     }
 
     public void activeAccount(String activationKey) {

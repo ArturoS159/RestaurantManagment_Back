@@ -68,9 +68,8 @@ public class WorkerService {
 
     @Transactional(value = "transactionManager")
     public void deleteRestaurantWorker(UUID restaurantId, UUID workerId) {
-        User user = userRepository.findById(workerId).orElseThrow(
-                NotFoundException::new);
-        user.delRole(Role.WORKER, restaurantId);
-        userRepository.save(user);
+        UserRole workerAuth = userRoleRepository.findByRestaurantIdAndUserIdAndRole(restaurantId, workerId, Role.WORKER)
+                .orElseThrow(NotFoundException::new);
+        userRoleRepository.delete(workerAuth);
     }
 }
