@@ -1,12 +1,12 @@
 package com.przemarcz.order.service;
 
 import com.przemarcz.avro.OrderAvro;
-import com.przemarcz.order.dto.OrderDto;
-import com.przemarcz.order.dto.OrderDto.OrderResponse;
+import com.przemarcz.order.dto.OrderDto.OrderForRestaurantResponse;
 import com.przemarcz.order.exception.NotFoundException;
 import com.przemarcz.order.mapper.AvroMapper;
 import com.przemarcz.order.mapper.OrderMapper;
 import com.przemarcz.order.mapper.PayUMapper;
+import com.przemarcz.order.mapper.TextMapper;
 import com.przemarcz.order.model.Order;
 import com.przemarcz.order.model.RestaurantPayment;
 import com.przemarcz.order.repository.OrderRepository;
@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.przemarcz.order.dto.OrderDto.*;
+
 
 @RequiredArgsConstructor
 @Service
@@ -37,12 +39,17 @@ public class OrderService {
     private final PaymentRepository paymentRepository;
     private final OrderMapper orderMapper;
     private final AvroMapper avroMapper;
+    private final PayUMapper payUMapper;
+    private final TextMapper textMapper;
     private final OrderHelper orderHelper;
     private final PaymentHelper paymentHelper;
-    private final PayUMapper payUMapper;
 
-    public Page<OrderResponse> getAllOrdersForWorkers(UUID restaurantId, Pageable pageable) {
-        return orderRepository.findAllByRestaurantId(restaurantId, pageable).map(orderMapper::toOrderDto);
+    public Page<OrderForRestaurantResponse> getAllOrdersForWorkers(UUID restaurantId, Pageable pageable) {
+        return orderRepository.findAllByRestaurantId(restaurantId, pageable).map(orderMapper::toOrderForRestaurantResponse);
+    }
+
+    public Page<OrderForUserResponse> getAllOrdersForMe(String userId, Pageable pageable) {
+        return orderRepository.findAllByUserId(textMapper.toUUID(userId), pageable).map(orderMapper::toOrderForUserResponse);
     }
 
     public void refreshOrdersStatus(UUID restaurantId) {
@@ -74,14 +81,12 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public OrderResponse payOrderAgain(UUID restaurantId, UUID orderId) throws IOException {
+    public OrderForUserResponse payOrderAgain(UUID restaurantId, UUID orderId) throws IOException {
         Order order = getOrderFromDb(restaurantId,orderId);
-        if(order.isPayed()){
-            throw new IllegalArgumentException("");
-            //TODO
+        if(!order.isPayed()){
+            orderMapper.updateOrderPayUResponse(order,preparePayment(order));
         }
-        orderMapper.updateOrderPayUResponse(order,preparePayment(order));
-        return orderMapper.toOrderDto(order);
+        return orderMapper.toOrderForUserResponse(order);
     }
 
     private PaymentResponse preparePayment(Order order) throws IOException {
@@ -90,6 +95,13 @@ public class OrderService {
 
         Payment payment = payUMapper.toPayment(order, restaurantPayment.getPosId());
         return paymentHelper.pay(payment,restaurantPayment);
+    }
+
+    public OrderForRestaurantResponse updateOrder(UUID restaurantId, UUID orderId, UpdateOrderRequest updateOrderRequest) {
+        Order order = orderRepository.findByRestaurantIdAndId(restaurantId, orderId).orElseThrow(() -> new NotFoundException("Order not found!"));
+        orderMapper.updateOrder(order, updateOrderRequest);
+        orderRepository.save(order);
+        return orderMapper.toOrderForRestaurantResponse(order);
     }
 
     private RestaurantPayment getRestaurantPayment(UUID restaurantId) {

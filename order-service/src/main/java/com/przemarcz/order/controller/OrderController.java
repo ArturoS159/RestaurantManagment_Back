@@ -1,7 +1,6 @@
 package com.przemarcz.order.controller;
 
 import com.przemarcz.avro.OrderAvro;
-import com.przemarcz.order.dto.OrderDto;
 import com.przemarcz.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -14,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.UUID;
 
 import static com.przemarcz.order.dto.OrderDto.*;
@@ -29,9 +29,14 @@ public class OrderController {
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/orders")
-    public ResponseEntity<Page<OrderResponse>> getAllOrdersForWorkers(@PathVariable UUID restaurantId,
-                                                                      Pageable pageable) {
+    public ResponseEntity<Page<OrderForRestaurantResponse>> getAllOrdersForWorkers(@PathVariable UUID restaurantId,
+                                                                                   Pageable pageable) {
         return new ResponseEntity<>(orderService.getAllOrdersForWorkers(restaurantId, pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("/my-orders")
+    public ResponseEntity<Page<OrderForUserResponse>> getAllOrdersForMe(Principal user, Pageable pageable) {
+        return new ResponseEntity<>(orderService.getAllOrdersForMe(user.getName(), pageable), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
@@ -42,8 +47,16 @@ public class OrderController {
     }
 
     @PostMapping("/{restaurantId}/orders/{orderId}/pay")
-    public ResponseEntity<OrderResponse> payOrderAgain(@PathVariable UUID restaurantId,@PathVariable UUID orderId) throws IOException {
+    public ResponseEntity<OrderForUserResponse> payOrderAgain(@PathVariable UUID restaurantId, @PathVariable UUID orderId) throws IOException {
         return new ResponseEntity<>(orderService.payOrderAgain(restaurantId, orderId), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
+    @PutMapping("/{restaurantId}/orders/{orderId}")
+    public ResponseEntity<OrderForRestaurantResponse> updateOrder(@PathVariable UUID restaurantId,
+                                                                  @PathVariable UUID orderId,
+                                                                  @RequestBody UpdateOrderRequest updateOrderRequest){
+        return new ResponseEntity<>(orderService.updateOrder(restaurantId, orderId, updateOrderRequest), HttpStatus.OK);
     }
 
     @KafkaListener(topics = TOPIC_ORDERS)

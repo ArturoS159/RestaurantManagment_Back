@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findAllByRestaurantId(@Param("restaurantId") UUID restaurantId, Pageable pageable);
+    Page<Order> findAllByUserId(@Param("userId") UUID userId, Pageable pageable);
     List<Order> findAllByRestaurantId(@Param("restaurantId") UUID restaurantId);
     Optional<Order> findByRestaurantIdAndId(@Param("restaurantId") UUID restaurantId, @Param("id") UUID id);
 }
