@@ -6,7 +6,6 @@ import com.przemarcz.restaurant.mapper.AvroMapper;
 import com.przemarcz.restaurant.mapper.TextMapper;
 import com.przemarcz.restaurant.model.Meal;
 import com.przemarcz.restaurant.model.Restaurant;
-import com.przemarcz.restaurant.repository.MealRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.przemarcz.restaurant.dto.MealDto.OrderMealRequest;
 import static com.przemarcz.restaurant.dto.OrderDto.CreateOrderPersonalRequest;
@@ -26,7 +24,6 @@ import static com.przemarcz.restaurant.dto.OrderDto.CreateOrderUserRequest;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final MealRepository mealRepository;
     private final AvroMapper avroMapper;
     private final TextMapper textMapper;
     private final KafkaTemplate<String, OrderAvro> orderKafkaTemplate;
@@ -45,8 +42,10 @@ public class OrderService {
         }
         OrderAvro orderAvro = avroMapper.toOrderByUser(order, restaurantId, userId);
         List<MealAvro> meals = getMealsFromDatabase(restaurantId, order.getMeals());
-        orderAvro.setMeals(meals);
-        sendMessageOrder(orderAvro);
+        if(!meals.isEmpty()){
+            orderAvro.setMeals(meals);
+            sendMessageOrder(orderAvro);
+        }
     }
 
     private boolean isPaymentAvailable(UUID restaurantId) {
@@ -58,8 +57,10 @@ public class OrderService {
     public void orderMealsByPersonal(UUID restaurantId, CreateOrderPersonalRequest order) {
         OrderAvro orderAvro = avroMapper.toOrderByPersonal(order, restaurantId);
         List<MealAvro> meals = getMealsFromDatabase(restaurantId, order.getMeals());
-        orderAvro.setMeals(meals);
-        sendMessageOrder(orderAvro);
+        if(!meals.isEmpty()){
+            orderAvro.setMeals(meals);
+            sendMessageOrder(orderAvro);
+        }
     }
 
     private List<MealAvro> getMealsFromDatabase(UUID restaurantId, List<OrderMealRequest> orderMealRequests) {
@@ -68,23 +69,12 @@ public class OrderService {
 
         for(OrderMealRequest mealRequest : orderMealRequests){
             for(Meal meal : meals){
-                if(mealRequest.getId().equals(meal.getId())){
-                    mealsAvro.add(avroMapper.toMealAvro(mealRequest,meal));
+                if(mealRequest.getId().equals(meal.getId())&&mealRequest.getQuantity()!=0){
+                    mealsAvro.add(avroMapper.toMealAvro(mealRequest, meal));
                 }
             }
         }
-
-        orderMealRequests
-                .stream()
-                .filter(mealRequest -> meals.stream().anyMatch(meal -> meal.getId().equals(mealRequest.getId())))
-                .map(OrderMealRequest::getQuantity);
-
-        return orderMealRequests.stream()
-                .map(mealDto -> {
-                    Meal meal = mealRepository.findByIdAndRestaurantId(mealDto.getId(),restaurantId)
-                            .orElseThrow(() -> new NotFoundException(String.format("Meal %s not found!", mealDto.getId())));
-                    return avroMapper.toMealAvro(mealDto,meal);
-                }).collect(Collectors.toList());
+        return mealsAvro;
     }
 
     private void sendMessageOrder(OrderAvro order) {

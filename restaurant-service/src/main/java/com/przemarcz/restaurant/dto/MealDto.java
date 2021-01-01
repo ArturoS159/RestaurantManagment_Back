@@ -1,7 +1,6 @@
 package com.przemarcz.restaurant.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.przemarcz.restaurant.model.Meal;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
@@ -73,7 +72,7 @@ public class MealDto {
     @Value
     public static class MealListResponse {
         Set<String> category;
-        List<Meal> meals;
+        List<MealResponse> meals;
     }
 
     @Value

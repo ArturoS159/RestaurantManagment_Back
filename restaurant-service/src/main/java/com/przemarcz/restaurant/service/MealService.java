@@ -28,8 +28,14 @@ public class MealService {
     public MealListResponse getAllRestaurantMeals(UUID restaurantId, MealFilter mealFilter) {
         MealSpecification mealSpecification = new MealSpecification(restaurantId, mealFilter);
         List<Meal> meals = mealRepository.findAll(mealSpecification);
-        Set<String> category = meals.stream().map(Meal::getCategory).collect(Collectors.toSet());
-        return new MealListResponse(category, meals);
+        List<MealResponse> mealsResponse =
+                meals.stream()
+                .map(mealMapper::toMealResponse)
+                .collect(Collectors.toList());
+        Set<String> category = meals.stream()
+                .map(Meal::getCategory)
+                .collect(Collectors.toSet());
+        return new MealListResponse(category, mealsResponse);
     }
 
     @Transactional(value = "transactionManager")

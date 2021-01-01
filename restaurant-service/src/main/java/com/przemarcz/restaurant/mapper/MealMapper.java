@@ -16,6 +16,7 @@ import static java.util.Objects.isNull;
 public interface MealMapper {
 
     @Mapping(target = "price", source = "createMealRequest.price", qualifiedByName = "scaleBigDecimal")
+    @Mapping(target = "category", expression = "java(createMealRequest.getCategory().toLowerCase())")
     Meal toMeal(CreateMealRequest createMealRequest, UUID restaurantId);
 
     @Mapping(target = "price", source = "updateMealRequest.price", qualifiedByName = "scaleBigDecimal")
