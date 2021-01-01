@@ -1,7 +1,8 @@
 package com.przemarcz.order.service;
 
 import com.przemarcz.avro.OrderAvro;
-import com.przemarcz.order.dto.OrderDto.OrderForRestaurantResponse;
+import com.przemarcz.order.dto.OrderDto.*;
+import com.przemarcz.order.dto.PayUDto.PayUUrlResponse;
 import com.przemarcz.order.exception.NotFoundException;
 import com.przemarcz.order.mapper.AvroMapper;
 import com.przemarcz.order.mapper.OrderMapper;
@@ -11,6 +12,7 @@ import com.przemarcz.order.model.Order;
 import com.przemarcz.order.model.RestaurantPayment;
 import com.przemarcz.order.repository.OrderRepository;
 import com.przemarcz.order.repository.PaymentRepository;
+import com.przemarcz.order.specification.OrderSpecification;
 import com.przemarcz.order.util.OrderHelper;
 import com.przemarcz.order.util.PaymentHelper;
 import com.przemarcz.order.util.payumodels.Payment;
@@ -22,10 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.przemarcz.order.dto.OrderDto.*;
 
@@ -34,7 +35,6 @@ import static com.przemarcz.order.dto.OrderDto.*;
 @Service
 public class OrderService {
 
-    private static final int ORDER_MAX_TIME = 15;
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final OrderMapper orderMapper;
@@ -44,34 +44,35 @@ public class OrderService {
     private final OrderHelper orderHelper;
     private final PaymentHelper paymentHelper;
 
-    public Page<OrderForRestaurantResponse> getAllOrdersForWorkers(UUID restaurantId, Pageable pageable) {
-        return orderRepository.findAllByRestaurantId(restaurantId, pageable).map(orderMapper::toOrderForRestaurantResponse);
+
+    public Page<OrderForRestaurantResponse> getAllOrders(UUID restaurantId, OrderFilter orderFilter, Pageable pageable) {
+        OrderSpecification specification = new OrderSpecification(restaurantId, orderFilter);
+        return orderRepository.findAll(specification, pageable).map(orderMapper::toOrderForRestaurantResponse);
     }
 
-    public Page<OrderForUserResponse> getAllOrdersForMe(String userId, Pageable pageable) {
+    public Page<OrderForUserResponse> getAllOrdersForUser(String userId, Pageable pageable) {
         return orderRepository.findAllByUserId(textMapper.toUUID(userId), pageable).map(orderMapper::toOrderForUserResponse);
     }
 
     public void refreshOrdersStatus(UUID restaurantId) {
-        List<Order> orders = orderRepository.findAllByRestaurantId(restaurantId);
-        //TODO get orders from today delete orders expired
+        OrderSpecification specification = new OrderSpecification(restaurantId);
+        List<Order> orders = orderRepository.findAll(specification);
         RestaurantPayment restaurantPayment = getRestaurantPayment(restaurantId);
-        List<Order> ordersNew = orders.stream()
-                .filter(order -> !order.isPayed())
-                .filter(this::isOrderNotExpired)
-                .filter(order -> isOrderPayed(restaurantPayment,order.getPayUOrderId())
-        ).collect(Collectors.toList());
-        ordersNew.forEach(order -> order.setPayed(true));
-        orderRepository.saveAll(ordersNew);
+        List<Order> ordersToUpdatePaymentStatus = new ArrayList<>();
+        for(Order order: orders){
+            if(isOrderPayed(restaurantPayment,order.getPayUOrderId())){
+                ordersToUpdatePaymentStatus.add(order);
+                order.setPayed(true);
+            }
+            if(order.isOrderExpired()){
+                orderRepository.delete(order);
+            }
+        }
+       orderRepository.saveAll(ordersToUpdatePaymentStatus);
     }
 
     private boolean isOrderPayed(RestaurantPayment restaurantPayment, String payUOrderId){
         return paymentHelper.checkOrderStatus(restaurantPayment,payUOrderId);
-    }
-
-    private boolean isOrderNotExpired(Order order) {
-        LocalDateTime orderTime = order.getTime();
-        return orderTime.plusMinutes(ORDER_MAX_TIME).isBefore(orderTime);
     }
 
     @Transactional("chainedKafkaTransactionManager")
@@ -81,18 +82,17 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public OrderForUserResponse payOrderAgain(UUID restaurantId, UUID orderId) throws IOException {
+    public PayUUrlResponse payOrder(UUID restaurantId, UUID orderId) throws IOException {
         Order order = getOrderFromDb(restaurantId,orderId);
         if(!order.isPayed()){
             orderMapper.updateOrderPayUResponse(order,preparePayment(order));
+            orderRepository.save(order);
         }
-        return orderMapper.toOrderForUserResponse(order);
+        return payUMapper.toPayUUrlResponse(order.getPayUUrl());
     }
 
     private PaymentResponse preparePayment(Order order) throws IOException {
-        RestaurantPayment restaurantPayment;
-        restaurantPayment = getRestaurantPayment(order.getRestaurantId());
-
+        RestaurantPayment restaurantPayment = getRestaurantPayment(order.getRestaurantId());
         Payment payment = payUMapper.toPayment(order, restaurantPayment.getPosId());
         return paymentHelper.pay(payment,restaurantPayment);
     }

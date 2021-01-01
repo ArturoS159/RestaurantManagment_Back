@@ -13,9 +13,9 @@ import static com.przemarcz.order.dto.PaymentDto.*;
 @Mapper(componentModel = "spring")
 public interface PaymentMapper {
 
-    RestaurantPayment toPayment(PaymentDto paymentDto, UUID id);
+    RestaurantPayment toPayment(CreatePaymentRequest createPaymentRequest, UUID id);
 
-    PaymentResponse toPaymentDto(RestaurantPayment restaurantPayment);
+    PaymentResponse toPaymentResponse(RestaurantPayment restaurantPayment);
 
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

@@ -36,7 +36,7 @@ public class OrderDto {
         @Pattern(regexp = "(?<!\\w)(\\(?(\\+|00)?48\\)?)?[ -]?\\d{3}[ -]?\\d{3}[ -]?\\d{3}(?!\\w)", message = "It's not phone number")
         String phoneNumber;
         @NotBlank(message = "House-number must be not blank")
-        @Size(max = 10, message = "Hose number must be lower than 10")
+        @Size(max = 10, message = "House number must be lower than 10")
         String houseNumber;
         @NotBlank(message = "Surname must be not blank")
         @Pattern(regexp = "\\d{2}-\\d{3}", message = "It's not postcode")

@@ -2,9 +2,9 @@ package com.przemarcz.order.service;
 
 import com.przemarcz.avro.AddDelete;
 import com.przemarcz.avro.PaymentAvro;
-import com.przemarcz.order.dto.PaymentDto;
+import com.przemarcz.order.dto.PaymentDto.CreatePaymentRequest;
+import com.przemarcz.order.dto.PaymentDto.PaymentResponse;
 import com.przemarcz.order.exception.AlreadyExistException;
-import com.przemarcz.order.exception.NotFoundException;
 import com.przemarcz.order.mapper.PaymentMapper;
 import com.przemarcz.order.model.RestaurantPayment;
 import com.przemarcz.order.repository.PaymentRepository;
@@ -28,7 +28,7 @@ public class PaymentService {
     private final KafkaTemplate<String, PaymentAvro> paymentKafkaTemplate;
 
     @Transactional("chainedKafkaTransactionManager")
-    public PaymentDto addPayment(UUID restaurantId, PaymentDto paymentDto){
+    public PaymentResponse addPayment(UUID restaurantId, CreatePaymentRequest paymentDto){
         if(hasRestaurantPayment(restaurantId)){
             throw new AlreadyExistException("This restaurant has payment!");
         }
@@ -37,52 +37,27 @@ public class PaymentService {
         }
         RestaurantPayment restaurantPayment = paymentMapper.toPayment(paymentDto, restaurantId);
         paymentRepository.save(restaurantPayment);
-        sendPayment(restaurantId, AddDelete.ADD);
-//        return paymentMapper.toPaymentDto(restaurantPayment);
-        return null;
+        sendPaymentToRestaurantService(restaurantId, AddDelete.ADD);
+        return paymentMapper.toPaymentResponse(restaurantPayment);
     }
 
     private boolean hasRestaurantPayment(UUID restaurantId) {
         return paymentRepository.findById(restaurantId).isPresent();
     }
 
-    private boolean isWrongPaymentDetails(PaymentDto paymentDto) {
-        return false;
-//        return isNull(paymentHelper.getAuthorizationToken(paymentDto.getClientId(),paymentDto.getClientSecret()));
-    }
-
-    @Transactional(value = "transactionManager", readOnly = true)
-    public PaymentDto getPayment(UUID restaurantId) {
-        return null;
-//        return paymentMapper.toPaymentDto(getRestaurantPayment(restaurantId));
-    }
-
-    @Transactional(value = "transactionManager")
-    public PaymentDto updatePayment(UUID restaurantId, PaymentDto paymentDto) {
-        RestaurantPayment restaurantPayment = getRestaurantPayment(restaurantId);
-        paymentMapper.updatePayment(restaurantPayment, paymentDto, restaurantId);
-        if(isWrongPaymentDetails(paymentDto)){
-            throw new IllegalArgumentException("Payment not valid!");
-        }
-        paymentRepository.save(restaurantPayment);
-//        return paymentMapper.toPaymentDto(restaurantPayment);
-        return null;
+    private boolean isWrongPaymentDetails(CreatePaymentRequest createPaymentRequest) {
+        return isNull(paymentHelper.getAuthorizationToken(createPaymentRequest.getClientId(),createPaymentRequest.getClientSecret()));
     }
 
     @Transactional(value = "transactionManager")
     public void deletePayment(UUID restaurantId) {
         if(hasRestaurantPayment(restaurantId)){
             paymentRepository.deleteById(restaurantId);
-            sendPayment(restaurantId,AddDelete.DEL);
+            sendPaymentToRestaurantService(restaurantId,AddDelete.DEL);
         }
     }
 
-    private RestaurantPayment getRestaurantPayment(UUID restaurantId) {
-        return paymentRepository.findById(restaurantId)
-                .orElseThrow(() -> new NotFoundException(String.format("Payment with %s not found!", restaurantId)));
-    }
-
-    private void sendPayment(UUID restaurantId, AddDelete type){
+    private void sendPaymentToRestaurantService(UUID restaurantId, AddDelete type){
         PaymentAvro paymentAvro = paymentMapper.toPaymentAvro(restaurantId,type);
         paymentKafkaTemplate.send("payments", paymentAvro);
     }

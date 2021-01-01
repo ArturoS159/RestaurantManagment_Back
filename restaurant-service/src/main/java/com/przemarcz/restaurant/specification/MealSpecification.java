@@ -44,26 +44,26 @@ public class MealSpecification implements Specification<Meal> {
 
     @Override
     public Predicate toPredicate(Root<Meal> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder builder) {
-        List<Predicate> predicatesAnd = new ArrayList<>();
+        List<Predicate> predicates = new ArrayList<>();
         if(!CollectionUtils.isEmpty(categories)){
-            predicatesAnd.add(builder.lower(root.get(Meal_.category)).in(categories));
+            predicates.add(builder.lower(root.get(Meal_.category)).in(categories));
         }
         if(nonNull(fromPrice)){
-            predicatesAnd.add(builder.greaterThanOrEqualTo(root.get(Meal_.price), fromPrice));
+            predicates.add(builder.greaterThanOrEqualTo(root.get(Meal_.price), fromPrice));
         }
         if(nonNull(toPrice)){
-            predicatesAnd.add(builder.lessThanOrEqualTo(root.get(Meal_.price), toPrice));
+            predicates.add(builder.lessThanOrEqualTo(root.get(Meal_.price), toPrice));
         }
         if(nonNull(fromTime)){
-            predicatesAnd.add(builder.greaterThanOrEqualTo(root.get(Meal_.timeToDo), fromTime));
+            predicates.add(builder.greaterThanOrEqualTo(root.get(Meal_.timeToDo), fromTime));
         }
         if(nonNull(toTime)){
-            predicatesAnd.add(builder.lessThanOrEqualTo(root.get(Meal_.timeToDo), toTime));
+            predicates.add(builder.lessThanOrEqualTo(root.get(Meal_.timeToDo), toTime));
         }
-        predicatesAnd.add(builder.equal(root.get(Meal_.restaurantId), restaurantId));
-        Predicate[] predicatesArrayAnd = new Predicate[predicatesAnd.size()];
-        Predicate[] finalPredicatesAnd = predicatesAnd.toArray(predicatesArrayAnd);
-        builder.and(finalPredicatesAnd);
-        return builder.and(finalPredicatesAnd);
+        predicates.add(builder.equal(root.get(Meal_.restaurantId), restaurantId));
+        Predicate[] predicatesArray = new Predicate[predicates.size()];
+        Predicate[] finalPredicates = predicates.toArray(predicatesArray);
+        builder.and(finalPredicates);
+        return builder.and(finalPredicates);
     }
 }

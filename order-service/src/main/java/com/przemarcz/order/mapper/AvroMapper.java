@@ -2,14 +2,13 @@ package com.przemarcz.order.mapper;
 
 import com.przemarcz.avro.OrderAvro;
 import com.przemarcz.order.model.Order;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import com.przemarcz.order.model.enums.OrderStatus;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = TextMapper.class)
+@Mapper(componentModel = "spring", uses = TextMapper.class, imports = OrderStatus.class)
 public interface AvroMapper {
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    @Mapping(target = "orderStatus", expression = "java(OrderStatus.IN_PROGRESS)")
     Order toOrder(OrderAvro orderAvro);
 }

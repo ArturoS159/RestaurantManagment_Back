@@ -1,5 +1,6 @@
 package com.przemarcz.order.model;
 
+import com.przemarcz.order.model.enums.OrderStatus;
 import com.przemarcz.order.model.enums.OrderType;
 import com.przemarcz.order.model.enums.PaymentMethod;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
+
+    private static final int ORDER_WAITING_TIME = 60;
+
     @Id
     private UUID id;
     private String forename;
@@ -41,6 +45,9 @@ public class Order {
     @Enumerated(EnumType.STRING)
     @Column(name = "order_type")
     private OrderType orderType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
+    private OrderStatus orderStatus;
     @Column(name = "user_id")
     private UUID userId;
     private BigDecimal price;
@@ -57,4 +64,9 @@ public class Order {
     private String payUUrl;
     @Column(name = "payu_order_id")
     private String payUOrderId;
+
+    public boolean isOrderExpired(){
+        return time.plusMinutes(ORDER_WAITING_TIME).isBefore(LocalDateTime.now());
+    }
+
 }

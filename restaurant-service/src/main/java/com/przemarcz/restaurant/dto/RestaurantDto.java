@@ -14,7 +14,6 @@ public class RestaurantDto {
     private RestaurantDto(){
     }
 
-    //TODO add if
     @Value
     public static class CreateRestaurantRequest {
         String name;
@@ -105,8 +104,6 @@ public class RestaurantDto {
         String phoneNumber;
         BigDecimal rate;
     }
-
-
 
     @Value
     public static class RestaurantFilter {

@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+import static com.przemarcz.order.dto.PaymentDto.CreatePaymentRequest;
+import static com.przemarcz.order.dto.PaymentDto.PaymentResponse;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/restaurants")
@@ -20,20 +23,8 @@ public class PaymentController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/payment")
-    public ResponseEntity<PaymentDto> addPayment(@PathVariable UUID restaurantId, @RequestBody PaymentDto paymentDto) {
-        return new ResponseEntity<>(paymentService.addPayment(restaurantId,paymentDto), HttpStatus.CREATED);
-    }
-
-    @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
-    @GetMapping("/{restaurantId}/payment")
-    public ResponseEntity<PaymentDto> getPayment(@PathVariable UUID restaurantId) {
-        return new ResponseEntity<>(paymentService.getPayment(restaurantId),HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
-    @PutMapping("/{restaurantId}/payment")
-    public ResponseEntity<PaymentDto> updatePayment(@PathVariable UUID restaurantId, @RequestBody PaymentDto paymentDto) {
-        return new ResponseEntity<>(paymentService.updatePayment(restaurantId,paymentDto),HttpStatus.OK);
+    public ResponseEntity<PaymentResponse> addPayment(@PathVariable UUID restaurantId, @RequestBody CreatePaymentRequest createPaymentRequest) {
+        return new ResponseEntity<>(paymentService.addPayment(restaurantId,createPaymentRequest), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

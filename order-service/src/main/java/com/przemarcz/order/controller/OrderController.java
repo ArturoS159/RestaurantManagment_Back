@@ -1,6 +1,7 @@
 package com.przemarcz.order.controller;
 
 import com.przemarcz.avro.OrderAvro;
+import com.przemarcz.order.dto.PayUDto.PayUUrlResponse;
 import com.przemarcz.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -29,14 +30,15 @@ public class OrderController {
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/orders")
-    public ResponseEntity<Page<OrderForRestaurantResponse>> getAllOrdersForWorkers(@PathVariable UUID restaurantId,
-                                                                                   Pageable pageable) {
-        return new ResponseEntity<>(orderService.getAllOrdersForWorkers(restaurantId, pageable), HttpStatus.OK);
+    public ResponseEntity<Page<OrderForRestaurantResponse>> getAllOrders(@PathVariable UUID restaurantId,
+                                                                         @ModelAttribute OrderFilter orderFilter,
+                                                                         Pageable pageable) {
+        return new ResponseEntity<>(orderService.getAllOrders(restaurantId, orderFilter, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/my-orders")
-    public ResponseEntity<Page<OrderForUserResponse>> getAllOrdersForMe(Principal user, Pageable pageable) {
-        return new ResponseEntity<>(orderService.getAllOrdersForMe(user.getName(), pageable), HttpStatus.OK);
+    public ResponseEntity<Page<OrderForUserResponse>> getAllOrdersForUser(Principal user, Pageable pageable) {
+        return new ResponseEntity<>(orderService.getAllOrdersForUser(user.getName(), pageable), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
@@ -47,8 +49,8 @@ public class OrderController {
     }
 
     @PostMapping("/{restaurantId}/orders/{orderId}/pay")
-    public ResponseEntity<OrderForUserResponse> payOrderAgain(@PathVariable UUID restaurantId, @PathVariable UUID orderId) throws IOException {
-        return new ResponseEntity<>(orderService.payOrderAgain(restaurantId, orderId), HttpStatus.OK);
+    public ResponseEntity<PayUUrlResponse> payOrder(@PathVariable UUID restaurantId, @PathVariable UUID orderId) throws IOException {
+        return new ResponseEntity<>(orderService.payOrder(restaurantId, orderId), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")

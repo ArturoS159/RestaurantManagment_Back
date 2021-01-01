@@ -13,6 +13,7 @@ create table if not exists orders (
   comment VARCHAR(256),
   payment_method VARCHAR(256),
   order_type VARCHAR(256),
+  order_status VARCHAR(256),
   time TIMESTAMP,
   user_id UUID,
   price NUMERIC,

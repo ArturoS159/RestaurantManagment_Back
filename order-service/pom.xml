@@ -191,6 +191,11 @@
 					<source>11</source> <!-- depending on your project -->
 					<target>11</target> <!-- depending on your project -->
 					<annotationProcessorPaths>
+						<dependency>
+							<groupId>org.hibernate</groupId>
+							<artifactId>hibernate-jpamodelgen</artifactId>
+							<version>5.4.25.Final</version>
+						</dependency>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
