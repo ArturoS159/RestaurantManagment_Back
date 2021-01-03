@@ -28,6 +28,14 @@ create table if not exists opinions (
   description VARCHAR(256)
 );
 
+create table if not exists tables (
+  id UUID PRIMARY KEY,
+  restaurant_id UUID REFERENCES restaurants(id),\
+  name VARCHAR(256),
+      private Integer numberOfSeats;
+      private Boolean isCollapseOpen;
+);
+
 create table if not exists meals (
   id UUID PRIMARY KEY,
   restaurant_id UUID REFERENCES restaurants(id),

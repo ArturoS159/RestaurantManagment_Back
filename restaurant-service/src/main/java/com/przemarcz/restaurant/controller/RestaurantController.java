@@ -54,14 +54,14 @@ public class RestaurantController {
 
     @PostMapping
     public ResponseEntity<RestaurantOwnerResponse> addRestaurant(@RequestBody CreateRestaurantRequest createRestaurantRequest,
-                                                       Principal user) {
+                                                                 Principal user) {
         return new ResponseEntity<>(restaurantService.addRestaurant(createRestaurantRequest, user.getName()),HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}")
     public ResponseEntity<RestaurantOwnerResponse> updateRestaurant(@PathVariable UUID restaurantId,
-                                                          @RequestBody UpdateRestaurantRequest updateRestaurantRequest) {
+                                                                    @RequestBody UpdateRestaurantRequest updateRestaurantRequest) {
         return new ResponseEntity<>(restaurantService.updateRestaurant(restaurantId, updateRestaurantRequest),HttpStatus.OK);
     }
 

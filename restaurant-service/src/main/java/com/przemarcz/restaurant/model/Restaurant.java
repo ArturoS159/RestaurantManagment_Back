@@ -1,5 +1,7 @@
 package com.przemarcz.restaurant.model;
 
+import com.przemarcz.restaurant.dto.TableReservationDto;
+import com.przemarcz.restaurant.dto.TableReservationDto.AddReservationRequest;
 import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
@@ -11,13 +13,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Entity
-@Table(name = "restaurants")
+@javax.persistence.Table(name = "restaurants")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -69,6 +72,12 @@ public class Restaurant {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String category;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "restaurant_id")
+    private List<Table> tables = new ArrayList<>();
 
     public Set<RestaurantCategory> getCategory(){
         if(isNull(category)){
@@ -129,6 +138,10 @@ public class Restaurant {
 
     public void delete() {
         isDeleted=true;
+    }
+
+    public void createTable(Table table){
+        tables.add(table);
     }
 
     public void setWorkTime(List<WorkTime> incomingTime) {

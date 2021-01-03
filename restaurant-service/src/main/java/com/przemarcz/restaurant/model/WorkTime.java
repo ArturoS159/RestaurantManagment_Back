@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.persistence.Table;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WorkTime {
     @Id
-    private UUID id = UUID.randomUUID();;
+    private UUID id = UUID.randomUUID();
     @Column(name = "restaurant_id")
     private UUID restaurantId;
     @Enumerated(EnumType.STRING)
@@ -28,10 +29,4 @@ public class WorkTime {
     private LocalTime from;
     @Column(name = "to_time")
     private LocalTime to;
-
-    public WorkTime(Days day, LocalTime from, LocalTime to) {
-        this.day = day;
-        this.from = from;
-        this.to = to;
-    }
 }
