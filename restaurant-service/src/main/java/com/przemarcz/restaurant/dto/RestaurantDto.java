@@ -71,6 +71,7 @@ public class RestaurantDto {
         String houseNumber;
         String phoneNumber;
         BigDecimal rate;
+        boolean paymentOnline;
     }
 
     @Value
