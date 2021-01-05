@@ -37,8 +37,13 @@ public class TableReservationDto {
     }
 
     @Value
-    public static class ReservationTableResponse {
-
+    public static class ReservationResponse {
+        LocalDate day;
+        LocalTime from;
+        LocalTime to;
+        String forename;
+        String surname;
+        String phoneNumber;
     }
 
 }

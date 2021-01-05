@@ -30,10 +30,21 @@ create table if not exists opinions (
 
 create table if not exists tables (
   id UUID PRIMARY KEY,
-  restaurant_id UUID REFERENCES restaurants(id),\
+  restaurant_id UUID REFERENCES restaurants(id),
   name VARCHAR(256),
-      private Integer numberOfSeats;
-      private Boolean isCollapseOpen;
+  number_of_seats INTEGER,
+  is_collapse_open boolean
+);
+
+create table if not exists reservations (
+  id UUID PRIMARY KEY,
+  table_id UUID REFERENCES tables(id),
+  reservation_day DATE,
+  from_time TIME,
+  to_time TIME,
+  forename VARCHAR(256),
+  surname VARCHAR(256),
+  phone_number VARCHAR(256)
 );
 
 create table if not exists meals (

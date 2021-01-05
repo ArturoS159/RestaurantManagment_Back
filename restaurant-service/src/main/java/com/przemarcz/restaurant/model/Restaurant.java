@@ -1,7 +1,5 @@
 package com.przemarcz.restaurant.model;
 
-import com.przemarcz.restaurant.dto.TableReservationDto;
-import com.przemarcz.restaurant.dto.TableReservationDto.AddReservationRequest;
 import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
@@ -25,6 +23,7 @@ import static java.util.Objects.nonNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Restaurant {
 
     private static final int TWO_INT = 2;
@@ -33,6 +32,7 @@ public class Restaurant {
     private static final BigDecimal TWO = new BigDecimal(2);
     private static final BigDecimal MIN = new BigDecimal("0.5");
     private static final BigDecimal MAX = new BigDecimal(5);
+    private static Random rand = new Random();
 
     @Id
     private UUID id = UUID.randomUUID();
@@ -189,7 +189,7 @@ public class Restaurant {
     }
 
     private boolean areValuesTheSame(LocalTime from, LocalTime to) {
-        return from==to;
+        return from == to;
     }
 
     private boolean areValuesNonNull(LocalTime from, LocalTime to) {
@@ -198,5 +198,45 @@ public class Restaurant {
 
     private boolean isFromSmaller(LocalTime from, LocalTime to) {
         return from.isBefore(to);
+    }
+
+    public void createReservation(Integer numberOfSeats, Reservation reservation) {
+        List<Table> avalibleTables = getTablesFilterByDayAndSize(numberOfSeats);
+
+        if (avalibleTables.size() == ZERO) {
+            throw new NotFoundException("No avalibe tables found!");
+        }
+
+        List<Table> avalibleTablesToReserve = getAvalibleTablesToReserve(reservation, avalibleTables);
+
+        if (avalibleTablesToReserve.size() == ZERO) {
+            throw new NotFoundException("No avalibe tables found!");
+        }
+
+        int randomNumber = getRandomNumber(avalibleTablesToReserve.size());
+        Table tableToReservation = avalibleTablesToReserve.get(randomNumber);
+        tableToReservation.getReservations().add(reservation);
+    }
+
+    private List<Table> getTablesFilterByDayAndSize(Integer numberOfSeats) {
+        return tables.stream()
+                .filter(Table::getIsCollapseOpen)
+                .filter(table -> isTableSizeEqualsReservationRequest(numberOfSeats, table))
+                .collect(Collectors.toList());
+    }
+
+    private List<Table> getAvalibleTablesToReserve(Reservation reservation, List<Table> avalibleTables) {
+        return avalibleTables
+                .stream()
+                .filter(table -> table.canReserveTable(reservation.getDay(), reservation.getFrom(), reservation.getTo()))
+                .collect(Collectors.toList());
+    }
+
+    private int getRandomNumber(int size) {
+        return rand.nextInt(size);
+    }
+
+    private boolean isTableSizeEqualsReservationRequest(Integer numberOfSeats, Table table) {
+        return table.getNumberOfSeats().equals(numberOfSeats);
     }
 }
