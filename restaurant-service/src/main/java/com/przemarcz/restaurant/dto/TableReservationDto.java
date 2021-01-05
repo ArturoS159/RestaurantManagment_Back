@@ -18,6 +18,13 @@ public class TableReservationDto {
     }
 
     @Value
+    public static class UpdateTableRequest {
+        String name;
+        Integer numberOfSeats;
+        Boolean isCollapseOpen;
+    }
+
+    @Value
     public static class AddReservationRequest {
         Integer numberOfSeats;
         LocalDate day;

@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.NotFoundException;
 import java.util.UUID;
 
-import static com.przemarcz.restaurant.dto.TableReservationDto.CreateTableRequest;
-import static com.przemarcz.restaurant.dto.TableReservationDto.TableResponse;
+import static com.przemarcz.restaurant.dto.TableReservationDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +29,14 @@ public class TableService {
         Table table = tableReservationMapper.toTable(createTableRequest);
         restaurant.createTable(table);
         restaurantRepository.save(restaurant);
+        return tableReservationMapper.toTableResponse(table);
+    }
+
+    @Transactional(value = "transactionManager")
+    public TableResponse updateTable(UUID restaurantId, UUID tableId, UpdateTableRequest updateTableRequest) {
+        Table table = tableRepository.findByIdAndRestaurantId(tableId,restaurantId).orElseThrow(NotFoundException::new);
+        tableReservationMapper.updateTable(table,updateTableRequest);
+        tableRepository.save(table);
         return tableReservationMapper.toTableResponse(table);
     }
 
