@@ -22,7 +22,7 @@ public class MealController {
 
     @GetMapping("/{restaurantId}/meals/public")
     public ResponseEntity<MealListResponse> getRestaurantMeals(@PathVariable UUID restaurantId,
-                                                                     @ModelAttribute("mealFilter") MealFilter mealFilter) {
+                                                               @ModelAttribute("mealFilter") MealFilter mealFilter) {
         return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId, mealFilter), HttpStatus.OK);
     }
 

@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -17,11 +18,12 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Entity
-@Table(name = "restaurants")
+@javax.persistence.Table(name = "restaurants")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Restaurant {
 
     private static final int TWO_INT = 2;
@@ -69,6 +71,12 @@ public class Restaurant {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String category;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "restaurant_id")
+    private List<Table> tables = new ArrayList<>();
 
     public Set<RestaurantCategory> getCategory(){
         if(isNull(category)){
@@ -131,6 +139,10 @@ public class Restaurant {
         isDeleted=true;
     }
 
+    public void createTable(Table table){
+        tables.add(table);
+    }
+
     public void setWorkTime(List<WorkTime> incomingTime) {
         List<WorkTime> finalWorksTime = new ArrayList<>();
         if(incomingTime.size()==SEVEN){
@@ -176,7 +188,7 @@ public class Restaurant {
     }
 
     private boolean areValuesTheSame(LocalTime from, LocalTime to) {
-        return from==to;
+        return from == to;
     }
 
     private boolean areValuesNonNull(LocalTime from, LocalTime to) {
@@ -185,5 +197,13 @@ public class Restaurant {
 
     private boolean isFromSmaller(LocalTime from, LocalTime to) {
         return from.isBefore(to);
+    }
+
+    public void checkReservationTime(LocalDate reservationDay, LocalTime from, LocalTime to) {
+        worksTime.forEach(workTime -> {
+            if (workTime.isDayEquals(reservationDay.getDayOfWeek().getValue()) && !workTime.isTimeInRange(from, to)) {
+                throw new NotFoundException("No available hours found!");
+            }
+        });
     }
 }
