@@ -53,6 +53,22 @@ public class ReservationService {
         return tableReservationMapper.toReservationResponse(reservation);
     }
 
+    @Transactional(value = "transactionManager", readOnly = true)
+    public CheckReservationStatusResponse checkReservationStatus(UUID restaurantId, CheckReservationStatusRequest checkReservationStatusRequest) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        List<Table> tablesInRestaurant = getTablesRestaurant(checkReservationStatusRequest.getNumberOfSeats(), restaurant);
+        if (tablesInRestaurant.isEmpty()) {
+            return tableReservationMapper.toCheckReservationStatusResponse(false, Collections.emptyList());
+        }
+        List<Reservation> reservations = getReservationsInThisDay(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo());
+        List<Table> availableTables = getAvailableTables(tablesInRestaurant, reservations);
+
+        if (!availableTables.isEmpty()) {
+            return tableReservationMapper.toCheckReservationStatusResponse(true, Collections.emptyList());
+        }
+        return tableReservationMapper.toCheckReservationStatusResponse(false, reservations);
+    }
+
     private List<Table> getTablesRestaurant(int size, Restaurant restaurant) {
         return restaurant.getTables().stream()
                 .filter(Table::getIsCollapseOpen)
@@ -77,22 +93,6 @@ public class ReservationService {
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public CheckReservationStatusResponse checkReservationStatus(UUID restaurantId, CheckReservationStatusRequest checkReservationStatusRequest) {
-        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        List<Table> tablesInRestaurant = getTablesRestaurant(checkReservationStatusRequest.getNumberOfSeats(), restaurant);
-        if (tablesInRestaurant.isEmpty()) {
-            return tableReservationMapper.toCheckReservationStatusResponse(false, Collections.emptyList());
-        }
-        List<Reservation> reservations = getReservationsInThisDay(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo());
-        List<Table> availableTables = getAvailableTables(tablesInRestaurant, reservations);
-
-        if (!availableTables.isEmpty()) {
-            return tableReservationMapper.toCheckReservationStatusResponse(true, Collections.emptyList());
-        }
-        return tableReservationMapper.toCheckReservationStatusResponse(false, reservations);
-    }
-
-    @Transactional(value = "transactionManager", readOnly = true)
     public Page<MyReservationResponse> getMyReservations(String userId, Pageable pageable) {
         return reservationRepository.findAllByUserId(textMapper.toUUID(userId), pageable)
                 .map(reservation -> {
@@ -101,6 +101,7 @@ public class ReservationService {
                 });
     }
 
+    @Transactional(value = "transactionManager", readOnly = true)
     public Page<ReservationResponse> getRestaurantReservations(LocalDate day, Pageable pageable) {
         if (isNull(day)) {
             day = LocalDate.now();
