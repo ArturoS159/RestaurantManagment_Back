@@ -39,6 +39,8 @@ create table if not exists tables (
 create table if not exists reservations (
   id UUID PRIMARY KEY,
   table_id UUID REFERENCES tables(id),
+  restaurant_id UUID REFERENCES restaurants(id),
+  user_id UUID,
   reservation_day DATE,
   from_time TIME,
   to_time TIME,

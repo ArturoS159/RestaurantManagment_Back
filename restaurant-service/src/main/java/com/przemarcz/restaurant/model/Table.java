@@ -4,12 +4,9 @@ package com.przemarcz.restaurant.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @javax.persistence.Table(name = "tables")
@@ -32,18 +29,7 @@ public class Table {
     @JoinColumn(name = "table_id")
     private List<Reservation> reservations = new ArrayList<>();
 
-    public boolean canReserveTable(LocalDate day, LocalTime from, LocalTime to) {
-        List<Reservation> reservationsInDay = reservations.stream()
-                .filter(reservation -> reservation.getDay().isEqual(day))
-                .collect(Collectors.toList());
-
-        List<Boolean> noReservationsAvalible = new ArrayList<>();
-        reservationsInDay.forEach(reservation -> {
-            if (!reservation.isReservationOpen(from, to)) {
-                noReservationsAvalible.add(true);
-            }
-        });
-
-        return noReservationsAvalible.isEmpty();
+    public void addReservation(Reservation reservation) {
+        reservations.add(reservation);
     }
 }

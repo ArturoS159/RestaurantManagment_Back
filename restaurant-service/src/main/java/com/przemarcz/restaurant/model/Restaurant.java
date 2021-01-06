@@ -9,9 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import static java.util.Objects.isNull;
@@ -32,7 +32,6 @@ public class Restaurant {
     private static final BigDecimal TWO = new BigDecimal(2);
     private static final BigDecimal MIN = new BigDecimal("0.5");
     private static final BigDecimal MAX = new BigDecimal(5);
-    private static Random rand = new Random();
 
     @Id
     private UUID id = UUID.randomUUID();
@@ -200,43 +199,11 @@ public class Restaurant {
         return from.isBefore(to);
     }
 
-    public void createReservation(Integer numberOfSeats, Reservation reservation) {
-        List<Table> avalibleTables = getTablesFilterByDayAndSize(numberOfSeats);
-
-        if (avalibleTables.size() == ZERO) {
-            throw new NotFoundException("No avalibe tables found!");
-        }
-
-        List<Table> avalibleTablesToReserve = getAvalibleTablesToReserve(reservation, avalibleTables);
-
-        if (avalibleTablesToReserve.size() == ZERO) {
-            throw new NotFoundException("No avalibe tables found!");
-        }
-
-        int randomNumber = getRandomNumber(avalibleTablesToReserve.size());
-        Table tableToReservation = avalibleTablesToReserve.get(randomNumber);
-        tableToReservation.getReservations().add(reservation);
-    }
-
-    private List<Table> getTablesFilterByDayAndSize(Integer numberOfSeats) {
-        return tables.stream()
-                .filter(Table::getIsCollapseOpen)
-                .filter(table -> isTableSizeEqualsReservationRequest(numberOfSeats, table))
-                .collect(Collectors.toList());
-    }
-
-    private List<Table> getAvalibleTablesToReserve(Reservation reservation, List<Table> avalibleTables) {
-        return avalibleTables
-                .stream()
-                .filter(table -> table.canReserveTable(reservation.getDay(), reservation.getFrom(), reservation.getTo()))
-                .collect(Collectors.toList());
-    }
-
-    private int getRandomNumber(int size) {
-        return rand.nextInt(size);
-    }
-
-    private boolean isTableSizeEqualsReservationRequest(Integer numberOfSeats, Table table) {
-        return table.getNumberOfSeats().equals(numberOfSeats);
+    public void checkReservationTime(LocalDate reservationDay, LocalTime from, LocalTime to) {
+        worksTime.forEach(workTime -> {
+            if (workTime.isDayEquals(reservationDay.getDayOfWeek().getValue()) && !workTime.isTimeInRange(from, to)) {
+                throw new NotFoundException("No available hours found!");
+            }
+        });
     }
 }

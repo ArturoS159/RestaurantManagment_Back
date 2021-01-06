@@ -21,6 +21,10 @@ public class Reservation {
     private UUID id = UUID.randomUUID();
     @Column(name = "table_id")
     private UUID tableId;
+    @Column(name = "restaurant_id")
+    private UUID restaurantId;
+    @Column(name = "user_id")
+    private UUID userId;
     @Column(name = "reservation_day")
     private LocalDate day;
     @Column(name = "from_time")
