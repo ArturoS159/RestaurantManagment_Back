@@ -33,7 +33,7 @@ create table if not exists tables (
   restaurant_id UUID REFERENCES restaurants(id),
   name VARCHAR(256),
   number_of_seats INTEGER,
-  is_collapse_open boolean
+  can_reserve boolean
 );
 
 create table if not exists reservations (

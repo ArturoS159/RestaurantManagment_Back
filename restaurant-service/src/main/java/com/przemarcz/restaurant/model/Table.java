@@ -23,8 +23,8 @@ public class Table {
     private String name;
     @Column(name = "number_of_seats")
     private Integer numberOfSeats;
-    @Column(name = "is_collapse_open")
-    private Boolean isCollapseOpen;
+    @Column(name = "can_reserve")
+    private Boolean canReserve;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "table_id")
     private List<Reservation> reservations = new ArrayList<>();

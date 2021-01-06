@@ -15,14 +15,14 @@ public class TableReservationDto {
     public static class CreateTableRequest {
         String name;
         Integer numberOfSeats;
-        Boolean isCollapseOpen;
+        Boolean canReserve;
     }
 
     @Value
     public static class UpdateTableRequest {
         String name;
         Integer numberOfSeats;
-        Boolean isCollapseOpen;
+        Boolean canReserve;
     }
 
     @Value
@@ -49,7 +49,7 @@ public class TableReservationDto {
         UUID id;
         String name;
         Integer numberOfSeats;
-        Boolean isCollapseOpen;
+        Boolean canReserve;
     }
 
     @Value

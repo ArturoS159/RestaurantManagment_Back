@@ -71,7 +71,7 @@ public class ReservationService {
 
     private List<Table> getTablesRestaurant(int size, Restaurant restaurant) {
         return restaurant.getTables().stream()
-                .filter(Table::getIsCollapseOpen)
+                .filter(Table::getCanReserve)
                 .filter(table -> table.getNumberOfSeats().equals(size))
                 .collect(Collectors.toList());
     }
