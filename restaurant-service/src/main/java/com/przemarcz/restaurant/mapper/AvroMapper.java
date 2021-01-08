@@ -22,13 +22,13 @@ public interface AvroMapper {
     @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
     @Mapping(target = "time", expression = "java(LocalDateTime.now().toString())")
     @Mapping(target = "comment", source = "order.comment", defaultValue = "")
-    OrderAvro toOrderByUser(CreateOrderUserRequest order, UUID restaurantId, String userId);
+    OrderAvro toOrderByUser(CreateOrderUserRequest order, UUID restaurantId, String userId, String restaurantName);
 
     @Mapping(target = "meals", ignore = true)
     @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
     @Mapping(target = "time", expression = "java(LocalDateTime.now().toString())")
     @Mapping(target = "comment", source = "order.comment", defaultValue = "")
-    OrderAvro toOrderByPersonal(CreateOrderPersonalRequest order, UUID restaurantId);
+    OrderAvro toOrderByPersonal(CreateOrderPersonalRequest order, UUID restaurantId, String restaurantName);
 
     @Mapping(target = "name", source = "meal.name")
     @Mapping(target = "price", source = "meal.price")

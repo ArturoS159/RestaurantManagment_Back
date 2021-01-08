@@ -18,6 +18,7 @@ create table if not exists orders (
   user_id UUID,
   price NUMERIC,
   restaurant_id UUID,
+  restaurant_name VARCHAR(256),
   payed BOOLEAN,
   payu_url TEXT,
   payu_order_id VARCHAR(256)

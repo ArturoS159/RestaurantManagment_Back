@@ -83,6 +83,10 @@
       "type": "string"
     },
     {
+      "name": "restaurantName",
+      "type": "string"
+    },
+    {
       "logicalType": "UUID",
       "name": "userId",
       "type": ["null", "string"],

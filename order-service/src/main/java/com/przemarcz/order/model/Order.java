@@ -53,6 +53,8 @@ public class Order {
     private BigDecimal price;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
+    @Column(name = "restaurant_name")
+    private String restaurantName;
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true

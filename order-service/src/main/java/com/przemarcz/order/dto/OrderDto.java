@@ -19,7 +19,6 @@ public class OrderDto {
     private OrderDto() {
     }
 
-    //TODO add validation
     @Value
     public static class UpdateOrderRequest {
         String forename;
@@ -59,6 +58,7 @@ public class OrderDto {
     public static class OrderForUserResponse {
         UUID id;
         UUID restaurantId;
+        String restaurantName;
         String forename;
         String surname;
         String city;

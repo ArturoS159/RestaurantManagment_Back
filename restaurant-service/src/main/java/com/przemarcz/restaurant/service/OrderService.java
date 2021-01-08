@@ -34,14 +34,16 @@ public class OrderService {
 
     @Transactional("chainedKafkaTransactionManager")
     public void orderMealsByClient(UUID restaurantId, CreateOrderUserRequest order, String userId) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+
         if(order.getPaymentMethod()== PaymentMethod.ONLINE&&!isPaymentAvailable(restaurantId)){
             throw new NotFoundException("Restaurant payment not found!");
         }
         if(order.getOrderType()== OrderType.IN_LOCAL){
             throw new IllegalArgumentException("Only restaurant staff may order local!");
         }
-        OrderAvro orderAvro = avroMapper.toOrderByUser(order, restaurantId, userId);
-        List<MealAvro> meals = getMealsFromDatabase(restaurantId, order.getMeals());
+        OrderAvro orderAvro = avroMapper.toOrderByUser(order, restaurantId, userId, restaurant.getName());
+        List<MealAvro> meals = getMealsFromDatabase(restaurant.getMeals(), order.getMeals());
         if(!meals.isEmpty()){
             orderAvro.setMeals(meals);
             sendMessageOrder(orderAvro);
@@ -55,16 +57,16 @@ public class OrderService {
 
     @Transactional("chainedKafkaTransactionManager")
     public void orderMealsByPersonal(UUID restaurantId, CreateOrderPersonalRequest order) {
-        OrderAvro orderAvro = avroMapper.toOrderByPersonal(order, restaurantId);
-        List<MealAvro> meals = getMealsFromDatabase(restaurantId, order.getMeals());
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        OrderAvro orderAvro = avroMapper.toOrderByPersonal(order, restaurantId, restaurant.getName());
+        List<MealAvro> meals = getMealsFromDatabase(restaurant.getMeals(), order.getMeals());
         if(!meals.isEmpty()){
             orderAvro.setMeals(meals);
             sendMessageOrder(orderAvro);
         }
     }
 
-    private List<MealAvro> getMealsFromDatabase(UUID restaurantId, List<OrderMealRequest> orderMealRequests) {
-        List<Meal> meals = restaurantService.getRestaurantFromDatabase(restaurantId).getMeals();
+    private List<MealAvro> getMealsFromDatabase(List<Meal> meals, List<OrderMealRequest> orderMealRequests) {
         List<MealAvro> mealsAvro = new ArrayList<>();
 
         for(OrderMealRequest mealRequest : orderMealRequests){

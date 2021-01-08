@@ -51,7 +51,8 @@ public class OrderService {
     }
 
     public Page<OrderForUserResponse> getAllOrdersForUser(String userId, Pageable pageable) {
-        return orderRepository.findAllByUserId(textMapper.toUUID(userId), pageable).map(orderMapper::toOrderForUserResponse);
+        return orderRepository.findAllByUserId(textMapper.toUUID(userId), pageable)
+                .map(orderMapper::toOrderForUserResponse);
     }
 
     public void refreshOrdersStatus(UUID restaurantId) {
