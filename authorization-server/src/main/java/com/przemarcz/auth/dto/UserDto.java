@@ -3,6 +3,7 @@ package com.przemarcz.auth.dto;
 import lombok.Value;
 
 import javax.validation.constraints.*;
+import java.util.List;
 import java.util.UUID;
 
 public class UserDto {
@@ -70,6 +71,11 @@ public class UserDto {
         String postCode;
         String phoneNumber;
         String houseNumber;
+    }
+
+    @Value
+    public static class WorkerRestaurantResponse{
+        List<UUID> restaurants;
     }
 
 }

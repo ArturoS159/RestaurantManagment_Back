@@ -1,8 +1,6 @@
 package com.przemarcz.auth.controller;
 
-import com.przemarcz.auth.dto.UserDto;
-import com.przemarcz.auth.dto.UserDto.ActivationUserRequest;
-import com.przemarcz.auth.dto.UserDto.UserResponse;
+import com.przemarcz.auth.dto.UserDto.*;
 import com.przemarcz.auth.service.AccessConsumerService;
 import com.przemarcz.auth.service.AuthService;
 import com.przemarcz.avro.AccessAvro;
@@ -32,13 +30,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody UserDto.RegisterUserRequest user) throws EmailException {
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterUserRequest user) throws EmailException {
         authService.register(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UserDto.UpdateUserRequest userRequest, Principal user) {
+    public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserRequest userRequest, Principal user) {
         return new ResponseEntity<>(authService.updateUser(userRequest, user.getName()), HttpStatus.OK);
     }
 
@@ -46,6 +44,11 @@ public class AuthController {
     public ResponseEntity<Void> activeAccount(@RequestBody ActivationUserRequest userActivation) {
         authService.active(userActivation);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/restaurants")
+    public ResponseEntity<WorkerRestaurantResponse> getAllWorkerRestaurants(Principal user) {
+        return new ResponseEntity<>(authService.getAllWorkerRestaurants(user.getName()), HttpStatus.OK);
     }
 
     @KafkaListener(topics = TOPIC_OWNER)
