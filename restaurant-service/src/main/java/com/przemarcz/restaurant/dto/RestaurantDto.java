@@ -50,8 +50,6 @@ public class RestaurantDto {
         String nothing;
     }
 
-
-
     @Value
     public static class AllRestaurantResponse {
         UUID id;
@@ -87,20 +85,8 @@ public class RestaurantDto {
         UUID id;
         String name;
         Set<RestaurantCategory> category;
-        String image;
-        String city;
-        String street;
-        String postCode;
-        String houseNumber;
-        String phoneNumber;
-        BigDecimal rate;
-    }
-
-    @Value
-    public static class AllRestaurantWorkerResponse {
-        UUID id;
-        String name;
-        Set<RestaurantCategory> category;
+        String nip;
+        String regon;
         String image;
         String city;
         String street;
