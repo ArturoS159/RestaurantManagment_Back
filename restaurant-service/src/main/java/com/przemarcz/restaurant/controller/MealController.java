@@ -26,11 +26,16 @@ public class MealController {
         return new ResponseEntity<>(mealService.getAllRestaurantMeals(restaurantId, mealFilter), HttpStatus.OK);
     }
 
+    @GetMapping("/{restaurantId}/meals/category/public")
+    public ResponseEntity<MealsCategoryResponse> getRestaurantMealsCategory(@PathVariable UUID restaurantId) {
+        return new ResponseEntity<>(mealService.getRestaurantMealsCategory(restaurantId), HttpStatus.OK);
+    }
+
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/meals")
     public ResponseEntity<MealResponse> addMeal(@PathVariable UUID restaurantId,
                                                 @Valid @RequestBody CreateMealRequest meal) {
-        return new ResponseEntity<>(mealService.addMeal(restaurantId, meal),HttpStatus.CREATED);
+        return new ResponseEntity<>(mealService.addMeal(restaurantId, meal), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

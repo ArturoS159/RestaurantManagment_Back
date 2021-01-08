@@ -1,6 +1,9 @@
 package com.przemarcz.auth.controller;
 
-import com.przemarcz.auth.dto.UserDto.*;
+import com.przemarcz.auth.dto.UserDto.ActivationUserRequest;
+import com.przemarcz.auth.dto.UserDto.RegisterUserRequest;
+import com.przemarcz.auth.dto.UserDto.UpdateUserRequest;
+import com.przemarcz.auth.dto.UserDto.UserResponse;
 import com.przemarcz.auth.service.AccessConsumerService;
 import com.przemarcz.auth.service.AuthService;
 import com.przemarcz.avro.AccessAvro;
@@ -44,11 +47,6 @@ public class AuthController {
     public ResponseEntity<Void> activeAccount(@RequestBody ActivationUserRequest userActivation) {
         authService.active(userActivation);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/restaurants")
-    public ResponseEntity<WorkerRestaurantResponse> getAllWorkerRestaurants(Principal user) {
-        return new ResponseEntity<>(authService.getAllWorkerRestaurants(user.getName()), HttpStatus.OK);
     }
 
     @KafkaListener(topics = TOPIC_OWNER)

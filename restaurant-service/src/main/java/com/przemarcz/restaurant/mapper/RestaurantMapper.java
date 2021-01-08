@@ -18,6 +18,7 @@ public interface RestaurantMapper {
 
     @Mapping(target = "paymentOnline", expression = "java(false)")
     @Mapping(target = "worksTime", ignore = true)
+    @Mapping(target = "category", ignore = true)
     Restaurant toRestaurant(CreateRestaurantRequest createRestaurantRequest, UUID ownerId);
 
     @Mapping(target = "worksTime", ignore = true)
@@ -38,10 +39,16 @@ public interface RestaurantMapper {
     RestaurantOwnerResponse toRestaurantOwnerResponse(Restaurant restaurant);
 
     List<WorkTimeResponse> toWorkTimeResponse(List<WorkTime> workTime);
+
     List<WorkTime> toWorkTime(List<WorkTimeRequest> workTime);
 
     @Named("scaleRate")
-    default BigDecimal setScaleBigDecimal(BigDecimal value ) {
+    default BigDecimal setScaleBigDecimal(BigDecimal value) {
         return isNull(value) ? null : BigDecimal.valueOf(Math.ceil(value.floatValue() * 2 - 1) / 2);
+    }
+
+    @AfterMapping
+    default void convertCategory(@MappingTarget Restaurant restaurant, CreateRestaurantRequest createRestaurantRequest) {
+        restaurant.setCategory(createRestaurantRequest.getCategory());
     }
 }

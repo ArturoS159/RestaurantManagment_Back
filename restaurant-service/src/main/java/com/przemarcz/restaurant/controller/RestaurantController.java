@@ -37,25 +37,25 @@ public class RestaurantController {
     @GetMapping
     public ResponseEntity<Page<AllRestaurantOwnerResponse>> getAllRestaurantForOwner(@ModelAttribute("restaurantFilter") RestaurantFilter restaurantFilter,
                                                                                      Principal user,
-                                                                                     Pageable pageable){
+                                                                                     Pageable pageable) {
         return new ResponseEntity<>(restaurantService.getAllRestaurantForOwner(restaurantFilter, user.getName(), pageable), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantOwnerResponse> getRestaurantForOwner(@PathVariable UUID restaurantId){
+    public ResponseEntity<RestaurantOwnerResponse> getRestaurantForOwner(@PathVariable UUID restaurantId) {
         return new ResponseEntity<>(restaurantService.getRestaurantForOwner(restaurantId), HttpStatus.OK);
     }
 
     @GetMapping("/{restaurantId}/time/public")
-    public ResponseEntity<List<WorkTimeResponse>> getRestaurantWorkTime(@PathVariable UUID restaurantId){
+    public ResponseEntity<List<WorkTimeResponse>> getRestaurantWorkTime(@PathVariable UUID restaurantId) {
         return new ResponseEntity<>(restaurantService.getRestaurantWorkTime(restaurantId), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<RestaurantOwnerResponse> addRestaurant(@RequestBody CreateRestaurantRequest createRestaurantRequest,
                                                                  Principal user) {
-        return new ResponseEntity<>(restaurantService.addRestaurant(createRestaurantRequest, user.getName()),HttpStatus.CREATED);
+        return new ResponseEntity<>(restaurantService.addRestaurant(createRestaurantRequest, user.getName()), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

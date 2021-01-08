@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -32,10 +31,16 @@ public class MealService {
                 meals.stream()
                 .map(mealMapper::toMealResponse)
                 .collect(Collectors.toList());
-        Set<String> category = meals.stream()
-                .map(Meal::getCategory)
-                .collect(Collectors.toSet());
-        return new MealListResponse(category, mealsResponse);
+        return new MealListResponse(mealsResponse);
+    }
+
+    @Transactional(value = "transactionManager", readOnly = true)
+    public MealsCategoryResponse getRestaurantMealsCategory(UUID restaurantId) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        List<String> categories = restaurant.getMeals()
+                .stream().map(Meal::getCategory)
+                .collect(Collectors.toList());
+        return new MealsCategoryResponse(categories);
     }
 
     @Transactional(value = "transactionManager")

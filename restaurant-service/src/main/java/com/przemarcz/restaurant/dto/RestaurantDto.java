@@ -45,6 +45,14 @@ public class RestaurantDto {
     }
 
     @Value
+    public static class GetAllRestaurantsForWorkerRequest {
+        List<UUID> restaurants;
+        String nothing;
+    }
+
+
+
+    @Value
     public static class AllRestaurantResponse {
         UUID id;
         String name;
@@ -76,6 +84,20 @@ public class RestaurantDto {
 
     @Value
     public static class AllRestaurantOwnerResponse {
+        UUID id;
+        String name;
+        Set<RestaurantCategory> category;
+        String image;
+        String city;
+        String street;
+        String postCode;
+        String houseNumber;
+        String phoneNumber;
+        BigDecimal rate;
+    }
+
+    @Value
+    public static class AllRestaurantWorkerResponse {
         UUID id;
         String name;
         Set<RestaurantCategory> category;

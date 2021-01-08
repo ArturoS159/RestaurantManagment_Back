@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.przemarcz.restaurant.dto.RestaurantDto.*;
-import static com.przemarcz.restaurant.dto.WorkTimeDto.*;
+import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeResponse;
 
 @Service
 @RequiredArgsConstructor

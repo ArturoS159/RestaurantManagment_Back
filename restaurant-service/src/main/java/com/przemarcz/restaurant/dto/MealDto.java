@@ -8,7 +8,6 @@ import lombok.Value;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Setter
@@ -71,8 +70,12 @@ public class MealDto {
 
     @Value
     public static class MealListResponse {
-        Set<String> category;
         List<MealResponse> meals;
+    }
+
+    @Value
+    public static class MealsCategoryResponse {
+        List<String> category;
     }
 
     @Value
