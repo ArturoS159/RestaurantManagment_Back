@@ -9,6 +9,8 @@ import com.przemarcz.auth.exception.NotFoundException;
 import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
+import com.przemarcz.auth.model.UserRole;
+import com.przemarcz.auth.model.enums.Role;
 import com.przemarcz.auth.repository.UserRepository;
 import com.przemarcz.auth.util.MailSender;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -79,5 +85,16 @@ public class AuthService implements UserDetailsService {
 
     private User getUserFormDbByLogin(String value) {
         return userRepository.findByLogin(value.toLowerCase()).orElseThrow(NotFoundException::new);
+    }
+
+    @Transactional(value = "transactionManager")
+    public UserDto.WorkerRestaurantResponse getAllWorkerRestaurants(String userId) {
+        User user = getUserFromDatabaseById(userId);
+        List<UUID> restaurnts = user.getRestaurantRoles()
+                .stream()
+                .filter(userRole -> userRole.getRole().equals(Role.WORKER))
+                .map(UserRole::getRestaurantId)
+                .collect(Collectors.toList());
+        return new UserDto.WorkerRestaurantResponse(restaurnts);
     }
 }

@@ -12,7 +12,11 @@ import java.util.UUID;
 
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, UUID> {
+    List<UserRole> findAllByUserId(UUID userId);
+
     List<UserRole> findAllByRestaurantIdAndRole(@Param("restaurantId") UUID restaurantId, @Param("role") Role role);
+
     void deleteByRestaurantId(UUID restaurantId);
+
     Optional<UserRole> findByRestaurantIdAndUserIdAndRole(@Param("restaurantId") UUID restaurantId, @Param("userId") UUID userId, @Param("role") Role role);
 }

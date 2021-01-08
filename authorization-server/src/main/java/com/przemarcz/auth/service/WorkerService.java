@@ -2,6 +2,7 @@ package com.przemarcz.auth.service;
 
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
+import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.UserRole;
@@ -29,6 +30,7 @@ public class WorkerService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
+    private final TextMapper textMapper;
 
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<WorkerResponse> getAllRestaurantWorkers(UUID restaurantId, Pageable pageable) {
