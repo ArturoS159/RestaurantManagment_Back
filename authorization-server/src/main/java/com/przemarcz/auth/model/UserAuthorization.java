@@ -1,31 +1,25 @@
 package com.przemarcz.auth.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
-@Getter
-@Setter
+
 @Entity
 @Table(name = "user_authorization")
-@NoArgsConstructor
+@Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
+@Setter
 public class UserAuthorization implements Serializable {
 
     private static final long serialVersionUID = 6539685298265657691L;
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(name = "activation_key")

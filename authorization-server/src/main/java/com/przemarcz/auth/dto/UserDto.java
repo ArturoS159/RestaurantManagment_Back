@@ -1,16 +1,24 @@
 package com.przemarcz.auth.dto;
 
+import lombok.Builder;
 import lombok.Value;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
 
 public class UserDto {
     private UserDto(){}
 
+    @Builder
     @Value
     public static class RegisterUserRequest {
+        @NotBlank(message = "Login must be not blank")
+        @Size(max = 50, message = "Login must be lower than 50")
+        String login;
         @NotBlank(message = "Email must be not blank")
         @Email(message = "It's not email!")
         @Size(max = 50, message = "Email must be lower than 50")
@@ -18,11 +26,9 @@ public class UserDto {
         @NotBlank(message = "Password must be not blank")
         @Size(min = 4, max = 50, message = "Password must be in range! 4-50")
         String password;
-        @NotBlank(message = "Login must be not blank")
-        @Size(max = 50, message = "Login must be lower than 50")
-        String login;
     }
 
+    @Builder
     @Value
     public static class UpdateUserRequest {
         @Size(max = 50, message = "Forename must be lower than 50")

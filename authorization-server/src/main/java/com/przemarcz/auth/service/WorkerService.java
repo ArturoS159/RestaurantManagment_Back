@@ -2,7 +2,6 @@ package com.przemarcz.auth.service;
 
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
-import com.przemarcz.auth.mapper.TextMapper;
 import com.przemarcz.auth.mapper.UserMapper;
 import com.przemarcz.auth.model.User;
 import com.przemarcz.auth.model.UserRole;
@@ -30,7 +29,6 @@ public class WorkerService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
-    private final TextMapper textMapper;
 
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<WorkerResponse> getAllRestaurantWorkers(UUID restaurantId, Pageable pageable) {
@@ -41,8 +39,9 @@ public class WorkerService {
     }
 
     private List<UUID> getWorkersByRestaurantId(UUID restaurantId) {
-        return userRoleRepository.findAllByRestaurantIdAndRole(restaurantId, Role.WORKER)
+        return userRoleRepository.findAllByRestaurantId(restaurantId)
                 .stream()
+                .filter(userRole -> userRole.getRole().equals(Role.WORKER))
                 .map(UserRole::getUserId)
                 .collect(Collectors.toList());
     }
@@ -51,7 +50,7 @@ public class WorkerService {
     public WorkerResponse addRestaurantWorker(UUID restaurantId, String email) {
         User user = getUserFromDatabaseByEmail(email.toLowerCase());
         if (isWorkerAddedBefore(restaurantId, user.getId())) {
-            throw new AlreadyExistException(String.format("User %s is added before!", email));
+            throw new AlreadyExistException();
         }
         user.addRole(Role.WORKER, restaurantId);
         userRepository.save(user);
@@ -59,10 +58,12 @@ public class WorkerService {
     }
 
     private boolean isWorkerAddedBefore(UUID restaurantId, UUID userId) {
-        return userRoleRepository.findByRestaurantIdAndUserIdAndRole(restaurantId, userId, Role.WORKER).isPresent();
+        return userRoleRepository.findAllByRestaurantId(restaurantId).stream()
+                .filter(userRole -> userRole.getRole().equals(Role.WORKER))
+                .anyMatch(userRole -> userRole.getUserId().equals(userId));
     }
 
-    public User getUserFromDatabaseByEmail(String email) {
+    private User getUserFromDatabaseByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 NotFoundException::new
         );
@@ -70,7 +71,10 @@ public class WorkerService {
 
     @Transactional(value = "transactionManager")
     public void deleteRestaurantWorker(UUID restaurantId, UUID workerId) {
-        UserRole workerAuth = userRoleRepository.findByRestaurantIdAndUserIdAndRole(restaurantId, workerId, Role.WORKER)
+        UserRole workerAuth = userRoleRepository.findAllByRestaurantId(restaurantId).stream()
+                .filter(userRole -> userRole.getRole().equals(Role.WORKER))
+                .filter(userRole -> userRole.getUserId().equals(workerId))
+                .findAny()
                 .orElseThrow(NotFoundException::new);
         userRoleRepository.delete(workerAuth);
     }

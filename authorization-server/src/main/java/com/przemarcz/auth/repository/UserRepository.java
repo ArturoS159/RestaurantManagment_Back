@@ -1,11 +1,9 @@
 package com.przemarcz.auth.repository;
 
-
 import com.przemarcz.auth.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,11 +12,11 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findByEmail(@Param("email") String email);
+    Optional<User> findByEmail(String email);
 
-    Optional<User> findByLogin(@Param("login") String login);
+    Optional<User> findByLogin(String login);
 
-    Optional<User> findByLoginOrEmail(@Param("login") String login, @Param("email") String email);
+    Optional<User> findByLoginOrEmail(String login, String email);
 
-    Page<User> findByIdIn(@Param("userIdList") List<UUID> userIdList, Pageable pageable);
+    Page<User> findByIdIn(List<UUID> userIdList, Pageable pageable);
 }

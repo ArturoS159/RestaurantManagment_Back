@@ -1,30 +1,26 @@
 package com.przemarcz.auth.model;
 
 import com.przemarcz.auth.model.enums.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "user_roles")
-@NoArgsConstructor
+@Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
+@Setter
 public class UserRole implements Serializable {
+
     private static final long serialVersionUID = 6228683028367657690L;
+
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(name = "user_id")
     private UUID userId;

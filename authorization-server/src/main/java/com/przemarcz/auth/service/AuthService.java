@@ -1,6 +1,5 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.dto.UserDto;
 import com.przemarcz.auth.dto.UserDto.ActivationUserRequest;
 import com.przemarcz.auth.dto.UserDto.RegisterUserRequest;
 import com.przemarcz.auth.dto.UserDto.UserResponse;
@@ -19,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.przemarcz.auth.dto.UserDto.UpdateUserRequest;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -30,11 +31,12 @@ public class AuthService implements UserDetailsService {
     private final MailSender mailSender;
 
     @Override
+    @Transactional(value = "transactionManager", readOnly = true)
     public UserDetails loadUserByUsername(String value) {
         try {
             return getUserFromDatabaseById(value);
         } catch (Exception err) {
-            return getUserFormDbByLogin(value);
+            return getUserFormDatabaseByLogin(value);
         }
     }
 
@@ -55,12 +57,12 @@ public class AuthService implements UserDetailsService {
         log.info(String.format("User %s registered!", user.getLogin()));
     }
 
-    private boolean isUserExist(UserDto.RegisterUserRequest user) {
+    private boolean isUserExist(RegisterUserRequest user) {
         return userRepository.findByLoginOrEmail(user.getLogin(), user.getEmail()).isPresent();
     }
 
     @Transactional(value = "transactionManager")
-    public UserResponse updateUser(UserDto.UpdateUserRequest userRequest, String userId) {
+    public UserResponse updateUser(UpdateUserRequest userRequest, String userId) {
         User user = getUserFromDatabaseById(userId);
         userMapper.updateUser(user, userRequest);
         return userMapper.toUserResponse(userRepository.save(user));
@@ -68,7 +70,7 @@ public class AuthService implements UserDetailsService {
 
     @Transactional(value = "transactionManager")
     public void active(ActivationUserRequest userActivation) {
-        User user = getUserFormDbByLogin(userActivation.getLogin());
+        User user = getUserFormDatabaseByLogin(userActivation.getLogin());
         user.activeAccount(userActivation.getActivationKey());
         userRepository.save(user);
     }
@@ -77,7 +79,7 @@ public class AuthService implements UserDetailsService {
         return userRepository.findById(textMapper.toUUID(value)).orElseThrow(NotFoundException::new);
     }
 
-    private User getUserFormDbByLogin(String value) {
+    private User getUserFormDatabaseByLogin(String value) {
         return userRepository.findByLogin(value.toLowerCase()).orElseThrow(NotFoundException::new);
     }
 }

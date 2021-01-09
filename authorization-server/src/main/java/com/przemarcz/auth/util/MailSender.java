@@ -42,13 +42,6 @@ public class MailSender {
         htmlEmail.send();
     }
 
-    private void setContent(String activationKey, List<InternetAddress> address, HtmlEmail htmlEmail, String login) throws EmailException {
-        htmlEmail.setHtmlMsg(String.format(content, login, activationKey));
-        htmlEmail.setSubject(subject);
-        htmlEmail.setFrom(email, userName);
-        htmlEmail.setTo(address);
-    }
-
     private List<InternetAddress> prepareAddress(String userEmail) {
         List<InternetAddress> address = new ArrayList<>();
         InternetAddress ia = new InternetAddress();
@@ -66,6 +59,13 @@ public class MailSender {
         htmlEmail.setSslSmtpPort(sslSmtp);
         htmlEmail.setStartTLSRequired(true);
         return htmlEmail;
+    }
+
+    private void setContent(String activationKey, List<InternetAddress> address, HtmlEmail htmlEmail, String login) throws EmailException {
+        htmlEmail.setHtmlMsg(String.format(content, login, activationKey));
+        htmlEmail.setSubject(subject);
+        htmlEmail.setFrom(email, userName);
+        htmlEmail.setTo(address);
     }
 
 }

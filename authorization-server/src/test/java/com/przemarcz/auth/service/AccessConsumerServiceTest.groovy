@@ -1,8 +1,9 @@
 package com.przemarcz.auth.service
 
-import com.przemarcz.auth.exception.NotFoundException
 import com.przemarcz.auth.model.User
+import com.przemarcz.auth.model.UserRole
 import com.przemarcz.auth.repository.UserRepository
+import com.przemarcz.auth.repository.UserRoleRepository
 import com.przemarcz.avro.AccessAvro
 import com.przemarcz.avro.AddDelete
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,69 +18,23 @@ import spock.lang.Specification
 class AccessConsumerServiceTest extends Specification {
 
     @Autowired
-    AccessConsumerService accessConsumerService
-    @Autowired
     UserRepository userRepository
+    @Autowired
+    UserRoleRepository userRoleRepository
+    @Autowired
+    AccessConsumerService accessConsumerService
 
-    def setup() {
-        userRepository.deleteAll()
-    }
-
-    AccessAvro prepareAccessAvro(String userId, String restaurantId, AddDelete type){
-        AccessAvro accessAvro = new AccessAvro()
-        accessAvro.restaurantId = restaurantId
-        accessAvro.userId = userId
-        accessAvro.type = type
-        return accessAvro
-    }
-
-    User prepareUser(String login, String email) {
-        User user = new User()
-        user.email = email
-        user.password = "password"
-        user.login = login
-        return user
-    }
-
-    def "should add owner role to user"(){
+    def "should add owner role to existing user"() {
         given:
-        User user = prepareUser("login", "email@wp.pl")
-        String restaurantId = UUID.randomUUID().toString()
-        userRepository.save(user)
-        AccessAvro accessAvro = prepareAccessAvro(user.id.toString(), restaurantId, AddDelete.ADD)
+        String restaurantId = UUID.randomUUID()
+        User user = userRepository.save(User.builder().build())
+        AccessAvro accessAvro = new AccessAvro(AddDelete.ADD, restaurantId, user.id.toString())
         when:
         accessConsumerService.addOrDeleteOwnerRole(accessAvro)
         then:
-        userRepository.findById(user.id).get().getRestaurantRoles().size()==1
-        userRepository.findById(user.id).get().getRestaurantRoles().get(0).getRestaurantId().toString()==restaurantId
-    }
-
-    def "should throw exception when try to remove not exist user"(){
-        given:
-        User user = prepareUser("login", "email@wp.pl")
-        String restaurantId = UUID.randomUUID().toString()
-        userRepository.save(user)
-        AccessAvro accessAvro = prepareAccessAvro(user.id.toString(), restaurantId, AddDelete.ADD)
-        AccessAvro accessAvro1 = prepareAccessAvro(UUID.randomUUID().toString(), restaurantId, AddDelete.DEL)
-        when:
-        accessConsumerService.addOrDeleteOwnerRole(accessAvro)
-        accessConsumerService.addOrDeleteOwnerRole(accessAvro1)
-        then:
-        userRepository.findById(user.id).get().getRestaurantRoles().size()==1
-        thrown(NotFoundException)
-    }
-
-    def "should delete access"(){
-        given:
-        User user = prepareUser("login", "email@wp.pl")
-        String restaurantId = UUID.randomUUID().toString()
-        userRepository.save(user)
-        AccessAvro accessAvro = prepareAccessAvro(user.id.toString(), restaurantId, AddDelete.ADD)
-        AccessAvro accessAvro1 = prepareAccessAvro(user.id.toString(), restaurantId, AddDelete.DEL)
-        when:
-        accessConsumerService.addOrDeleteOwnerRole(accessAvro)
-        accessConsumerService.addOrDeleteOwnerRole(accessAvro1)
-        then:
-        userRepository.findById(user.id).get().getRestaurantRoles().size()==0
+        UserRole userRole = userRoleRepository.findAll().get(0)
+        userRole.restaurantId.toString() == restaurantId
+        userRole.userId.toString() == user.id.toString()
+        userRepository.findAll().size() == 1
     }
 }

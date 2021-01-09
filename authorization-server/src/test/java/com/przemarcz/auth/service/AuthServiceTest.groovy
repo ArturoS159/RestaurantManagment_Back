@@ -1,6 +1,5 @@
 package com.przemarcz.auth.service
 
-
 import com.przemarcz.auth.exception.AlreadyExistException
 import com.przemarcz.auth.exception.NotFoundException
 import com.przemarcz.auth.model.User
@@ -29,24 +28,79 @@ class AuthServiceTest extends Specification {
         userRepository.deleteAll()
     }
 
-    User prepareUser(String login, String email) {
-        User user = new User()
-        user.email = email
-        user.password = "password"
-        user.login = login
-        return user
+    def "should load user by id or login"() {
+        given:
+        User user = User.builder()
+                .login("login")
+                .email("email@test.pl")
+                .build()
+        userRepository.save(user)
+        when:
+        UserDetails byLogin = authService.loadUserByUsername("login")
+        UserDetails byId = authService.loadUserByUsername(user.id.toString())
+        then:
+        byLogin != null
+        byId != null
     }
 
-    RegisterUserRequest prepareRegisterUser(String login, String email, String password) {
-        return new RegisterUserRequest(login,email,password)
+    def "should not load user when entry value is invalid"() {
+        given:
+        User user = User.builder()
+                .login("login")
+                .email("email@test.pl")
+                .build()
+        userRepository.save(user)
+        when:
+        authService.loadUserByUsername("badLogin")
+        then:
+        thrown NotFoundException
+    }
+
+    def "should get user by id"() {
+        given:
+        User user = User.builder()
+                .login("login")
+                .email("email@test.pl")
+                .build()
+        User user1 = User.builder()
+                .login("login1")
+                .email("email1@test.pl")
+                .build()
+        userRepository.saveAll(Arrays.asList(user, user1))
+        when:
+        UserResponse userResponse = authService.getUser(user1.id.toString())
+        then:
+        userResponse.login == "login1"
+        userResponse.email == "email1@test.pl"
+    }
+
+    def "should not get user by id when id is wrong"() {
+        given:
+        User user = User.builder()
+                .login("login")
+                .email("email@test.pl")
+                .build()
+        User user1 = User.builder()
+                .login("login1")
+                .email("email1@test.pl")
+                .build()
+        userRepository.saveAll(Arrays.asList(user, user1))
+        when:
+        authService.getUser(UUID.randomUUID().toString())
+        then:
+        thrown NotFoundException
     }
 
     @Unroll
-    def "should create User"() {
+    def "should register user when all data correct"() {
         given:
-        RegisterUserRequest registerUser = new RegisterUserRequest(login,email,password)
+        RegisterUserRequest user = RegisterUserRequest.builder()
+                .login(login)
+                .email(email)
+                .password(password)
+                .build()
         when:
-        authService.register(registerUser)
+        authService.register(user)
         then:
         userRepository.findAll().size() == size
         where:
@@ -56,108 +110,87 @@ class AuthServiceTest extends Specification {
     }
 
     @Unroll
-    def "should throw exception when user is exist"() {
+    def "should not register second user when login or email is the same"() {
         given:
-        RegisterUserRequest registerUser = prepareRegisterUser(login, email, password)
-        RegisterUserRequest userIdDB = new RegisterUserRequest("login", "email@wp.pl", "password")
-        authService.register(userIdDB)
+        User userInDb = User.builder()
+                .login("login")
+                .email("email@test.pl")
+                .build()
+        userRepository.save(userInDb)
+        RegisterUserRequest user = RegisterUserRequest.builder()
+                .login(login)
+                .email(email)
+                .password(password)
+                .build()
         when:
-        authService.register(registerUser)
+        authService.register(user)
         then:
-        userRepository.findAll().size() == size
-        thrown(AlreadyExistException)
+        thrown AlreadyExistException
         where:
-        login   | email         | password   || size
-        "login" | "difff@wp.pl" | "password" || 1
-        "difff" | "email@wp.pl" | "password" || 1
+        login      | email           | password   || size
+        "login"    | "email@diff.pl" | "password" || 1
+        "logiDiff" | "email@test.pl" | "password" || 1
     }
 
-    def "should active user account"() {
+    def "should update user"() {
         given:
-        User user = prepareUser("login", "email@wp.pl")
-        user.generateUserActivationKey()
+        User user = User.builder()
+                .login("login")
+                .email("email@test.pl")
+                .build()
         userRepository.save(user)
-        ActivationUserRequest userActivation = new ActivationUserRequest("login", user.getUserAuthorization().getActivationKey())
+        UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                .forename("forename")
+                .surname("surname")
+                .street("street")
+                .city("city")
+                .postCode("10-100")
+                .phoneNumber("123456789")
+                .houseNumber("21B")
+                .build()
         when:
-        authService.active(userActivation)
+        UserResponse userResponse = authService.updateUser(updateUserRequest, user.id.toString())
         then:
-        userRepository.findById(user.getId()).get().active
+        userResponse.forename == "forename"
+        userResponse.surname == "surname"
+        userResponse.street == "street"
+        userResponse.city == "city"
+        userResponse.postCode == "10-100"
+        userResponse.phoneNumber == "123456789"
+        userResponse.houseNumber == "21B"
     }
 
-    def "should return correct User"() {
+    def "should active user account when all is correct"() {
         given:
-        User user = prepareUser("login", "email@wp.pl")
-        User user1 = prepareUser("login1", "email1@wp.pl")
-        userRepository.save(user)
-        userRepository.save(user1)
+        RegisterUserRequest user = RegisterUserRequest.builder()
+                .login("login")
+                .email("email@test.pl")
+                .password("password")
+                .build()
+        authService.register(user)
         when:
-        UserResponse userFromDb = authService.getUser(user.getId().toString())
+        String key = userRepository.findAll().get(0).getUserAuthorization().activationKey
+        ActivationUserRequest activationUserRequest = new ActivationUserRequest("login", key)
+        authService.active(activationUserRequest)
         then:
-        userFromDb.login=="login"
-        userFromDb.email=="email@wp.pl"
-        userRepository.findAll().size()==2
+        userRepository.findAll().get(0).active
     }
 
-    def "should correct login when user try to login by login"(){
+    def "should not active user account when user is activated before"() {
         given:
-        User user = prepareUser("login", "email@wp.pl")
-        User user1 = prepareUser("login1", "email1@wp.pl")
-        userRepository.save(user)
-        userRepository.save(user1)
+        RegisterUserRequest user = RegisterUserRequest.builder()
+                .login("login")
+                .email("email@test.pl")
+                .password("password")
+                .build()
+        authService.register(user)
+        String key = userRepository.findAll().get(0).getUserAuthorization().activationKey
+        ActivationUserRequest activationUserRequest = new ActivationUserRequest("login", key)
+        authService.active(activationUserRequest)
         when:
-        UserDetails userDetails = authService.loadUserByUsername("login")
+        authService.active(activationUserRequest)
         then:
-        userDetails.getUsername()==user.id.toString()
+        thrown AlreadyExistException
     }
 
-    def "should correct login when user try to login by userId"(){
-        given:
-        User user = prepareUser("login", "email@wp.pl")
-        User user1 = prepareUser("login1", "email1@wp.pl")
-        userRepository.save(user)
-        userRepository.save(user1)
-        when:
-        UserDetails userDetails = authService.loadUserByUsername(user.id.toString())
-        then:
-        userDetails.getUsername()==user.id.toString()
-    }
-
-    def "should throw exception user not found by login"(){
-        given:
-        User user = prepareUser("login", "email@wp.pl")
-        User user1 = prepareUser("login1", "email1@wp.pl")
-        userRepository.save(user)
-        userRepository.save(user1)
-        when:
-        UserDetails userDetails = authService.loadUserByUsername("emptyLogin")
-        then:
-        userDetails==null
-        thrown(NotFoundException)
-    }
-
-    def "should throw exception user not found by id"(){
-        given:
-        User user = prepareUser("login", "email@wp.pl")
-        User user1 = prepareUser("login1", "email1@wp.pl")
-        userRepository.save(user)
-        userRepository.save(user1)
-        when:
-        UserDetails userDetails = authService.loadUserByUsername(UUID.randomUUID().toString())
-        then:
-        userDetails==null
-        thrown(NotFoundException)
-    }
-
-    def "should update User"(){
-        given:
-        User user = prepareUser("login", "email@wp.pl")
-        userRepository.save(user)
-        UpdateUserRequest userDto = new UpdateUserRequest(null,null,null,"cityNew",null,null,null)
-        when:
-        authService.updateUser(userDto, user.id.toString())
-        then:
-        userRepository.findById(user.id).get().login=="login"
-        userRepository.findById(user.id).get().email=="email@wp.pl"
-        userRepository.findById(user.id).get().city=="cityNew"
-    }
 }

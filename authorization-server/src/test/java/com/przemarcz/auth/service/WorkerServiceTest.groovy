@@ -3,15 +3,19 @@ package com.przemarcz.auth.service
 import com.przemarcz.auth.exception.AlreadyExistException
 import com.przemarcz.auth.exception.NotFoundException
 import com.przemarcz.auth.model.User
+import com.przemarcz.auth.model.UserRole
+import com.przemarcz.auth.model.enums.Role
 import com.przemarcz.auth.repository.UserRepository
 import com.przemarcz.auth.repository.UserRoleRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Page
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
-import spock.lang.Unroll
+
+import static com.przemarcz.auth.dto.UserDto.WorkerResponse
+import static org.springframework.data.domain.Pageable.unpaged
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -19,121 +23,107 @@ import spock.lang.Unroll
 class WorkerServiceTest extends Specification {
 
     @Autowired
-    WorkerService workerService
+    UserRepository userRepository
     @Autowired
     UserRoleRepository userRoleRepository
     @Autowired
-    UserRepository userRepository
+    WorkerService workerService
 
     def setup() {
         userRepository.deleteAll()
         userRoleRepository.deleteAll()
     }
 
-    User prepareUser(String email, String login) {
-        User user = new User()
-        user.email = email
-        user.password = "password"
-        user.login = login
-        return user
-    }
-
-    @Unroll
-    def "should add restaurant worker"() {
+    def "should get all workers from only one restaurnat"() {
         given:
-        userRepository.save(prepareUser("test@wp.pl","login"))
+        UUID restaurant1 = UUID.randomUUID()
+        UUID restaurant2 = UUID.randomUUID()
+        User worker1 = User.builder()
+                .email("worker1@test.pl")
+                .build()
+        User worker2 = User.builder()
+                .email("worker2@test.pl")
+                .build()
+        User worker3 = User.builder()
+                .email("worker3@test.pl")
+                .build()
+        worker1.addRole(Role.WORKER, restaurant1)
+        worker2.addRole(Role.WORKER, restaurant1)
+        worker3.addRole(Role.WORKER, restaurant2)
+        userRepository.saveAll(Arrays.asList(worker1, worker2, worker3))
         when:
-        workerService.addRestaurantWorker(UUID.randomUUID(), email)
+        Page<WorkerResponse> workers1 = workerService.getAllRestaurantWorkers(restaurant1, unpaged())
+        Page<WorkerResponse> workers2 = workerService.getAllRestaurantWorkers(restaurant2, unpaged())
         then:
-        userRoleRepository.findAll().size() == size
-        where:
-        email        || size
-        "test@wp.pl" || 1
-        "test@Wp.pL" || 1
-        "TEsT@wp.pL" || 1
-    }
-
-    def "should add restaurant worker when is different restaurant"() {
-        given:
-        userRepository.save(prepareUser("test@wp.pl", "login"))
-        when:
-        workerService.addRestaurantWorker(UUID.randomUUID(), "test@wp.pl")
-        workerService.addRestaurantWorker(UUID.randomUUID(), "test@wp.pl")
-        then:
-        userRoleRepository.findAll().size() == 2
-    }
-
-    def "should not add restaurant worker when is added before"() {
-        given:
-        userRepository.save(prepareUser("test@wp.pl", "login"))
-        UUID uuid = UUID.randomUUID()
-        when:
-        workerService.addRestaurantWorker(uuid, "test@wp.pl")
-        workerService.addRestaurantWorker(uuid, "test@wp.pl")
-        then:
-        userRoleRepository.findAll().size() == 1
-        thrown(AlreadyExistException)
-    }
-
-    def "should throw exception when try to add not exist user to worker"() {
-        given:
-        userRepository.save(prepareUser("test@wp.pl", "login"))
-        when:
-        workerService.addRestaurantWorker(UUID.randomUUID(), "notexist@wp.pl")
-        then:
-        userRoleRepository.findAll().size() == 0
-        userRepository.findAll().size()==1
-        thrown(NotFoundException)
-    }
-
-    def "should get all workers from only one restaurant"() {
-        given:
-        userRepository.save(prepareUser("test1@wp.pl", "login1"))
-        userRepository.save(prepareUser("test2@wp.pl", "login2"))
-        UUID restaurantId = UUID.randomUUID()
-        UUID restaurantIdDiff = UUID.randomUUID()
-        workerService.addRestaurantWorker(restaurantId, "test1@wp.pl")
-        workerService.addRestaurantWorker(restaurantId, "test2@wp.pl")
-        workerService.addRestaurantWorker(restaurantIdDiff, "test2@wp.pl")
-        when:
-        def sizeRestaurantFirst = workerService.getAllRestaurantWorkers(restaurantId, Pageable.unpaged()).size
-        def sizeRestaurantSec = workerService.getAllRestaurantWorkers(restaurantIdDiff, Pageable.unpaged()).size
-        then:
+        workers1.size() == 2
+        workers2.size() == 1
         userRoleRepository.findAll().size() == 3
-        sizeRestaurantFirst == 2
-        sizeRestaurantSec == 1
+    }
+
+    def "should add worker to restaurant when worker found"() {
+        given:
+        UUID restaurantId = UUID.randomUUID()
+        User worker = userRepository.save(
+                User.builder()
+                        .email("test@test.pl")
+                        .build())
+        when:
+        workerService.addRestaurantWorker(restaurantId, "test@test.pl")
+        then:
+        UserRole workerRole = userRoleRepository.findAll().get(0)
+        workerRole.userId == worker.id
+        workerRole.restaurantId == restaurantId
+        userRoleRepository.findAll().size() == 1
+    }
+
+    def "should not add worker to restaurant when worker not found"() {
+        given:
+        UUID restaurantId = UUID.randomUUID()
+        userRepository.save(User.builder()
+                .email("test@test.pl")
+                .build())
+        when:
+        workerService.addRestaurantWorker(restaurantId, "notfound@test.pl")
+        then:
+        thrown NotFoundException
+        userRoleRepository.findAll().size() == 0
+    }
+
+    def "should not add worker to restaurant when worker was aded before"() {
+        given:
+        UUID restaurantId = UUID.randomUUID()
+        userRepository.save(
+                User.builder()
+                        .email("test@test.pl")
+                        .build())
+        userRepository.save(
+                User.builder()
+                        .email("test2@test.pl")
+                        .build())
+        workerService.addRestaurantWorker(restaurantId, "test@test.pl")
+        when:
+        workerService.addRestaurantWorker(restaurantId, "test@test.pl")
+        then:
+        thrown AlreadyExistException
+        userRoleRepository.findAll().size() == 1
     }
 
     def "should delete worker from restaurant"() {
         given:
-        User user = userRepository.save(prepareUser("test@wp.pl", "login"))
         UUID restaurantId = UUID.randomUUID()
-        workerService.addRestaurantWorker(restaurantId, "test@wp.pl")
-        workerService.addRestaurantWorker(UUID.randomUUID(), "test@wp.pl")
+        User worker = userRepository.save(
+                User.builder()
+                        .email("test@test.pl")
+                        .build())
+        userRepository.save(
+                User.builder()
+                        .email("test2@test.pl")
+                        .build())
+        workerService.addRestaurantWorker(restaurantId, "test@test.pl")
+        workerService.addRestaurantWorker(restaurantId, "test2@test.pl")
         when:
-        workerService.deleteRestaurantWorker(restaurantId, user.getId())
+        workerService.deleteRestaurantWorker(restaurantId, worker.id)
         then:
-        userRepository.findById(user.getId()).get().restaurantRoles.size()==1
-    }
-
-    def "should throw exception when try to delete not existing worker"() {
-        given:
-        userRepository.save(prepareUser("test@wp.pl", "login"))
-        when:
-        workerService.deleteRestaurantWorker(UUID.randomUUID(), UUID.randomUUID())
-        then:
-        thrown(NotFoundException)
-    }
-
-    def "should throw exception when try to delete not existing role in user"() {
-        given:
-        User user = userRepository.save(prepareUser("test@wp.pl", "login"))
-        UUID restaurantId = UUID.randomUUID()
-        workerService.addRestaurantWorker(restaurantId, "test@wp.pl")
-        when:
-        workerService.deleteRestaurantWorker(UUID.randomUUID(), user.getId())
-        then:
-        userRepository.findById(user.getId()).get().restaurantRoles.size()==1
-        thrown(NotFoundException)
+        userRoleRepository.findAll().size() == 1
     }
 }

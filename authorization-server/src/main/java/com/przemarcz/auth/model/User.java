@@ -2,12 +2,8 @@ package com.przemarcz.auth.model;
 
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.model.enums.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,12 +17,13 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "users")
-@NoArgsConstructor
+@Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
+@Setter
 public class User implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 6529685098267757690L;
@@ -34,11 +31,7 @@ public class User implements UserDetails, Serializable {
     private static final Integer TEN = 10;
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(unique = true)
@@ -58,7 +51,7 @@ public class User implements UserDetails, Serializable {
     private String houseNumber;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private List<UserRole> restaurantRoles = new ArrayList<>();
+    private final List<UserRole> restaurantRoles = new ArrayList<>();
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_authorization")
     private UserAuthorization userAuthorization;
@@ -72,11 +65,11 @@ public class User implements UserDetails, Serializable {
 
     public void activeAccount(String activationKey) {
         if (active) {
-            throw new AlreadyExistException("User was activated!");
+            throw new AlreadyExistException();
         } else if (isActivationKeyTheSame(activationKey)) {
             active = true;
         } else {
-            throw new IllegalArgumentException("Bad activation key!");
+            throw new IllegalArgumentException("Bad key!");
         }
     }
 
