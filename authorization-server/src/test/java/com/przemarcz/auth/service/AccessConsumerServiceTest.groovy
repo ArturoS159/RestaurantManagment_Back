@@ -24,6 +24,10 @@ class AccessConsumerServiceTest extends Specification {
     @Autowired
     AccessConsumerService accessConsumerService
 
+    def setup() {
+        userRepository.deleteAll()
+    }
+
     def "should add owner role to existing user"() {
         given:
         String restaurantId = UUID.randomUUID()
