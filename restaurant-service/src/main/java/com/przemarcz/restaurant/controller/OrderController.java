@@ -27,7 +27,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/{restaurantId}/order")
-    public ResponseEntity<Void> orderMealsByClient(@PathVariable UUID restaurantId,
+    public ResponseEntity<CreateOrderResponse> orderMealsByClient(@PathVariable UUID restaurantId,
                                                    @Valid @RequestBody CreateOrderUserRequest createOrderUserRequest,
                                                    Principal principal) {
         orderService.orderMealsByClient(restaurantId, createOrderUserRequest, principal.getName());
@@ -36,7 +36,7 @@ public class OrderController {
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/order-personal")
-    public ResponseEntity<Void> orderMealsByPersonal(@PathVariable UUID restaurantId,
+    public ResponseEntity<CreateOrderResponse> orderMealsByPersonal(@PathVariable UUID restaurantId,
                                                      @Valid @RequestBody CreateOrderPersonalRequest createOrderPersonalRequest) {
         orderService.orderMealsByPersonal(restaurantId, createOrderPersonalRequest);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -6,6 +6,7 @@ import lombok.Value;
 
 import javax.validation.constraints.*;
 import java.util.List;
+import java.util.UUID;
 
 import static com.przemarcz.restaurant.dto.MealDto.OrderMealRequest;
 
@@ -78,5 +79,10 @@ public class OrderDto {
         PaymentMethod paymentMethod;
         @NotNull(message = "Meals must be not null")
         List<OrderMealRequest> meals;
+    }
+
+    @Value
+    public static class CreateOrderResponse {
+        UUID orderId;
     }
 }

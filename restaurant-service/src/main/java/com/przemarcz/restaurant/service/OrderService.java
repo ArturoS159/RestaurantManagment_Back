@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.przemarcz.restaurant.dto.MealDto.OrderMealRequest;
-import static com.przemarcz.restaurant.dto.OrderDto.CreateOrderPersonalRequest;
-import static com.przemarcz.restaurant.dto.OrderDto.CreateOrderUserRequest;
+import static com.przemarcz.restaurant.dto.OrderDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +32,13 @@ public class OrderService {
     private String topicOrders;
 
     @Transactional("chainedKafkaTransactionManager")
-    public void orderMealsByClient(UUID restaurantId, CreateOrderUserRequest order, String userId) {
+    public CreateOrderResponse orderMealsByClient(UUID restaurantId, CreateOrderUserRequest order, String userId) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
 
-        if(order.getPaymentMethod()== PaymentMethod.ONLINE&&!isPaymentAvailable(restaurantId)){
+        if (order.getPaymentMethod() == PaymentMethod.ONLINE && !isPaymentAvailable(restaurantId)) {
             throw new NotFoundException("Restaurant payment not found!");
         }
-        if(order.getOrderType()== OrderType.IN_LOCAL){
+        if (order.getOrderType() == OrderType.IN_LOCAL) {
             throw new IllegalArgumentException("Only restaurant staff may order local!");
         }
         OrderAvro orderAvro = avroMapper.toOrderByUser(order, restaurantId, userId, restaurant.getName());
@@ -48,6 +47,7 @@ public class OrderService {
             orderAvro.setMeals(meals);
             sendMessageOrder(orderAvro);
         }
+        return new CreateOrderResponse(UUID.fromString(orderAvro.getId().toString()));
     }
 
     private boolean isPaymentAvailable(UUID restaurantId) {
@@ -56,14 +56,15 @@ public class OrderService {
     }
 
     @Transactional("chainedKafkaTransactionManager")
-    public void orderMealsByPersonal(UUID restaurantId, CreateOrderPersonalRequest order) {
+    public CreateOrderResponse orderMealsByPersonal(UUID restaurantId, CreateOrderPersonalRequest order) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
         OrderAvro orderAvro = avroMapper.toOrderByPersonal(order, restaurantId, restaurant.getName());
         List<MealAvro> meals = getMealsFromDatabase(restaurant.getMeals(), order.getMeals());
-        if(!meals.isEmpty()){
+        if (!meals.isEmpty()) {
             orderAvro.setMeals(meals);
             sendMessageOrder(orderAvro);
         }
+        return new CreateOrderResponse(UUID.fromString(orderAvro.getId().toString()));
     }
 
     private List<MealAvro> getMealsFromDatabase(List<Meal> meals, List<OrderMealRequest> orderMealRequests) {
