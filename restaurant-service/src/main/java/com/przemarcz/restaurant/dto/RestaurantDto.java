@@ -79,7 +79,7 @@ public class RestaurantDto {
     }
 
     @Value
-    public static class AllRestaurantOwnerResponse {
+    public static class AllRestaurantForOwnerResponse {
         UUID id;
         String name;
         Set<RestaurantCategory> category;
@@ -96,7 +96,7 @@ public class RestaurantDto {
     }
 
     @Value
-    public static class RestaurantOwnerResponse {
+    public static class RestaurantForOwnerResponse {
         UUID id;
         String name;
         Set<RestaurantCategory> category;
@@ -114,7 +114,6 @@ public class RestaurantDto {
         boolean paymentOnline;
     }
 
-    @Builder
     @Value
     public static class RestaurantFilter {
         String name;

@@ -195,7 +195,7 @@ class RestaurantServiceTest extends Specification {
         RestaurantFilter fitlers = RestaurantFilter.builder().build()
         restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
         when:
-        Page<AllRestaurantOwnerResponse> response = restaurantService.getAllRestaurantForOwner(fitlers, ownerId.toString(), unpaged())
+        Page<AllRestaurantForOwnerResponse> response = restaurantService.getAllRestaurantForOwner(fitlers, ownerId.toString(), unpaged())
         then:
         response.size == 2
     }
@@ -213,7 +213,7 @@ class RestaurantServiceTest extends Specification {
                 .build()
         restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2))
         when:
-        RestaurantOwnerResponse response = restaurantService.getRestaurantForOwner(restaurantId)
+        RestaurantForOwnerResponse response = restaurantService.getRestaurantForOwner(restaurantId)
         then:
         response.name == "r1"
     }

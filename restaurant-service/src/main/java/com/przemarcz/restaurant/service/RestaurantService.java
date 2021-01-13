@@ -54,13 +54,13 @@ public class RestaurantService {
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<AllRestaurantOwnerResponse> getAllRestaurantForOwner(RestaurantFilter restaurantFilter, String ownerId, Pageable pageable) {
+    public Page<AllRestaurantForOwnerResponse> getAllRestaurantForOwner(RestaurantFilter restaurantFilter, String ownerId, Pageable pageable) {
         RestaurantSpecification specification = new RestaurantSpecification(textMapper.toUUID(ownerId), restaurantFilter);
         return restaurantRepository.findAll(specification, pageable).map(restaurantMapper::toAllRestaurantOwnerResponse);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public RestaurantOwnerResponse getRestaurantForOwner(UUID restaurantId) {
+    public RestaurantForOwnerResponse getRestaurantForOwner(UUID restaurantId) {
         Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
         return restaurantMapper.toRestaurantOwnerResponse(restaurant);
     }
@@ -72,7 +72,7 @@ public class RestaurantService {
     }
 
     @Transactional("chainedKafkaTransactionManager")
-    public RestaurantOwnerResponse addRestaurant(CreateRestaurantRequest createRestaurantRequest, String userId) {
+    public RestaurantForOwnerResponse addRestaurant(CreateRestaurantRequest createRestaurantRequest, String userId) {
         Restaurant restaurant = restaurantMapper.toRestaurant(createRestaurantRequest, textMapper.toUUID(userId));
         List<WorkTime> worksTime = restaurantMapper.toWorkTime(createRestaurantRequest.getWorksTime());
         restaurant.addWorkTime(worksTime);
@@ -82,7 +82,7 @@ public class RestaurantService {
     }
 
     @Transactional(value = "transactionManager")
-    public RestaurantOwnerResponse updateRestaurant(UUID restaurantId, UpdateRestaurantRequest updateRestaurantRequest) {
+    public RestaurantForOwnerResponse updateRestaurant(UUID restaurantId, UpdateRestaurantRequest updateRestaurantRequest) {
         Restaurant restaurant = getRestaurantFromDatabase(restaurantId);
         restaurantMapper.updateRestaurant(restaurant,updateRestaurantRequest);
         restaurant.updateWorkTime(updateRestaurantRequest.getWorksTime());

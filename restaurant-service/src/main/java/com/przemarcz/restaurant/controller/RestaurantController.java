@@ -35,15 +35,15 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<AllRestaurantOwnerResponse>> getAllRestaurantForOwner(@ModelAttribute("restaurantFilter") RestaurantFilter restaurantFilter,
-                                                                                     Principal user,
-                                                                                     Pageable pageable) {
+    public ResponseEntity<Page<AllRestaurantForOwnerResponse>> getAllRestaurantForOwner(@ModelAttribute("restaurantFilter") RestaurantFilter restaurantFilter,
+                                                                                        Principal user,
+                                                                                        Pageable pageable) {
         return new ResponseEntity<>(restaurantService.getAllRestaurantForOwner(restaurantFilter, user.getName(), pageable), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantOwnerResponse> getRestaurantForOwner(@PathVariable UUID restaurantId) {
+    public ResponseEntity<RestaurantForOwnerResponse> getRestaurantForOwner(@PathVariable UUID restaurantId) {
         return new ResponseEntity<>(restaurantService.getRestaurantForOwner(restaurantId), HttpStatus.OK);
     }
 
@@ -53,15 +53,15 @@ public class RestaurantController {
     }
 
     @PostMapping
-    public ResponseEntity<RestaurantOwnerResponse> addRestaurant(@RequestBody CreateRestaurantRequest createRestaurantRequest,
-                                                                 Principal user) {
+    public ResponseEntity<RestaurantForOwnerResponse> addRestaurant(@RequestBody CreateRestaurantRequest createRestaurantRequest,
+                                                                    Principal user) {
         return new ResponseEntity<>(restaurantService.addRestaurant(createRestaurantRequest, user.getName()), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<RestaurantOwnerResponse> updateRestaurant(@PathVariable UUID restaurantId,
-                                                                    @RequestBody UpdateRestaurantRequest updateRestaurantRequest) {
+    public ResponseEntity<RestaurantForOwnerResponse> updateRestaurant(@PathVariable UUID restaurantId,
+                                                                       @RequestBody UpdateRestaurantRequest updateRestaurantRequest) {
         return new ResponseEntity<>(restaurantService.updateRestaurant(restaurantId, updateRestaurantRequest),HttpStatus.OK);
     }
 
