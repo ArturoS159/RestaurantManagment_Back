@@ -41,7 +41,8 @@ public class TableService {
     }
 
     @Transactional(value = "transactionManager")
-    public void deleteTable(UUID restaurantId) {
-        tableRepository.deleteById(restaurantId);
+    public void deleteTable(UUID restaurantId, UUID tableId) {
+        Table table = tableRepository.findByIdAndRestaurantId(tableId, restaurantId).orElseThrow(NotFoundException::new);
+        tableRepository.delete(table);
     }
 }

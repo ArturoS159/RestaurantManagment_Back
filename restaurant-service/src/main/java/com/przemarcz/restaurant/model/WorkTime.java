@@ -2,10 +2,7 @@ package com.przemarcz.restaurant.model;
 
 import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.Days;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Table;
 import javax.persistence.*;
@@ -16,13 +13,14 @@ import static java.util.Objects.nonNull;
 
 @Entity
 @Table(name = "work_time")
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class WorkTime {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
     @Enumerated(EnumType.STRING)

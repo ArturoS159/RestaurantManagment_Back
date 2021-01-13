@@ -19,9 +19,8 @@ public class UserRole implements Serializable {
     private static final long serialVersionUID = 6228683028367657690L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     @Column(name = "user_id")
     private UUID userId;
     @Enumerated(EnumType.STRING)

@@ -10,14 +10,14 @@ import java.util.UUID;
 
 @Entity
 @javax.persistence.Table(name = "tables")
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Table {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
     private String name;

@@ -2,7 +2,10 @@ package com.przemarcz.auth.model;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -19,9 +22,8 @@ public class UserAuthorization implements Serializable {
     private static final long serialVersionUID = 6539685298265657691L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     @Column(name = "activation_key")
     private String activationKey;
 

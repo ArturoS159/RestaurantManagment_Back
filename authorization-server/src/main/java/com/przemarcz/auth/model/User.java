@@ -31,9 +31,8 @@ public class User implements UserDetails, Serializable {
     private static final Integer TEN = 10;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     @Column(unique = true)
     private String email;
     @Column(unique = true)

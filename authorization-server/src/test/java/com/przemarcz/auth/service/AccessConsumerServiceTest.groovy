@@ -27,7 +27,10 @@ class AccessConsumerServiceTest extends Specification {
     def "should add owner role to existing user"() {
         given:
         String restaurantId = UUID.randomUUID()
-        User user = userRepository.save(User.builder().build())
+        User user = User.builder()
+                .id(UUID.randomUUID())
+                .build()
+        userRepository.save(user)
         AccessAvro accessAvro = new AccessAvro(AddDelete.ADD, restaurantId, user.id.toString())
         when:
         accessConsumerService.addOrDeleteOwnerRole(accessAvro)

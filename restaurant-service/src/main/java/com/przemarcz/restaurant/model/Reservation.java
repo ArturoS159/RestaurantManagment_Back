@@ -2,23 +2,21 @@ package com.przemarcz.restaurant.model;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
 @javax.persistence.Table(name = "reservations")
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @Setter
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
 public class Reservation {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     @Column(name = "table_id")
     private UUID tableId;
     @Column(name = "restaurant_id")

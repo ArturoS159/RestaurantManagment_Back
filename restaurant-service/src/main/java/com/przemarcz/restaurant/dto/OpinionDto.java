@@ -1,5 +1,6 @@
 package com.przemarcz.restaurant.dto;
 
+import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.*;
@@ -9,6 +10,7 @@ public class OpinionDto {
     private OpinionDto() {
     }
 
+    @Builder
     @Value
     public static class CreateOpinionRequest {
         @NotNull(message = "Rate must be not null")

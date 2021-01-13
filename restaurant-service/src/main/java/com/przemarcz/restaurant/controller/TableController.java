@@ -36,8 +36,8 @@ public class TableController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @DeleteMapping("/{restaurantId}/tables/{tableId}")
-    public ResponseEntity<Void> deleteTable(@PathVariable UUID restaurantId) {
-        tableService.deleteTable(restaurantId);
+    public ResponseEntity<Void> deleteTable(@PathVariable UUID restaurantId, @PathVariable UUID tableId) {
+        tableService.deleteTable(restaurantId, tableId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

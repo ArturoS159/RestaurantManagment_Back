@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -26,10 +27,12 @@ public class OpinionService {
     private final TextMapper textMapper;
     private final RestaurantService restaurantService;
 
+    @Transactional(value = "transactionManager", readOnly = true)
     public Page<OpinionResponse> getAllRestaurantOpinions(UUID restaurantId, Pageable pageable) {
         return opinionRepository.findAllByRestaurantId(restaurantId,pageable).map(opinionMapper::toOpinionResponse);
     }
 
+    @Transactional(value = "transactionManager")
     public OpinionResponse addRestaurantOpinion(CreateOpinionRequest opinionRequest, UUID restaurantId, String userId) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
         Opinion opinion = opinionMapper.toOpinion(opinionRequest, textMapper.toUUID(userId));

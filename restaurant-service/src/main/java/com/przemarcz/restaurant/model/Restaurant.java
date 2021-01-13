@@ -5,6 +5,7 @@ import com.przemarcz.restaurant.exception.NotFoundException;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -19,11 +20,11 @@ import static java.util.Objects.nonNull;
 
 @Entity
 @javax.persistence.Table(name = "restaurants")
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Restaurant {
 
     private static final int TWO_INT = 2;
@@ -34,7 +35,7 @@ public class Restaurant {
     private static final BigDecimal MAX = new BigDecimal(5);
 
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     private String name;
     private String image;
     @Column(name = "owner_id")
@@ -60,21 +61,12 @@ public class Restaurant {
     private String regon;
     @Column(name = "post_code")
     private String postCode;
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "restaurant_id")
-    private List<Opinion> opinions;
+    private List<Opinion> opinions = new ArrayList<>();
     private BigDecimal rate;
-    @Column(name="category")
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     private String category;
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id")
     private List<Table> tables = new ArrayList<>();
 
@@ -115,19 +107,25 @@ public class Restaurant {
         if(isUserAddedOpinionBefore(opinion)){
             throw new AlreadyExistException(String.format("Opinion by user %s was added before!", opinion.getUserId()));
         }
-        if(isRateOpinionInRange(opinion.getRate())){
-            Optional<BigDecimal> rateOptional = Optional.ofNullable(rate);
-            rateOptional.ifPresentOrElse(
+        if(isRateOpinionInRange(opinion.getRate())) {
+            Optional<BigDecimal> restaurantRate = Optional.ofNullable(rate);
+            restaurantRate.ifPresentOrElse(
                     rateOld -> rate = rateOld.add(opinion.getRate()).divide(TWO, TWO_INT, RoundingMode.DOWN),
                     () -> rate = opinion.getRate()
             );
-            opinions.add(opinion);
+            if (CollectionUtils.isEmpty(opinions)) {
+                opinions = new ArrayList<>();
+                opinions.add(opinion);
+            }
         }else{
             throw new IllegalArgumentException("Opinion is not in range!");
         }
     }
 
     private boolean isUserAddedOpinionBefore(Opinion opinion) {
+        if (CollectionUtils.isEmpty(opinions)) {
+            return false;
+        }
         return opinions.stream().anyMatch(opinion1 -> opinion1.getUserId().equals(opinion.getUserId()));
     }
 
@@ -143,19 +141,19 @@ public class Restaurant {
         tables.add(table);
     }
 
-    public void setWorkTime(List<WorkTime> incomingTime) {
+    public void addWorkTime(List<WorkTime> incomingTime) {
         List<WorkTime> finalWorksTime = new ArrayList<>();
-        if(incomingTime.size()==SEVEN){
+        if (incomingTime.size() == SEVEN) {
             incomingTime.forEach(
                     workTime -> {
-                        if(areAllValuesCorrect(workTime.getFrom(), workTime.getTo())){
+                        if (areAllValuesCorrect(workTime.getFrom(), workTime.getTo())) {
                             finalWorksTime.add(workTime);
-                        }else{
+                        } else {
                             throw new IllegalArgumentException("Bad time values!");
                         }
                     }
             );
-        }else{
+        } else {
             throw new IllegalArgumentException("Not enough time values!");
         }
         worksTime=finalWorksTime;

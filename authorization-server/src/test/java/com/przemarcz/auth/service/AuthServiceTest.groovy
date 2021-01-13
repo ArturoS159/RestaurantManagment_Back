@@ -31,6 +31,7 @@ class AuthServiceTest extends Specification {
     def "should load user by id or login"() {
         given:
         User user = User.builder()
+                .id(UUID.randomUUID())
                 .login("login")
                 .email("email@test.pl")
                 .build()
@@ -46,6 +47,7 @@ class AuthServiceTest extends Specification {
     def "should not load user when entry value is invalid"() {
         given:
         User user = User.builder()
+                .id(UUID.randomUUID())
                 .login("login")
                 .email("email@test.pl")
                 .build()
@@ -59,10 +61,12 @@ class AuthServiceTest extends Specification {
     def "should get user by id"() {
         given:
         User user = User.builder()
+                .id(UUID.randomUUID())
                 .login("login")
                 .email("email@test.pl")
                 .build()
         User user1 = User.builder()
+                .id(UUID.randomUUID())
                 .login("login1")
                 .email("email1@test.pl")
                 .build()
@@ -77,10 +81,12 @@ class AuthServiceTest extends Specification {
     def "should not get user by id when id is wrong"() {
         given:
         User user = User.builder()
+                .id(UUID.randomUUID())
                 .login("login")
                 .email("email@test.pl")
                 .build()
         User user1 = User.builder()
+                .id(UUID.randomUUID())
                 .login("login1")
                 .email("email1@test.pl")
                 .build()
@@ -113,6 +119,7 @@ class AuthServiceTest extends Specification {
     def "should not register second user when login or email is the same"() {
         given:
         User userInDb = User.builder()
+                .id(UUID.randomUUID())
                 .login("login")
                 .email("email@test.pl")
                 .build()
@@ -135,6 +142,7 @@ class AuthServiceTest extends Specification {
     def "should update user"() {
         given:
         User user = User.builder()
+                .id(UUID.randomUUID())
                 .login("login")
                 .email("email@test.pl")
                 .build()

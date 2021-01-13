@@ -12,9 +12,10 @@ import java.util.UUID;
 
 import static java.util.Objects.isNull;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = UUID.class)
 public interface MealMapper {
 
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     @Mapping(target = "price", source = "createMealRequest.price", qualifiedByName = "scaleBigDecimal")
     @Mapping(target = "category", expression = "java(createMealRequest.getCategory().toLowerCase())")
     Meal toMeal(CreateMealRequest createMealRequest, UUID restaurantId);
@@ -28,7 +29,12 @@ public interface MealMapper {
     MealResponse toMealResponse(Meal meal);
 
     @Named("scaleBigDecimal")
-    default BigDecimal setScaleBigDecimal(BigDecimal value ) {
-        return isNull(value) ? null : value.setScale( 2, RoundingMode.DOWN );
+    default BigDecimal setScaleBigDecimal(BigDecimal value) {
+        return isNull(value) ? null : value.setScale(2, RoundingMode.DOWN);
+    }
+
+    @AfterMapping
+    default void convertCategorytoLowerCase(@MappingTarget Meal meal) {
+        meal.setCategory(meal.getCategory().toLowerCase());
     }
 }

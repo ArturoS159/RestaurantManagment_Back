@@ -1,5 +1,6 @@
 package com.przemarcz.restaurant.dto;
 
+import lombok.Builder;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ public class TableReservationDto {
     private TableReservationDto(){
     }
 
+    @Builder
     @Value
     public static class CreateTableRequest {
         String name;
@@ -18,6 +20,7 @@ public class TableReservationDto {
         Boolean canReserve;
     }
 
+    @Builder
     @Value
     public static class UpdateTableRequest {
         String name;
@@ -25,8 +28,9 @@ public class TableReservationDto {
         Boolean canReserve;
     }
 
+    @Builder
     @Value
-    public static class AddReservationRequest {
+    public static class CreateReservationRequest {
         Integer numberOfSeats;
         LocalDate day;
         LocalTime from;
@@ -36,6 +40,7 @@ public class TableReservationDto {
         String phoneNumber;
     }
 
+    @Builder
     @Value
     public static class CheckReservationStatusRequest {
         Integer numberOfSeats;
@@ -74,15 +79,15 @@ public class TableReservationDto {
     }
 
     @Value
-    public static class CheckReservationResponse {
-        LocalTime from;
-        LocalTime to;
-    }
-
-    @Value
     public static class CheckReservationStatusResponse {
         boolean status;
         List<CheckReservationResponse> reservationsInThisTime;
+    }
+
+    @Value
+    public static class CheckReservationResponse {
+        LocalTime from;
+        LocalTime to;
     }
 
 

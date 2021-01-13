@@ -1,23 +1,19 @@
 package com.przemarcz.restaurant.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 @Table(name = "opinions")
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Opinion {
     @Id
     private UUID id;

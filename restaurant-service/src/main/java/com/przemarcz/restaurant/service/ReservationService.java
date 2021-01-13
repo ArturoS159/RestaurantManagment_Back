@@ -35,19 +35,19 @@ public class ReservationService {
     private final RestaurantService restaurantService;
 
     @Transactional(value = "transactionManager")
-    public ReservationResponse addReservation(UUID restaurantId, AddReservationRequest addReservationRequest, String userId) {
+    public ReservationResponse addReservation(UUID restaurantId, CreateReservationRequest createReservationRequest, String userId) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        restaurant.checkReservationTime(addReservationRequest.getDay(), addReservationRequest.getFrom(), addReservationRequest.getTo());
-        List<Table> tablesInRestaurants = getTablesRestaurant(addReservationRequest.getNumberOfSeats(), restaurant);
+        restaurant.checkReservationTime(createReservationRequest.getDay(), createReservationRequest.getFrom(), createReservationRequest.getTo());
+        List<Table> tablesInRestaurants = getTablesRestaurant(createReservationRequest.getNumberOfSeats(), restaurant);
 
         if (CollectionUtils.isEmpty(tablesInRestaurants)) {
             throw new NotFoundException("No tables available found!");
         }
 
-        List<Reservation> reservationsInThisDay = getReservationsInThisDay(addReservationRequest.getDay(), addReservationRequest.getFrom(), addReservationRequest.getTo());
+        List<Reservation> reservationsInThisDay = getReservationsInThisDay(createReservationRequest.getDay(), createReservationRequest.getFrom(), createReservationRequest.getTo());
         List<Table> availableTables = getAvailableTables(tablesInRestaurants, reservationsInThisDay);
 
-        Reservation reservation = tableReservationMapper.toReservation(restaurantId, addReservationRequest, textMapper.toUUID(userId));
+        Reservation reservation = tableReservationMapper.toReservation(restaurantId, createReservationRequest, textMapper.toUUID(userId));
         Table table = availableTables.get(new Random().nextInt(availableTables.size()));
         table.addReservation(reservation);
         return tableReservationMapper.toReservationResponse(reservation);

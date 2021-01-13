@@ -1,21 +1,18 @@
 package com.przemarcz.restaurant.service
 
-import com.przemarcz.restaurant.dto.RestaurantDto
+import com.google.common.collect.Sets
 import com.przemarcz.restaurant.model.Restaurant
 import com.przemarcz.restaurant.model.enums.RestaurantCategory
-import com.przemarcz.restaurant.repository.MealRepository
 import com.przemarcz.restaurant.repository.RestaurantRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
-import java.awt.print.Pageable
-
-import static org.springframework.data.domain.Pageable.*
+import static com.przemarcz.restaurant.dto.RestaurantDto.*
+import static org.springframework.data.domain.Pageable.unpaged
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -31,104 +28,193 @@ class RestaurantServiceTest extends Specification {
         restaurantRepository.deleteAll()
     }
 
-    Restaurant prepareRestaurant(UUID restaurantId) {
-        Restaurant restaurant = new Restaurant()
-        restaurant.setId(restaurantId)
-        return restaurant
-    }
-
-    Restaurant prepareRestaurant(UUID restaurantId,String name, Set category, String city, BigDecimal rate) {
-        Restaurant restaurant = new Restaurant()
-        restaurant.setName(name)
-        restaurant.setCategory(category)
-        restaurant.setCity(city)
-        restaurant.setRate(rate)
-        restaurant.setId(restaurantId)
-        return restaurant
-    }
-
-    RestaurantDto prepareRestaurantDto(String name, Set category, String city, boolean open, BigDecimal rate) {
-        RestaurantDto restaurant = new RestaurantDto()
-        restaurant.setName(name)
-        restaurant.setCategory(category)
-        restaurant.setCity(city)
-        restaurant.setOpen(open)
-        restaurant.setRate(rate)
-        return restaurant
-    }
-
-    def "should return all restaurants"(){
+    def "should return all restaurants without filters"() {
         given:
-        Restaurant restaurant1 = prepareRestaurant(UUID.randomUUID())
-        Restaurant restaurant2 = prepareRestaurant(UUID.randomUUID())
-        restaurantRepository.save(restaurant1)
-        restaurantRepository.save(restaurant2)
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Restaurant restaurant3 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
+        RestaurantFilter fitlers = RestaurantFilter.builder().build()
         when:
-        Page<RestaurantDto> restaurants = restaurantService.getAllRestaurants(unpaged(),  new RestaurantDto())
+        Page<AllRestaurantResponse> response = restaurantService.getAllRestaurants(fitlers, unpaged())
         then:
-        restaurants.size==2
+        response.size == 3
     }
 
-    def "should return all restaurants when filter by name"(){
+    def "should return all restaurants filtered by name"() {
         given:
-        Restaurant restaurant1 = prepareRestaurant(UUID.randomUUID(),"name",null,null,null)
-        Restaurant restaurant2 = prepareRestaurant(UUID.randomUUID(),"diff",null,null,null)
-        RestaurantDto filters = new RestaurantDto()
-        filters.setName("na")
-        restaurantRepository.save(restaurant1)
-        restaurantRepository.save(restaurant2)
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .name("AA")
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .name("AB")
+                .build()
+        Restaurant restaurant3 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .name("CC")
+                .build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
+        RestaurantFilter fitlers1 = RestaurantFilter.builder()
+                .name("a").build()
+        RestaurantFilter fitlers2 = RestaurantFilter.builder()
+                .name("c").build()
         when:
-        Page<RestaurantDto> restaurants = restaurantService.getAllRestaurants(unpaged(), filters)
+        Page<AllRestaurantResponse> response1 = restaurantService.getAllRestaurants(fitlers1, unpaged())
+        Page<AllRestaurantResponse> response2 = restaurantService.getAllRestaurants(fitlers2, unpaged())
         then:
-        restaurants.size==1
-        restaurants.content.get(0).name=="name"
+        response1.size == 2
+        response2.size == 1
     }
 
-    def "should return all restaurants when filter by city"(){
+    def "should return all restaurants filtered by category"() {
         given:
-        Restaurant restaurant1 = prepareRestaurant(UUID.randomUUID(),null,null,"Gdynia",null)
-        Restaurant restaurant2 = prepareRestaurant(UUID.randomUUID(),null,null,"Warszawa",null)
-        RestaurantDto filters = new RestaurantDto()
-        filters.setCity("SzAw")
-        restaurantRepository.save(restaurant1)
-        restaurantRepository.save(restaurant2)
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .category("PIZZA,BURGER")
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .category("BURGER")
+                .build()
+        Restaurant restaurant3 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .category("KEBAB")
+                .build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
+        RestaurantFilter fitlers1 = RestaurantFilter.builder()
+                .category(Sets.newHashSet(RestaurantCategory.BURGER)).build()
+        RestaurantFilter fitlers2 = RestaurantFilter.builder()
+                .category(Sets.newHashSet(RestaurantCategory.KEBAB)).build()
+        RestaurantFilter fitlers3 = RestaurantFilter.builder()
+                .category(Sets.newHashSet(RestaurantCategory.BURGER, RestaurantCategory.KEBAB)).build()
         when:
-        Page<RestaurantDto> restaurants = restaurantService.getAllRestaurants(unpaged(), filters)
+        Page<AllRestaurantResponse> response1 = restaurantService.getAllRestaurants(fitlers1, unpaged())
+        Page<AllRestaurantResponse> response2 = restaurantService.getAllRestaurants(fitlers2, unpaged())
+        Page<AllRestaurantResponse> response3 = restaurantService.getAllRestaurants(fitlers3, unpaged())
         then:
-        restaurants.size==1
-        restaurants.content.get(0).city=="Warszawa"
+        response1.size == 2
+        response2.size == 1
+        response3.size == 0
     }
 
-    def "should return all restaurants when filter by category"(){
+    def "should return all restaurants filtered by city"() {
         given:
-        Set<RestaurantCategory> categories1 = new HashSet<>()
-        Set<RestaurantCategory> categories2 = new HashSet<>()
-
-        categories1.add(RestaurantCategory.BURGER)
-        categories1.add(RestaurantCategory.SUSHI)
-
-        categories2.add(RestaurantCategory.SUSHI)
-
-        Restaurant restaurant1 = prepareRestaurant(UUID.randomUUID(),null,categories1,null,null)
-        Restaurant restaurant2 = prepareRestaurant(UUID.randomUUID(),null,categories2,null,null)
-        RestaurantDto filters1 = new RestaurantDto()
-        RestaurantDto filters2 = new RestaurantDto()
-
-        Set<RestaurantCategory> categoriesFilter1 = new HashSet<>()
-        categoriesFilter1.add(RestaurantCategory.SUSHI)
-        filters1.setCategory(categoriesFilter1)
-
-        Set<RestaurantCategory> categoriesFilter2 = new HashSet<>()
-        categoriesFilter2.add(RestaurantCategory.BURGER)
-        filters2.setCategory(categoriesFilter2)
-
-        restaurantRepository.save(restaurant1)
-        restaurantRepository.save(restaurant2)
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .city("Tarnow")
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .city("Warszawa")
+                .build()
+        Restaurant restaurant3 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .city("Waclawek")
+                .build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
+        RestaurantFilter fitlers1 = RestaurantFilter.builder()
+                .city("tar").build()
+        RestaurantFilter fitlers2 = RestaurantFilter.builder()
+                .city("wa").build()
         when:
-        Page<RestaurantDto> restaurants1 = restaurantService.getAllRestaurants(unpaged(), filters1)
-        Page<RestaurantDto> restaurants2 = restaurantService.getAllRestaurants(unpaged(), filters2)
+        Page<AllRestaurantResponse> response1 = restaurantService.getAllRestaurants(fitlers1, unpaged())
+        Page<AllRestaurantResponse> response2 = restaurantService.getAllRestaurants(fitlers2, unpaged())
         then:
-        restaurants1.size==2
-        restaurants2.size==1
+        response1.size == 1
+        response2.size == 2
+    }
+
+    def "should return all restaurants filtered by rate"() {
+        given:
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .rate(BigDecimal.valueOf(3.2))
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .rate(BigDecimal.valueOf(2.67))
+                .build()
+        Restaurant restaurant3 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .rate(BigDecimal.valueOf(3.0))
+                .build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
+        RestaurantFilter fitlers1 = RestaurantFilter.builder()
+                .rate(BigDecimal.valueOf(3)).build()
+        RestaurantFilter fitlers2 = RestaurantFilter.builder()
+                .rate(BigDecimal.valueOf(3.2)).build()
+        when:
+        Page<AllRestaurantResponse> response1 = restaurantService.getAllRestaurants(fitlers1, unpaged())
+        Page<AllRestaurantResponse> response2 = restaurantService.getAllRestaurants(fitlers2, unpaged())
+        then:
+        response1.size == 2
+        response2.size == 1
+    }
+
+    def "should return correct restaurant by id"() {
+        given:
+        UUID restaurantId = UUID.randomUUID()
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(restaurantId)
+                .name("r1")
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .name("r1")
+                .build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2))
+        when:
+        RestaurantResponse response = restaurantService.getRestaurant(restaurantId)
+        then:
+        response.name == "r1"
+    }
+
+    def "should return all restaurants for owner"() {
+        given:
+        UUID ownerId = UUID.randomUUID()
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .ownerId(ownerId)
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .ownerId(ownerId)
+                .build()
+        Restaurant restaurant3 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .ownerId(UUID.randomUUID())
+                .build()
+        RestaurantFilter fitlers = RestaurantFilter.builder().build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
+        when:
+        Page<AllRestaurantOwnerResponse> response = restaurantService.getAllRestaurantForOwner(fitlers, ownerId.toString(), unpaged())
+        then:
+        response.size == 2
+    }
+
+    def "should return correct restaurant for owner by id"() {
+        given:
+        UUID restaurantId = UUID.randomUUID()
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(restaurantId)
+                .name("r1")
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .name("r1")
+                .build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2))
+        when:
+        RestaurantOwnerResponse response = restaurantService.getRestaurantForOwner(restaurantId)
+        then:
+        response.name == "r1"
     }
 }

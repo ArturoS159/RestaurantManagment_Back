@@ -1,6 +1,7 @@
 package com.przemarcz.restaurant.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
@@ -8,6 +9,7 @@ import lombok.Value;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Setter
@@ -16,6 +18,7 @@ public class MealDto {
     private MealDto() {
     }
 
+    @Builder
     @Value
     public static class CreateMealRequest {
         @NotBlank(message = "Name must be not blank")
@@ -30,7 +33,6 @@ public class MealDto {
         @Size(max = 300, message = "Ingredients must be lower than 300")
         String ingredients;
         @NotNull(message = "Time must be not null")
-/////        @Digits(integer = 2, fraction = 2, message = "Time bad format") //TODO look at frontend
         @DecimalMin(value = "0.0", inclusive = false, message = "Time must be greater than 0.0")
         BigDecimal timeToDo;
         @NotBlank(message = "Category must be not blank")
@@ -38,6 +40,7 @@ public class MealDto {
         String category;
     }
 
+    @Builder
     @Value
     public static class UpdateMealRequest {
         @Size(min = 2, max = 50, message = "Name must be in range 4-50!")
@@ -59,6 +62,7 @@ public class MealDto {
         Integer quantity;
     }
 
+    @Builder
     @Value
     public static class MealFilter {
         String category;
@@ -75,7 +79,7 @@ public class MealDto {
 
     @Value
     public static class MealsCategoryResponse {
-        List<String> category;
+        Set<String> category;
     }
 
     @Value

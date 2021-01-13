@@ -14,6 +14,5 @@ public interface OpinionMapper {
 
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     Opinion toOpinion(CreateOpinionRequest opinionDto, UUID userId);
-
     OpinionResponse toOpinionResponse(Opinion opinion);
 }

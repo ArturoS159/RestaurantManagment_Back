@@ -40,8 +40,8 @@ public class RestaurantService {
     private String topicAccess;
 
     @Transactional(value = "transactionManager", readOnly = true)
-    public Page<AllRestaurantResponse> getAllRestaurants(RestaurantFilter allRestaurantResponse, Pageable pageable) {
-        RestaurantSpecification specification = new RestaurantSpecification(allRestaurantResponse);
+    public Page<AllRestaurantResponse> getAllRestaurants(RestaurantFilter restaurantFilter, Pageable pageable) {
+        RestaurantSpecification specification = new RestaurantSpecification(restaurantFilter);
         Page<Restaurant> restaurants = restaurantRepository.findAll(specification, pageable);
         return restaurants.map(restaurantMapper::toAllRestaurantResponse);
     }
@@ -75,7 +75,7 @@ public class RestaurantService {
     public RestaurantOwnerResponse addRestaurant(CreateRestaurantRequest createRestaurantRequest, String userId) {
         Restaurant restaurant = restaurantMapper.toRestaurant(createRestaurantRequest, textMapper.toUUID(userId));
         List<WorkTime> worksTime = restaurantMapper.toWorkTime(createRestaurantRequest.getWorksTime());
-        restaurant.setWorkTime(worksTime);
+        restaurant.addWorkTime(worksTime);
         restaurantRepository.save(restaurant);
         sendMessageAccess(AddDelete.ADD, userId, restaurant.getId());
         return restaurantMapper.toRestaurantOwnerResponse(restaurant);

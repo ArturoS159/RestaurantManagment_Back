@@ -1,6 +1,6 @@
 package com.przemarcz.restaurant.service
 
-import com.przemarcz.restaurant.dto.OpinionDto
+import com.przemarcz.restaurant.exception.AlreadyExistException
 import com.przemarcz.restaurant.model.Opinion
 import com.przemarcz.restaurant.model.Restaurant
 import com.przemarcz.restaurant.repository.OpinionRepository
@@ -11,6 +11,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
+import static com.przemarcz.restaurant.dto.OpinionDto.CreateOpinionRequest
+import static com.przemarcz.restaurant.dto.OpinionDto.OpinionResponse
 import static org.springframework.data.domain.Pageable.unpaged
 
 @SpringBootTest
@@ -25,57 +27,70 @@ class OpinionServiceTest extends Specification {
     @Autowired
     RestaurantRepository restaurantRepository
 
-
     def setup() {
         opinionRepository.deleteAll()
         restaurantRepository.deleteAll()
     }
 
-    Restaurant prepareRestaurant(UUID restaurantId) {
-        Restaurant restaurant = new Restaurant()
-        restaurant.setId(restaurantId)
-        return restaurant
-    }
-
-    Opinion prepareOpinion(BigDecimal rate) {
-        Opinion opinion = new Opinion()
-        opinion.setRate(rate)
-        return opinion
-    }
-
-    OpinionDto prepareOpinionDto(BigDecimal rate) {
-        OpinionDto opinion = new OpinionDto()
-        opinion.setRate(rate)
-        return opinion
-    }
-
-    def "should add opinion to restaurant when it's first opinion"() {
+    def "should get all restaurant opinions"() {
         given:
-        UUID restaurantId = UUID.randomUUID()
-        UUID userId = UUID.randomUUID()
-        Restaurant restaurant = prepareRestaurant(restaurantId)
-        restaurantRepository.save(restaurant)
-        OpinionDto opinion = prepareOpinionDto(new BigDecimal("3.21"))
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID()).build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID()).build()
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2))
+        Opinion opinion1 = Opinion.builder()
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant1.id)
+                .build()
+        Opinion opinion2 = Opinion.builder()
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant2.id)
+                .build()
+        Opinion opinion3 = Opinion.builder()
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant2.id)
+                .build()
+        opinionRepository.saveAll(Arrays.asList(opinion1, opinion2, opinion3))
         when:
-        opinionService.addRestaurantOpinion(opinion, restaurantId, userId.toString())
+        List<OpinionResponse> opinions1 = opinionService.getAllRestaurantOpinions(restaurant1.id, unpaged()).asList()
+        List<OpinionResponse> opinions2 = opinionService.getAllRestaurantOpinions(restaurant2.id, unpaged()).asList()
         then:
-        opinionRepository.findAll().size() == 1
-        restaurantRepository.findAll().get(0).rate == new BigDecimal("3.21")
-        opinionService.getAllRestaurantOpinions(restaurantId, unpaged()).content.get(0).rate == new BigDecimal("3.0")
+        opinions1.size() == 1
+        opinions2.size() == 2
     }
 
-    def "should add opinion and count restaurant rate when it's second opinion"() {
+    def "should add opinion to restaurant"() {
         given:
-        UUID restaurantId = UUID.randomUUID()
-        Restaurant restaurant = prepareRestaurant(restaurantId)
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID()).build()
         restaurantRepository.save(restaurant)
-        OpinionDto opinion1 = prepareOpinionDto(new BigDecimal("3.0"))
-        OpinionDto opinion2 = prepareOpinionDto(new BigDecimal("5.0"))
+        CreateOpinionRequest createOpinion = CreateOpinionRequest.builder()
+                .rate(BigDecimal.valueOf(2.5))
+                .build()
         when:
-        opinionService.addRestaurantOpinion(opinion1, restaurantId, UUID.randomUUID().toString())
-        opinionService.addRestaurantOpinion(opinion2, restaurantId, UUID.randomUUID().toString())
+        opinionService.addRestaurantOpinion(createOpinion, restaurant.id, UUID.randomUUID().toString())
         then:
-        opinionRepository.findAll().size() == 2
-        restaurantRepository.findAll().get(0).rate == new BigDecimal("4.0")
+        restaurantRepository.findAll().get(0).rate.toString()=="2.50"
+        opinionRepository.findAll().size()==1
+    }
+
+    def "should not add opinion to restaurant when user added before"() {
+        given:
+        String userId = UUID.randomUUID()
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID()).build()
+        restaurantRepository.save(restaurant)
+        CreateOpinionRequest createOpinion1 = CreateOpinionRequest.builder()
+                .rate(BigDecimal.valueOf(2.5))
+                .build()
+        CreateOpinionRequest createOpinion2 = CreateOpinionRequest.builder()
+                .rate(BigDecimal.valueOf(2.5))
+                .build()
+        opinionService.addRestaurantOpinion(createOpinion1, restaurant.id, userId)
+        when:
+        opinionService.addRestaurantOpinion(createOpinion2, restaurant.id, userId)
+        then:
+        thrown AlreadyExistException
     }
 }

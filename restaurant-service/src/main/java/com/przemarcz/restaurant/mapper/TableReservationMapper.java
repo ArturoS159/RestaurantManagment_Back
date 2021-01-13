@@ -9,8 +9,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-@Mapper(componentModel = "spring", uses = MealMapper.class, imports = BigDecimal.class)
+@Mapper(componentModel = "spring", uses = MealMapper.class, imports = {BigDecimal.class, UUID.class})
 public interface TableReservationMapper {
+
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     Table toTable(CreateTableRequest createTableRequest);
 
     TableResponse toTableResponse(Table table);
@@ -19,7 +21,8 @@ public interface TableReservationMapper {
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateTable(@MappingTarget Table table, UpdateTableRequest updateTableRequest);
 
-    Reservation toReservation(UUID restaurantId, AddReservationRequest addReservationRequest, UUID userId);
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    Reservation toReservation(UUID restaurantId, CreateReservationRequest createReservationRequest, UUID userId);
 
     ReservationResponse toReservationResponse(Reservation reservation);
 

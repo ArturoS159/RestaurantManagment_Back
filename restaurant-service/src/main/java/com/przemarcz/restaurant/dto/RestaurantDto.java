@@ -3,6 +3,7 @@ package com.przemarcz.restaurant.dto;
 import com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeResponse;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
+import lombok.Builder;
 import lombok.Value;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ public class RestaurantDto {
     private RestaurantDto(){
     }
 
+    @Builder
     @Value
     public static class CreateRestaurantRequest {
         String name;
@@ -30,6 +32,7 @@ public class RestaurantDto {
         String phoneNumber;
     }
 
+    @Builder
     @Value
     public static class UpdateRestaurantRequest {
         String name;
@@ -42,12 +45,6 @@ public class RestaurantDto {
         String postCode;
         String houseNumber;
         String phoneNumber;
-    }
-
-    @Value
-    public static class GetAllRestaurantsForWorkerRequest {
-        List<UUID> restaurants;
-        String nothing;
     }
 
     @Value
@@ -114,6 +111,7 @@ public class RestaurantDto {
         BigDecimal rate;
     }
 
+    @Builder
     @Value
     public static class RestaurantFilter {
         String name;

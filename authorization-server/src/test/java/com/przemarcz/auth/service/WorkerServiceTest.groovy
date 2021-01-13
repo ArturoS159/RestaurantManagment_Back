@@ -39,12 +39,15 @@ class WorkerServiceTest extends Specification {
         UUID restaurant1 = UUID.randomUUID()
         UUID restaurant2 = UUID.randomUUID()
         User worker1 = User.builder()
+                .id(UUID.randomUUID())
                 .email("worker1@test.pl")
                 .build()
         User worker2 = User.builder()
+                .id(UUID.randomUUID())
                 .email("worker2@test.pl")
                 .build()
         User worker3 = User.builder()
+                .id(UUID.randomUUID())
                 .email("worker3@test.pl")
                 .build()
         worker1.addRole(Role.WORKER, restaurant1)
@@ -63,10 +66,11 @@ class WorkerServiceTest extends Specification {
     def "should add worker to restaurant when worker found"() {
         given:
         UUID restaurantId = UUID.randomUUID()
-        User worker = userRepository.save(
-                User.builder()
-                        .email("test@test.pl")
-                        .build())
+        User worker = User.builder()
+                .id(UUID.randomUUID())
+                .email("test@test.pl")
+                .build()
+        userRepository.save(worker)
         when:
         workerService.addRestaurantWorker(restaurantId, "test@test.pl")
         then:
@@ -79,9 +83,11 @@ class WorkerServiceTest extends Specification {
     def "should not add worker to restaurant when worker not found"() {
         given:
         UUID restaurantId = UUID.randomUUID()
-        userRepository.save(User.builder()
+        User user = User.builder()
+                .id(UUID.randomUUID())
                 .email("test@test.pl")
-                .build())
+                .build()
+        userRepository.save(user)
         when:
         workerService.addRestaurantWorker(restaurantId, "notfound@test.pl")
         then:
@@ -92,14 +98,15 @@ class WorkerServiceTest extends Specification {
     def "should not add worker to restaurant when worker was aded before"() {
         given:
         UUID restaurantId = UUID.randomUUID()
-        userRepository.save(
-                User.builder()
-                        .email("test@test.pl")
-                        .build())
-        userRepository.save(
-                User.builder()
-                        .email("test2@test.pl")
-                        .build())
+        User user1 = User.builder()
+                .id(UUID.randomUUID())
+                .email("test@test.pl")
+                .build()
+        User user2 = User.builder()
+                .id(UUID.randomUUID())
+                .email("test2@test.pl")
+                .build()
+        userRepository.saveAll(Arrays.asList(user1, user2))
         workerService.addRestaurantWorker(restaurantId, "test@test.pl")
         when:
         workerService.addRestaurantWorker(restaurantId, "test@test.pl")
@@ -111,18 +118,19 @@ class WorkerServiceTest extends Specification {
     def "should delete worker from restaurant"() {
         given:
         UUID restaurantId = UUID.randomUUID()
-        User worker = userRepository.save(
-                User.builder()
-                        .email("test@test.pl")
-                        .build())
-        userRepository.save(
-                User.builder()
-                        .email("test2@test.pl")
-                        .build())
+        User worker1 = User.builder()
+                .id(UUID.randomUUID())
+                .email("test@test.pl")
+                .build()
+        User worker2 = User.builder()
+                .id(UUID.randomUUID())
+                .email("test2@test.pl")
+                .build()
+        userRepository.saveAll(Arrays.asList(worker1, worker2))
         workerService.addRestaurantWorker(restaurantId, "test@test.pl")
         workerService.addRestaurantWorker(restaurantId, "test2@test.pl")
         when:
-        workerService.deleteRestaurantWorker(restaurantId, worker.id)
+        workerService.deleteRestaurantWorker(restaurantId, worker1.id)
         then:
         userRoleRepository.findAll().size() == 1
     }

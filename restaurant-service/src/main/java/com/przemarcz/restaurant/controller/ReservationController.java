@@ -1,6 +1,6 @@
 package com.przemarcz.restaurant.controller;
 
-import com.przemarcz.restaurant.dto.TableReservationDto.AddReservationRequest;
+import com.przemarcz.restaurant.dto.TableReservationDto;
 import com.przemarcz.restaurant.dto.TableReservationDto.CheckReservationStatusRequest;
 import com.przemarcz.restaurant.dto.TableReservationDto.MyReservationResponse;
 import com.przemarcz.restaurant.dto.TableReservationDto.ReservationResponse;
@@ -30,9 +30,9 @@ public class ReservationController {
 
     @PostMapping("/{restaurantId}/reservations")
     public ResponseEntity<ReservationResponse> addReservation(@PathVariable UUID restaurantId,
-                                                              @RequestBody AddReservationRequest addReservationRequest,
+                                                              @RequestBody TableReservationDto.CreateReservationRequest createReservationRequest,
                                                               Principal user) {
-        return new ResponseEntity<>(reservationService.addReservation(restaurantId, addReservationRequest, user.getName()), HttpStatus.CREATED);
+        return new ResponseEntity<>(reservationService.addReservation(restaurantId, createReservationRequest, user.getName()), HttpStatus.CREATED);
     }
 
     @PostMapping("/{restaurantId}/reservations/status")

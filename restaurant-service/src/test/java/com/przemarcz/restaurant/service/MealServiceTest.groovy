@@ -1,6 +1,6 @@
 package com.przemarcz.restaurant.service
 
-import com.przemarcz.restaurant.dto.MealDto
+
 import com.przemarcz.restaurant.model.Meal
 import com.przemarcz.restaurant.model.Restaurant
 import com.przemarcz.restaurant.repository.MealRepository
@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
+
+import static com.przemarcz.restaurant.dto.MealDto.*
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -24,98 +26,288 @@ class MealServiceTest extends Specification {
     RestaurantRepository restaurantRepository
 
     def setup() {
-        restaurantRepository.deleteAll()
         mealRepository.deleteAll()
+        restaurantRepository.deleteAll()
     }
 
-    Restaurant prepareRestaurant(UUID restaurantId) {
-        Restaurant restaurant = new Restaurant()
-        restaurant.setId(restaurantId)
-        return restaurant
-    }
-
-    Meal prepareMeal(String name, BigDecimal price) {
-        Meal meal = new Meal()
-        meal.setName(name)
-        meal.setPrice(price)
-        return meal
-    }
-
-    MealDto prepareMealDto(String name, BigDecimal price) {
-        MealDto meal = new MealDto()
-        meal.setName(name)
-        meal.setPrice(price)
-        return meal
-    }
-
-    def "should get all restaurant meals from only one restaurant"() {
+    def "should get all restauant meals without filters from only one restaurant"() {
         given:
-        UUID restaurantId1 = UUID.randomUUID()
-        UUID restaurantId2 = UUID.randomUUID()
-        Restaurant restaurant1 = prepareRestaurant(restaurantId1)
-        Restaurant restaurant2= prepareRestaurant(restaurantId2)
-        restaurant1.meals << prepareMeal("Meal1", new BigDecimal("23.5"))
-        restaurant1.meals << prepareMeal("Meal2", new BigDecimal("25.5"))
-        restaurant2.meals << prepareMeal("Meal2", new BigDecimal("1.50"))
-        restaurantRepository.save(restaurant1)
-        restaurantRepository.save(restaurant2)
+        Restaurant restaurant1 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Restaurant restaurant2 = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Meal meal1 = Meal.builder()
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant1.id)
+                .build()
+        Meal meal2 = Meal.builder()
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant1.id)
+                .build()
+        Meal meal3 = Meal.builder()
+                .name("test")
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant2.id)
+                .build()
+
+        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2))
+        mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3))
+        MealFilter filters = MealFilter.builder().build()
         when:
-        List<MealDto> meals = mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable)
-        List<MealDto> meals2 = mealService.getAllRestaurantMeals(restaurantId2, mealFilter, pageable)
+        MealListResponse responseRestaurant1 = mealService.getAllRestaurantMeals(restaurant1.id, filters)
+        MealListResponse responseRestaurant2 = mealService.getAllRestaurantMeals(restaurant2.id, filters)
         then:
-        meals.size()==2
-        meals2.size()==1
+        responseRestaurant1.meals.size() == 2
+        responseRestaurant2.meals.size() == 1
+        responseRestaurant2.meals.get(0).name == "test"
+    }
+
+    def "should return empty meals when restaurant meals is empty"() {
+        given:
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        restaurantRepository.save(restaurant)
+        MealFilter filters = MealFilter.builder().build()
+        when:
+        MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
+        then:
+        response.meals.size() == 0
+    }
+
+    def "should return empty meals when restaurant not found"() {
+        given:
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        restaurantRepository.save(restaurant)
+        MealFilter filters = MealFilter.builder().build()
+        when:
+        MealListResponse response = mealService.getAllRestaurantMeals(UUID.randomUUID(), filters)
+        then:
+        response.meals.size() == 0
+    }
+
+    def "should get all restauant meals when filter by category"() {
+        given:
+        Restaurant restaurnat = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Meal meal1 = Meal.builder()
+                .id(UUID.randomUUID())
+                .category("pizza")
+                .restaurantId(restaurnat.id)
+                .build()
+        Meal meal2 = Meal.builder()
+                .id(UUID.randomUUID())
+                .category("pizza")
+                .restaurantId(restaurnat.id)
+                .build()
+        Meal meal3 = Meal.builder()
+                .category("soup")
+                .id(UUID.randomUUID())
+                .restaurantId(restaurnat.id)
+                .build()
+        Meal meal4 = Meal.builder()
+                .category("kebab")
+                .id(UUID.randomUUID())
+                .restaurantId(restaurnat.id)
+                .build()
+        restaurantRepository.save(restaurnat)
+        mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
+        MealFilter filters = MealFilter.builder()
+                .category("pizza,soup")
+                .build()
+        when:
+        MealListResponse responseRestaurant1 = mealService.getAllRestaurantMeals(restaurnat.id, filters)
+        then:
+        responseRestaurant1.meals.size() == 3
+    }
+
+    def "should get all restauant meals when filter by price"() {
+        given:
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Meal meal1 = Meal.builder()
+                .id(UUID.randomUUID())
+                .price(BigDecimal.valueOf(5.21))
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal2 = Meal.builder()
+                .id(UUID.randomUUID())
+                .price(BigDecimal.valueOf(3.00))
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal3 = Meal.builder()
+                .id(UUID.randomUUID())
+                .price(BigDecimal.valueOf(2.20))
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal4 = Meal.builder()
+                .id(UUID.randomUUID())
+                .price(BigDecimal.valueOf(4.00))
+                .restaurantId(restaurant.id)
+                .build()
+        restaurantRepository.save(restaurant)
+        mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
+        MealFilter filters = MealFilter.builder()
+                .fromPrice(fromPrice)
+                .toPrice(toPrice)
+                .build()
+        when:
+        MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
+        then:
+        response.meals.size() == size
+        where:
+        fromPrice                | toPrice                  || size
+        BigDecimal.valueOf(3.00) | null                     || 3
+        BigDecimal.valueOf(2.99) | BigDecimal.valueOf(4.00) || 2
+        null                     | BigDecimal.valueOf(3.00) || 2
+    }
+
+    def "should get all restauant meals when filter by time"() {
+        given:
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Meal meal1 = Meal.builder()
+                .id(UUID.randomUUID())
+                .timeToDo(BigDecimal.valueOf(2))
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal2 = Meal.builder()
+                .id(UUID.randomUUID())
+                .timeToDo(BigDecimal.valueOf(3))
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal3 = Meal.builder()
+                .id(UUID.randomUUID())
+                .timeToDo(BigDecimal.valueOf(4))
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal4 = Meal.builder()
+                .id(UUID.randomUUID())
+                .timeToDo(BigDecimal.valueOf(5))
+                .restaurantId(restaurant.id)
+                .build()
+        restaurantRepository.save(restaurant)
+        mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
+        MealFilter filters = MealFilter.builder()
+                .fromTime(fromTime)
+                .toTime(toTime)
+                .build()
+        when:
+        MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
+        then:
+        response.meals.size() == size
+        where:
+        fromTime              | toTime                || size
+        BigDecimal.valueOf(3) | null                  || 3
+        BigDecimal.valueOf(2) | BigDecimal.valueOf(4) || 3
+        null                  | BigDecimal.valueOf(3) || 2
+    }
+
+    def "should get meals category"() {
+        given:
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Meal meal1 = Meal.builder()
+                .id(UUID.randomUUID())
+                .category("pizza")
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal2 = Meal.builder()
+                .id(UUID.randomUUID())
+                .category("pizza")
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal3 = Meal.builder()
+                .id(UUID.randomUUID())
+                .category("soup")
+                .restaurantId(restaurant.id)
+                .build()
+        Meal meal4 = Meal.builder()
+                .id(UUID.randomUUID())
+                .category("kebab")
+                .restaurantId(restaurant.id)
+                .build()
+        restaurantRepository.save(restaurant)
+        mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
+        when:
+        MealsCategoryResponse response = mealService.getRestaurantMealsCategory(restaurant.id)
+        then:
+        response.category.size() == 3
     }
 
     def "should add meal"() {
         given:
-        UUID restaurantId1 = UUID.randomUUID()
-        UUID restaurantId2 = UUID.randomUUID()
-        Restaurant restaurant1 = prepareRestaurant(restaurantId1)
-        Restaurant restaurant2 = prepareRestaurant(restaurantId2)
-        restaurantRepository.save(restaurant1)
-        restaurantRepository.save(restaurant2)
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        CreateMealRequest createMeal = CreateMealRequest.builder()
+                .name("name")
+                .category("category")
+                .timeToDo(BigDecimal.TEN)
+                .price(BigDecimal.ONE)
+                .build()
+        restaurantRepository.save(restaurant)
         when:
-        mealService.addMeal(restaurantId1,prepareMealDto("Meal1", new BigDecimal("3.21")))
-        mealService.addMeal(restaurantId1,prepareMealDto("Meal2", new BigDecimal("1")))
-        mealService.addMeal(restaurantId2,prepareMealDto("Meal2", new BigDecimal("2.22")))
+        MealResponse response = mealService.addMeal(restaurant.id, createMeal)
         then:
-        mealRepository.findAll().size()==3
-        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).size()==2
-        mealService.getAllRestaurantMeals(restaurantId2, mealFilter, pageable).size()==1
+        response != null
+        mealRepository.findAll().size() == 1
     }
 
     def "should update meal"() {
         given:
-        UUID restaurantId1 = UUID.randomUUID()
-        Restaurant restaurant = prepareRestaurant(restaurantId1)
-        Meal meal = prepareMeal("Meal", new BigDecimal("3.21"))
-        Meal meal1 = prepareMeal("Meal", new BigDecimal("3.21"))
-        restaurant.meals << meal
-        restaurant.meals << meal1
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
         restaurantRepository.save(restaurant)
-        MealDto updateMeal = prepareMealDto("MealUpdated", new BigDecimal("5.2"))
+        Meal meal = mealRepository.save(Meal.builder()
+                .id(UUID.randomUUID())
+                .name("name")
+                .restaurantId(restaurant.id)
+                .category("category")
+                .timeToDo(BigDecimal.TEN)
+                .price(BigDecimal.ONE)
+                .build())
+        UpdateMealRequest updateMeal = UpdateMealRequest.builder()
+                .name("updated")
+                .category("cat")
+                .timeToDo(BigDecimal.valueOf(55))
+                .price(BigDecimal.valueOf(12.22))
+                .build()
         when:
-        mealService.updateMeal(restaurantId1,meal.id,updateMeal)
+        MealResponse response = mealService.updateMeal(restaurant.id, meal.id, updateMeal)
         then:
-        mealRepository.findAll().size()==2
-        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).get(0).name=="MealUpdated"
-        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).get(0).price.toString() == "5.20"
+        Meal mealFromDb = mealRepository.findAll().get(0)
+        response != null
+        mealFromDb.name == "updated"
+        mealFromDb.category == "cat"
+        mealFromDb.timeToDo == BigDecimal.valueOf(55)
+        mealFromDb.price == BigDecimal.valueOf(12.22)
     }
 
-    def "should delete meal"() {
+    def "should delete meal from database"() {
         given:
-        UUID restaurantId1 = UUID.randomUUID()
-        Restaurant restaurant = prepareRestaurant(restaurantId1)
-        Meal meal = prepareMeal("Meal1", new BigDecimal("3.21"))
-        Meal meal1 = prepareMeal("Meal2", new BigDecimal("3.52"))
-        restaurant.meals << meal
-        restaurant.meals << meal1
+        Restaurant restaurant = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
         restaurantRepository.save(restaurant)
+        mealRepository.save(Meal.builder()
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant.id).build())
+        Meal mealToDelete = mealRepository.save(Meal.builder()
+                .id(UUID.randomUUID())
+                .restaurantId(restaurant.id).build())
         when:
-        mealService.deleteMeal(restaurantId1,meal.getId())
+        mealService.deleteMeal(restaurant.id, mealToDelete.id)
         then:
-        mealRepository.findAll().size()==1
-        mealService.getAllRestaurantMeals(restaurantId1, mealFilter, pageable).size()==1
+        mealRepository.findAll().size() == 1
     }
 }

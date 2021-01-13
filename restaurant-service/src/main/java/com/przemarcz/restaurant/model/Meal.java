@@ -1,9 +1,6 @@
 package com.przemarcz.restaurant.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,13 +11,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "meals")
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Meal {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
     private String name;
