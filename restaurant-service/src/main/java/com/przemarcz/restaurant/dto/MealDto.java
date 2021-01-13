@@ -62,7 +62,6 @@ public class MealDto {
         Integer quantity;
     }
 
-    @Builder
     @Value
     public static class MealFilter {
         String category;
