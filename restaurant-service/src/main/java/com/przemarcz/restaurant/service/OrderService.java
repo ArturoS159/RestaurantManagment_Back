@@ -47,7 +47,7 @@ public class OrderService {
             orderAvro.setMeals(meals);
             sendMessageOrder(orderAvro);
         }
-        return new CreateOrderResponse(UUID.fromString(orderAvro.getId().toString()));
+        return new CreateOrderResponse(textMapper.toUUID(orderAvro.getId()));
     }
 
     private boolean isPaymentAvailable(UUID restaurantId) {
@@ -64,7 +64,7 @@ public class OrderService {
             orderAvro.setMeals(meals);
             sendMessageOrder(orderAvro);
         }
-        return new CreateOrderResponse(UUID.fromString(orderAvro.getId().toString()));
+        return new CreateOrderResponse(textMapper.toUUID(orderAvro.getId()));
     }
 
     private List<MealAvro> getMealsFromDatabase(List<Meal> meals, List<OrderMealRequest> orderMealRequests) {
