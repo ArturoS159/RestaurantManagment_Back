@@ -15,7 +15,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.UUID;
 
-import static com.przemarcz.restaurant.dto.OrderDto.*;
+import static com.przemarcz.restaurant.dto.OrderDto.CreateOrderPersonalRequest;
+import static com.przemarcz.restaurant.dto.OrderDto.CreateOrderResponse;
 
 @RestController
 @AllArgsConstructor
@@ -30,16 +31,14 @@ public class OrderController {
     public ResponseEntity<CreateOrderResponse> orderMealsByClient(@PathVariable UUID restaurantId,
                                                    @Valid @RequestBody CreateOrderUserRequest createOrderUserRequest,
                                                    Principal principal) {
-        orderService.orderMealsByClient(restaurantId, createOrderUserRequest, principal.getName());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(orderService.orderMealsByClient(restaurantId, createOrderUserRequest, principal.getName()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/order-personal")
     public ResponseEntity<CreateOrderResponse> orderMealsByPersonal(@PathVariable UUID restaurantId,
                                                      @Valid @RequestBody CreateOrderPersonalRequest createOrderPersonalRequest) {
-        orderService.orderMealsByPersonal(restaurantId, createOrderPersonalRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(orderService.orderMealsByPersonal(restaurantId, createOrderPersonalRequest), HttpStatus.OK);
     }
 
     @KafkaListener(topics = TOPIC_PAYMENT)
