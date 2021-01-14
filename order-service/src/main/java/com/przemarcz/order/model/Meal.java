@@ -1,9 +1,6 @@
 package com.przemarcz.order.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
@@ -13,19 +10,17 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "meals")
-@NoArgsConstructor
+@Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
+@Setter
 public class Meal {
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
     private String name;
     private BigDecimal price;

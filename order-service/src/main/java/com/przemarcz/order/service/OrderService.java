@@ -1,7 +1,10 @@
 package com.przemarcz.order.service;
 
 import com.przemarcz.avro.OrderAvro;
-import com.przemarcz.order.dto.OrderDto.*;
+import com.przemarcz.order.dto.OrderDto.OrderFilter;
+import com.przemarcz.order.dto.OrderDto.OrderForRestaurantResponse;
+import com.przemarcz.order.dto.OrderDto.OrderForUserResponse;
+import com.przemarcz.order.dto.OrderDto.UpdateOrderRequest;
 import com.przemarcz.order.dto.PayUDto.PayUUrlResponse;
 import com.przemarcz.order.exception.NotFoundException;
 import com.przemarcz.order.mapper.AvroMapper;
@@ -24,11 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static com.przemarcz.order.dto.OrderDto.*;
 
 
 @RequiredArgsConstructor
@@ -61,11 +63,11 @@ public class OrderService {
         RestaurantPayment restaurantPayment = getRestaurantPayment(restaurantId);
         List<Order> ordersToUpdatePaymentStatus = new ArrayList<>();
         for(Order order: orders){
-            if(isOrderPayed(restaurantPayment,order.getPayUOrderId())){
+            if (isOrderPayed(restaurantPayment, order.getPayUOrderId())) {
                 ordersToUpdatePaymentStatus.add(order);
                 order.setPayed(true);
             }
-            if(order.isOrderExpired()){
+            if (order.isOrderExpired(LocalDateTime.now())) {
                 orderRepository.delete(order);
             }
         }

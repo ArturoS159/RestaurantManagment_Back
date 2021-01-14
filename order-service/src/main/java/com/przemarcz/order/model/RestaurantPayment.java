@@ -1,9 +1,6 @@
 package com.przemarcz.order.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,10 +10,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class RestaurantPayment {
     @Id
     @Column(name = "restaurant_id")

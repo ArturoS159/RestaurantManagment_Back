@@ -3,10 +3,7 @@ package com.przemarcz.order.model;
 import com.przemarcz.order.model.enums.OrderStatus;
 import com.przemarcz.order.model.enums.OrderType;
 import com.przemarcz.order.model.enums.PaymentMethod;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -14,12 +11,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "orders")
-@NoArgsConstructor
+@Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@Getter
+@Setter
 public class Order {
 
     private static final int ORDER_WAITING_TIME = 60;
@@ -55,10 +53,7 @@ public class Order {
     private UUID restaurantId;
     @Column(name = "restaurant_name")
     private String restaurantName;
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "order_id")
     private List<Meal> meals;
     private boolean payed;
@@ -67,8 +62,8 @@ public class Order {
     @Column(name = "payu_order_id")
     private String payUOrderId;
 
-    public boolean isOrderExpired(){
-        return time.plusMinutes(ORDER_WAITING_TIME).isBefore(LocalDateTime.now());
+    public boolean isOrderExpired(LocalDateTime time) {
+        return time.plusMinutes(ORDER_WAITING_TIME).isBefore(time);
     }
 
 }
