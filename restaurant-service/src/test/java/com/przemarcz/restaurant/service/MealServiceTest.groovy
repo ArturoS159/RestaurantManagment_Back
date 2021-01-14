@@ -54,7 +54,7 @@ class MealServiceTest extends Specification {
 
         restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2))
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3))
-        MealFilter filters = MealFilter.builder().build()
+        MealFilter filters = new MealFilter(null, null, null, null, null)
         when:
         MealListResponse responseRestaurant1 = mealService.getAllRestaurantMeals(restaurant1.id, filters)
         MealListResponse responseRestaurant2 = mealService.getAllRestaurantMeals(restaurant2.id, filters)
@@ -70,7 +70,7 @@ class MealServiceTest extends Specification {
                 .id(UUID.randomUUID())
                 .build()
         restaurantRepository.save(restaurant)
-        MealFilter filters = MealFilter.builder().build()
+        MealFilter filters = new MealFilter(null, null, null, null, null)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
         then:
@@ -83,7 +83,7 @@ class MealServiceTest extends Specification {
                 .id(UUID.randomUUID())
                 .build()
         restaurantRepository.save(restaurant)
-        MealFilter filters = MealFilter.builder().build()
+        MealFilter filters = new MealFilter(null, null, null, null, null)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(UUID.randomUUID(), filters)
         then:
@@ -117,9 +117,7 @@ class MealServiceTest extends Specification {
                 .build()
         restaurantRepository.save(restaurnat)
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
-        MealFilter filters = MealFilter.builder()
-                .category("pizza,soup")
-                .build()
+        MealFilter filters = new MealFilter("pizza,soup", null, null, null, null)
         when:
         MealListResponse responseRestaurant1 = mealService.getAllRestaurantMeals(restaurnat.id, filters)
         then:
@@ -153,10 +151,7 @@ class MealServiceTest extends Specification {
                 .build()
         restaurantRepository.save(restaurant)
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
-        MealFilter filters = MealFilter.builder()
-                .fromPrice(fromPrice)
-                .toPrice(toPrice)
-                .build()
+        MealFilter filters = new MealFilter(null, fromPrice, toPrice, null, null)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
         then:
@@ -195,10 +190,7 @@ class MealServiceTest extends Specification {
                 .build()
         restaurantRepository.save(restaurant)
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
-        MealFilter filters = MealFilter.builder()
-                .fromTime(fromTime)
-                .toTime(toTime)
-                .build()
+        MealFilter filters = new MealFilter(null, null, null, fromTime, toTime)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
         then:
