@@ -47,6 +47,8 @@ mvn clean install -DskipTests=true
  java -jar .\config-server\target\config-server.jar
  ```
  
+ Repeat this for all microservices.
+ 
  Run priority list > config-server >> other 
  config serwer share configs to other microservices
  
