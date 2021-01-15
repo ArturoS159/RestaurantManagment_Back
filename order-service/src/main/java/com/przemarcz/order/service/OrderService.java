@@ -91,7 +91,7 @@ public class OrderService {
             orderMapper.updateOrderPayUResponse(order,preparePayment(order));
             orderRepository.save(order);
         }
-        return payUMapper.toPayUUrlResponse(order.getPayUUrl());
+        return new PayUUrlResponse(order.getPayUUrl());
     }
 
     private PaymentResponse preparePayment(Order order) throws IOException {

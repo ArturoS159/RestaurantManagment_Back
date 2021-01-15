@@ -1,6 +1,5 @@
 package com.przemarcz.order.mapper;
 
-import com.przemarcz.order.dto.PayUDto.PayUUrlResponse;
 import com.przemarcz.order.model.Meal;
 import com.przemarcz.order.model.Order;
 import com.przemarcz.order.util.payumodels.Buyer;
@@ -36,9 +35,6 @@ public interface PayUMapper {
 
     @Mapping(target = "unitPrice", source = "price", qualifiedByName = "deleteDot")
     Product toProduct(Meal meal);
-
-    @Mapping(target = "payUUrl", source = "url")
-    PayUUrlResponse toPayUUrlResponse(String url);
 
     @Named("deleteDot")
     default String deleteDotFromString(String price){
