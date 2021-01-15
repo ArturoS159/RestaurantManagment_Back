@@ -1,0 +1,22 @@
+server:
+  port: 8881
+  application:
+    name: resource-server
+  servlet:
+    context-path: /resource-api
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    hikari:
+      maxLifeTime: 1200000
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://165.227.137.37:5432/authDb?currentSchema=auth
+    username: postgres
+    password: password
+
+user:
+  resourceId: rest_service
