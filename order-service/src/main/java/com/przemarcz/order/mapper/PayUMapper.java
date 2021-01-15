@@ -26,8 +26,9 @@ public interface PayUMapper {
     Payment toPayment(Order order, String posId);
 
     @Named("toBuyer")
-    @Mapping(target = "firstName", source = "forename")
-    @Mapping(target = "lastName", source = "surname")
+    @Mapping(target = "email", source = "email", defaultValue = "")
+    @Mapping(target = "firstName", source = "forename", defaultValue = "")
+    @Mapping(target = "lastName", source = "surname", defaultValue = "")
     Buyer toBuyer(Order order);
 
     @Named("toProducts")
@@ -38,6 +39,6 @@ public interface PayUMapper {
 
     @Named("deleteDot")
     default String deleteDotFromString(String price){
-        return price.replace("\\.","");
+        return price.replace(".","");
     }
 }

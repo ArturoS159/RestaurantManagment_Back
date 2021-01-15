@@ -58,7 +58,7 @@ public class PaymentHelper {
         if(response.getStatus() == CORRECT_RESPONSE_302){
             return new PaymentResponse(getOrderIdFromUrl(response.getLocation()),response.getLocation().toString());
         }
-        return null;
+        throw new IllegalArgumentException("Something went wrong!");
     }
 
     private String getOrderIdFromUrl(URI url){
