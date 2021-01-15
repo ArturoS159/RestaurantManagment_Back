@@ -40,8 +40,10 @@ public interface RestaurantMapper {
     @Mapping(target = "rate", source = "rate", qualifiedByName = "scaleRate")
     RestaurantForOwnerResponse toRestaurantOwnerResponse(Restaurant restaurant);
 
-    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     List<WorkTime> toWorkTime(List<WorkTimeRequest> workTime);
+
+    @Mapping(target = "id", expression = "java(UUID.randomUUID())")
+    WorkTime toWorkTimeSingle(WorkTimeRequest workTime);
 
     List<WorkTimeResponse> toWorkTimeResponse(List<WorkTime> workTime);
 

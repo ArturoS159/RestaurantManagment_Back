@@ -20,7 +20,7 @@ import static java.util.Objects.nonNull;
 @Setter
 public class WorkTime {
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
     @Column(name = "restaurant_id")
     private UUID restaurantId;
     @Enumerated(EnumType.STRING)
