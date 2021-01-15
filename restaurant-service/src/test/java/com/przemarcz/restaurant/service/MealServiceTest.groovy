@@ -54,7 +54,7 @@ class MealServiceTest extends Specification {
 
         restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2))
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3))
-        MealFilter filters = new MealFilter(null, null, null, null, null)
+        MealFilter filters = new MealFilter(null, null, null, null, null, null)
         when:
         MealListResponse responseRestaurant1 = mealService.getAllRestaurantMeals(restaurant1.id, filters)
         MealListResponse responseRestaurant2 = mealService.getAllRestaurantMeals(restaurant2.id, filters)
@@ -70,7 +70,7 @@ class MealServiceTest extends Specification {
                 .id(UUID.randomUUID())
                 .build()
         restaurantRepository.save(restaurant)
-        MealFilter filters = new MealFilter(null, null, null, null, null)
+        MealFilter filters = new MealFilter(null, null, null, null, null, null)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
         then:
@@ -83,11 +83,40 @@ class MealServiceTest extends Specification {
                 .id(UUID.randomUUID())
                 .build()
         restaurantRepository.save(restaurant)
-        MealFilter filters = new MealFilter(null, null, null, null, null)
+        MealFilter filters = new MealFilter(null, null, null, null, null, null)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(UUID.randomUUID(), filters)
         then:
         response.meals.size() == 0
+    }
+
+    def "should get all restauant meals when search by name"() {
+        given:
+        Restaurant restaurnat = Restaurant.builder()
+                .id(UUID.randomUUID())
+                .build()
+        Meal meal1 = Meal.builder()
+                .id(UUID.randomUUID())
+                .name("ab")
+                .restaurantId(restaurnat.id)
+                .build()
+        Meal meal2 = Meal.builder()
+                .id(UUID.randomUUID())
+                .name("aa")
+                .restaurantId(restaurnat.id)
+                .build()
+        Meal meal3 = Meal.builder()
+                .id(UUID.randomUUID())
+                .name("bc")
+                .restaurantId(restaurnat.id)
+                .build()
+        restaurantRepository.save(restaurnat)
+        mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3))
+        MealFilter filters = new MealFilter("a", null, null, null, null, null)
+        when:
+        MealListResponse responseRestaurant1 = mealService.getAllRestaurantMeals(restaurnat.id, filters)
+        then:
+        responseRestaurant1.meals.size() == 2
     }
 
     def "should get all restauant meals when filter by category"() {
@@ -117,7 +146,7 @@ class MealServiceTest extends Specification {
                 .build()
         restaurantRepository.save(restaurnat)
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
-        MealFilter filters = new MealFilter("pizza,soup", null, null, null, null)
+        MealFilter filters = new MealFilter(null, "pizza,soup", null, null, null, null)
         when:
         MealListResponse responseRestaurant1 = mealService.getAllRestaurantMeals(restaurnat.id, filters)
         then:
@@ -151,7 +180,7 @@ class MealServiceTest extends Specification {
                 .build()
         restaurantRepository.save(restaurant)
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
-        MealFilter filters = new MealFilter(null, fromPrice, toPrice, null, null)
+        MealFilter filters = new MealFilter(null, null, fromPrice, toPrice, null, null)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
         then:
@@ -190,7 +219,7 @@ class MealServiceTest extends Specification {
                 .build()
         restaurantRepository.save(restaurant)
         mealRepository.saveAll(Arrays.asList(meal1, meal2, meal3, meal4))
-        MealFilter filters = new MealFilter(null, null, null, fromTime, toTime)
+        MealFilter filters = new MealFilter(null, null, null, null, fromTime, toTime)
         when:
         MealListResponse response = mealService.getAllRestaurantMeals(restaurant.id, filters)
         then:
