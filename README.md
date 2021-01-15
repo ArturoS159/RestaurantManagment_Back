@@ -1,16 +1,52 @@
+
 ## Table of contents
 * [General info](#general-info)
+* [Frontend](#frontend)
 * [Technologies](#technologies)
 * [Setup](#setup)
 
 ## General info
-This project is simple Lorem ipsum dolor generator.
-	
+![Alt text](https://github.com/ArturoS159/RestaurantManagment_Back/blob/feature/readme/backend.png?raw=true "Backend")
+
+The backend is written in Java using Spring Boot and Spring Cloud technologies using the Kubernetes platform.
+Using a web browser both from a computer and from a mobile device, we communicate with the Gateway Server, which is the only one with an IP address available from outside. We improve security by preventing the user from direct communication with modules and all network traffic is sent through the gate. Each microservice can work independently of others and have its own database, which gives great flexibility when choosing the type of database.
+
+## Frontend
+[React](https://github.com/ArturoS159/RestaurantManagment_Front)
+
 ## Technologies
 Project is created with:
-* Lorem version: 12.3
-* Ipsum version: 2.33
-* Ament library version: 999
+ 1. Java 11
+ 2. Spring Boot
+ 3. Spring Cloud
+ 4. Apache Kafka
+ 5. PostgreSQL
 	
 ## Setup
-To run this project, install it locally using npm:
+ 1. Requires before
+     - Docker desktop [tutorial](https://docs.docker.com/docker-for-windows/install/)
+     - Maven [tutorial](https://maven.apache.org/download.cgi)
+     
+ 2. Make execute jar serwer files
+Go to main folder and type in console
+```
+mvn clean install -DskipTests=true
+```
+ 3. Run Apache Kafka 
+ Need runned docker.
+ Go to main folder (where is docker-compose.yml) and type in console
+ ```
+ docker-compose up -d
+ ```
+ When everything is ok it should be looks like 
+ ![Alt text](https://github.com/ArturoS159/RestaurantManagment_Back/blob/feature/readme/obraz_2021-01-15_225641.png?raw=true "docker")
+ 
+ 4. Run serwers locally
+ Go to main folder and type for example
+ ```
+ java -jar .\config-server\target\config-server.jar
+ ```
+ 
+ Run priority list > config-server >> other 
+ config serwer share configs to other microservices
+ 
