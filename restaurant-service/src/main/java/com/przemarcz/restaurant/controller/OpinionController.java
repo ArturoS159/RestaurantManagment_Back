@@ -23,7 +23,7 @@ public class OpinionController {
 
     private final OpinionService opinionService;
 
-    @GetMapping("/{restaurantId}/opinions")
+    @GetMapping("/{restaurantId}/opinions/public")
     public ResponseEntity<Page<OpinionResponse>> getAllRestaurantOpinions(@PathVariable UUID restaurantId,
                                                                           Pageable pageable) {
         return new ResponseEntity<>(opinionService.getAllRestaurantOpinions(restaurantId, pageable), HttpStatus.OK);
