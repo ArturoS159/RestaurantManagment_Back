@@ -11,6 +11,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/restaurants/public", "/restaurants/*/public", "/restaurants/*/time/public", "/restaurants/*/meals/public");
+        web.ignoring().antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/restaurants/public", "/restaurants/*/public", "/restaurants/*/time/public", "/restaurants/*/meals/public", "/restaurants/{restaurantId}/meals/category/public");
     }
 }
