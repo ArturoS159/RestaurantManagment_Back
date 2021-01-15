@@ -64,6 +64,7 @@ public class MealDto {
 
     @Value
     public static class MealFilter {
+        String name;
         String category;
         BigDecimal fromPrice;
         BigDecimal toPrice;

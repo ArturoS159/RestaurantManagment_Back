@@ -23,6 +23,7 @@ import static java.util.Objects.nonNull;
 public class MealSpecification implements Specification<Meal> {
 
     private final UUID restaurantId;
+    private final String name;
     private final Set<String> categories;
     private final BigDecimal fromPrice;
     private final BigDecimal toPrice;
@@ -31,6 +32,7 @@ public class MealSpecification implements Specification<Meal> {
 
     public MealSpecification(UUID restaurantId, MealFilter mealFilter) {
         this.restaurantId = restaurantId;
+        this.name = mealFilter.getName();
         this.categories = getCategories(mealFilter.getCategory());
         this.fromPrice = mealFilter.getFromPrice();
         this.toPrice = mealFilter.getToPrice();
@@ -45,16 +47,19 @@ public class MealSpecification implements Specification<Meal> {
     @Override
     public Predicate toPredicate(Root<Meal> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder builder) {
         List<Predicate> predicates = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(categories)){
+        if (nonNull(name)) {
+            predicates.add(builder.like(builder.lower(root.get(Meal_.name)), "%" + name.toLowerCase() + "%"));
+        }
+        if (!CollectionUtils.isEmpty(categories)) {
             predicates.add(builder.lower(root.get(Meal_.category)).in(categories));
         }
-        if(nonNull(fromPrice)){
+        if (nonNull(fromPrice)) {
             predicates.add(builder.greaterThanOrEqualTo(root.get(Meal_.price), fromPrice));
         }
-        if(nonNull(toPrice)){
+        if (nonNull(toPrice)) {
             predicates.add(builder.lessThanOrEqualTo(root.get(Meal_.price), toPrice));
         }
-        if(nonNull(fromTime)){
+        if (nonNull(fromTime)) {
             predicates.add(builder.greaterThanOrEqualTo(root.get(Meal_.timeToDo), fromTime));
         }
         if(nonNull(toTime)){
