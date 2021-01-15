@@ -6,7 +6,7 @@
 * [Setup](#setup)
 
 ## General info
-![Alt text](https://github.com/ArturoS159/RestaurantManagment_Back/blob/feature/readme/backend.png?raw=true "Backend")
+![Alt text](https://github.com/ArturoS159/RestaurantManagment_Back/blob/master/backend.png?raw=true "Backend")
 
 The backend is written in Java using Spring Boot and Spring Cloud technologies using the Kubernetes platform.
 Using a web browser both from a computer and from a mobile device, we communicate with the Gateway Server, which is the only one with an IP address available from outside. We improve security by preventing the user from direct communication with modules and all network traffic is sent through the gate. Each microservice can work independently of others and have its own database, which gives great flexibility when choosing the type of database.
@@ -39,7 +39,7 @@ mvn clean install -DskipTests=true
  docker-compose up -d
  ```
  When everything is ok it should be looks like 
- ![Alt text](https://github.com/ArturoS159/RestaurantManagment_Back/blob/feature/readme/obraz_2021-01-15_225641.png?raw=true "docker")
+ ![Alt text](https://github.com/ArturoS159/RestaurantManagment_Back/blob/master/obraz_2021-01-15_225641.png?raw=true "docker")
  
  4. Run serwers locally
  Go to main folder and type for example
