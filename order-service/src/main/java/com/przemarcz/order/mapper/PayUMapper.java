@@ -22,7 +22,7 @@ public interface PayUMapper {
     @Mapping(target = "totalAmount", source = "order.price", qualifiedByName = "deleteDot")
     @Mapping(target = "merchantPosId", source = "posId")
     @Mapping(target = "products", source = "order.meals", qualifiedByName = "toProducts")
-    @Mapping(target = "continueUrl", expression = "java(\"http://localhost:3000\")")
+    @Mapping(target = "continueUrl", expression = "java(\"http://localhost:3000/my_orders/\"+order.getRestaurantId( ).toString())")
     Payment toPayment(Order order, String posId);
 
     @Named("toBuyer")
