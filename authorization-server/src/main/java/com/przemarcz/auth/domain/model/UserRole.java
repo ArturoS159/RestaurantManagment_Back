@@ -1,6 +1,6 @@
-package com.przemarcz.auth.model;
+package com.przemarcz.auth.domain.model;
 
-import com.przemarcz.auth.model.enums.Role;
+import com.przemarcz.auth.domain.model.enums.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,7 +19,6 @@ public class UserRole implements Serializable {
     private static final long serialVersionUID = 6228683028367657690L;
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false)
     private UUID id = UUID.randomUUID();
     @Column(name = "user_id")
     private UUID userId;

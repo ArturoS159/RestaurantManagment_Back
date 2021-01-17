@@ -1,6 +1,6 @@
-package com.przemarcz.auth.repository;
+package com.przemarcz.auth.domain.repository;
 
-import com.przemarcz.auth.model.UserRole;
+import com.przemarcz.auth.domain.model.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

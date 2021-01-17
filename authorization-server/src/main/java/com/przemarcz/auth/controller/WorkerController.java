@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.przemarcz.auth.dto.UserDto.WorkerResponse;
+import static com.przemarcz.auth.domain.dto.UserDto.WorkerResponse;
 
 @RestController
 @RequiredArgsConstructor

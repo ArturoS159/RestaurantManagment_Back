@@ -1,7 +1,9 @@
 package com.przemarcz.auth.model
 
+import com.przemarcz.auth.domain.model.User
+import com.przemarcz.auth.domain.model.enums.Role
 import com.przemarcz.auth.exception.AlreadyExistException
-import com.przemarcz.auth.model.enums.Role
+import com.przemarcz.auth.exception.IllegalArgumentException
 import spock.lang.Specification
 
 class UserTest extends Specification {

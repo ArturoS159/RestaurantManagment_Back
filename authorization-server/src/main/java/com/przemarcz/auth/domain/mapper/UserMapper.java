@@ -1,11 +1,11 @@
-package com.przemarcz.auth.mapper;
+package com.przemarcz.auth.domain.mapper;
 
-import com.przemarcz.auth.model.User;
+import com.przemarcz.auth.domain.model.User;
 import org.mapstruct.*;
 
 import java.util.UUID;
 
-import static com.przemarcz.auth.dto.UserDto.*;
+import static com.przemarcz.auth.domain.dto.UserDto.*;
 
 @Mapper(componentModel = "spring", uses = PasswordEncoderMapper.class, imports = UUID.class)
 public interface UserMapper {

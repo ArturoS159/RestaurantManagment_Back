@@ -1,6 +1,6 @@
 package com.przemarcz.auth.controller;
 
-import com.przemarcz.auth.dto.ApiResponse;
+import com.przemarcz.auth.exception.ApiResponse;
 import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.NotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

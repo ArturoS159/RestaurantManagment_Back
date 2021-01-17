@@ -1,7 +1,8 @@
-package com.przemarcz.auth.model;
+package com.przemarcz.auth.domain.model;
 
+import com.przemarcz.auth.domain.model.enums.Role;
 import com.przemarcz.auth.exception.AlreadyExistException;
-import com.przemarcz.auth.model.enums.Role;
+import com.przemarcz.auth.exception.IllegalArgumentException;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import static com.przemarcz.auth.exception.ExceptionMessage.ACTIVATED_BEFORE;
+import static com.przemarcz.auth.exception.ExceptionMessage.BAD_ACTIVATION_KEY;
 import static java.util.Objects.nonNull;
 
 @Entity
@@ -28,11 +31,10 @@ public class User implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 6529685098267757690L;
     private static final String PRE_ROLE = "ROLE_";
-    private static final Integer TEN = 10;
+    private static final int TEN = 10;
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id = UUID.randomUUID();
+    private UUID id;
     @Column(unique = true)
     private String email;
     @Column(unique = true)
@@ -64,11 +66,11 @@ public class User implements UserDetails, Serializable {
 
     public void activeAccount(String activationKey) {
         if (active) {
-            throw new AlreadyExistException();
+            throw new AlreadyExistException(ACTIVATED_BEFORE);
         } else if (isActivationKeyTheSame(activationKey)) {
             active = true;
         } else {
-            throw new IllegalArgumentException("Bad key!");
+            throw new IllegalArgumentException(BAD_ACTIVATION_KEY);
         }
     }
 

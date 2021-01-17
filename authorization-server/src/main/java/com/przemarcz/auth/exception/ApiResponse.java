@@ -1,4 +1,4 @@
-package com.przemarcz.auth.dto;
+package com.przemarcz.auth.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

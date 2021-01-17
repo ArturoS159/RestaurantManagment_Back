@@ -1,14 +1,10 @@
 package com.przemarcz.auth.service;
 
-import com.przemarcz.auth.dto.UserDto.ActivationUserRequest;
-import com.przemarcz.auth.dto.UserDto.RegisterUserRequest;
-import com.przemarcz.auth.dto.UserDto.UserResponse;
+import com.przemarcz.auth.domain.dto.UserDto.RegisterUserRequest;
+import com.przemarcz.auth.domain.mapper.UserMapper;
+import com.przemarcz.auth.domain.model.User;
+import com.przemarcz.auth.domain.repository.UserRepository;
 import com.przemarcz.auth.exception.AlreadyExistException;
-import com.przemarcz.auth.exception.NotFoundException;
-import com.przemarcz.auth.mapper.TextMapper;
-import com.przemarcz.auth.mapper.UserMapper;
-import com.przemarcz.auth.model.User;
-import com.przemarcz.auth.repository.UserRepository;
 import com.przemarcz.auth.util.MailSender;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.przemarcz.auth.dto.UserDto.UpdateUserRequest;
+import static com.przemarcz.auth.exception.ExceptionMessage.RECORD_ALREADY_EXIST;
 
 @Service
 @AllArgsConstructor
@@ -27,28 +23,23 @@ public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final TextMapper textMapper;
     private final MailSender mailSender;
+    private final UserService userService;
 
     @Override
     @Transactional(value = "transactionManager", readOnly = true)
     public UserDetails loadUserByUsername(String value) {
         try {
-            return getUserFromDatabaseById(value);
+            return userService.getUserFromDatabaseById(value);
         } catch (Exception err) {
-            return getUserFormDatabaseByLogin(value);
+            return userService.getUserFormDatabaseByLogin(value);
         }
-    }
-
-    @Transactional(value = "transactionManager", readOnly = true)
-    public UserResponse getUser(String id) {
-        return userMapper.toUserResponse(getUserFromDatabaseById(id));
     }
 
     @Transactional(value = "transactionManager")
     public void register(RegisterUserRequest registerUser) throws EmailException {
         if (isUserExist(registerUser)) {
-            throw new AlreadyExistException();
+            throw new AlreadyExistException(RECORD_ALREADY_EXIST);
         }
         User user = userMapper.toUser(registerUser);
         user.generateUserActivationKey();
@@ -59,27 +50,5 @@ public class AuthService implements UserDetailsService {
 
     private boolean isUserExist(RegisterUserRequest user) {
         return userRepository.findByLoginOrEmail(user.getLogin(), user.getEmail()).isPresent();
-    }
-
-    @Transactional(value = "transactionManager")
-    public UserResponse updateUser(UpdateUserRequest userRequest, String userId) {
-        User user = getUserFromDatabaseById(userId);
-        userMapper.updateUser(user, userRequest);
-        return userMapper.toUserResponse(userRepository.save(user));
-    }
-
-    @Transactional(value = "transactionManager")
-    public void active(ActivationUserRequest userActivation) {
-        User user = getUserFormDatabaseByLogin(userActivation.getLogin());
-        user.activeAccount(userActivation.getActivationKey());
-        userRepository.save(user);
-    }
-
-    public User getUserFromDatabaseById(String value) {
-        return userRepository.findById(textMapper.toUUID(value)).orElseThrow(NotFoundException::new);
-    }
-
-    private User getUserFormDatabaseByLogin(String value) {
-        return userRepository.findByLogin(value.toLowerCase()).orElseThrow(NotFoundException::new);
     }
 }

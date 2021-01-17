@@ -1,6 +1,6 @@
-package com.przemarcz.auth.repository;
+package com.przemarcz.auth.domain.repository;
 
-import com.przemarcz.auth.model.User;
+import com.przemarcz.auth.domain.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

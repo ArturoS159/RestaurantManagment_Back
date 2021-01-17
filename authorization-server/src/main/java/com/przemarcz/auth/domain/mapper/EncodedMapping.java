@@ -1,4 +1,4 @@
-package com.przemarcz.auth.mapper;
+package com.przemarcz.auth.domain.mapper;
 
 import org.mapstruct.Qualifier;
 

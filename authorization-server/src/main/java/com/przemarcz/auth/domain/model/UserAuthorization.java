@@ -1,4 +1,4 @@
-package com.przemarcz.auth.model;
+package com.przemarcz.auth.domain.model;
 
 import lombok.*;
 
@@ -22,7 +22,6 @@ public class UserAuthorization implements Serializable {
     private static final long serialVersionUID = 6539685298265657691L;
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false)
     private UUID id = UUID.randomUUID();
     @Column(name = "activation_key")
     private String activationKey;

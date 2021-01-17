@@ -1,13 +1,14 @@
 package com.przemarcz.auth.service;
 
+import com.przemarcz.auth.domain.mapper.UserMapper;
+import com.przemarcz.auth.domain.model.User;
+import com.przemarcz.auth.domain.model.UserRole;
+import com.przemarcz.auth.domain.model.enums.Role;
+import com.przemarcz.auth.domain.repository.UserRepository;
+import com.przemarcz.auth.domain.repository.UserRoleRepository;
 import com.przemarcz.auth.exception.AlreadyExistException;
+import com.przemarcz.auth.exception.ExceptionMessage;
 import com.przemarcz.auth.exception.NotFoundException;
-import com.przemarcz.auth.mapper.UserMapper;
-import com.przemarcz.auth.model.User;
-import com.przemarcz.auth.model.UserRole;
-import com.przemarcz.auth.model.enums.Role;
-import com.przemarcz.auth.repository.UserRepository;
-import com.przemarcz.auth.repository.UserRoleRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.przemarcz.auth.dto.UserDto.WorkerResponse;
+import static com.przemarcz.auth.domain.dto.UserDto.WorkerResponse;
+import static com.przemarcz.auth.exception.ExceptionMessage.RECORD_ALREADY_EXIST;
+import static com.przemarcz.auth.exception.ExceptionMessage.RECORD_NOT_FOUND;
 
 @Service
 @AllArgsConstructor
@@ -50,7 +53,7 @@ public class WorkerService {
     public WorkerResponse addRestaurantWorker(UUID restaurantId, String email) {
         User user = getUserFromDatabaseByEmail(email.toLowerCase());
         if (isWorkerAddedBefore(restaurantId, user.getId())) {
-            throw new AlreadyExistException();
+            throw new AlreadyExistException(RECORD_ALREADY_EXIST);
         }
         user.addRole(Role.WORKER, restaurantId);
         userRepository.save(user);
@@ -64,9 +67,7 @@ public class WorkerService {
     }
 
     private User getUserFromDatabaseByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
-                NotFoundException::new
-        );
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ExceptionMessage.RECORD_NOT_FOUND));
     }
 
     @Transactional(value = "transactionManager")
@@ -75,7 +76,7 @@ public class WorkerService {
                 .filter(userRole -> userRole.getRole().equals(Role.WORKER))
                 .filter(userRole -> userRole.getUserId().equals(workerId))
                 .findAny()
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(RECORD_NOT_FOUND));
         userRoleRepository.delete(workerAuth);
     }
 }

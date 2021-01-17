@@ -1,4 +1,4 @@
-package com.przemarcz.auth.dto;
+package com.przemarcz.auth.domain.dto;
 
 import lombok.Builder;
 import lombok.Value;
@@ -7,7 +7,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.UUID;
 
 public class UserDto {
@@ -49,7 +48,11 @@ public class UserDto {
 
     @Value
     public static class ActivationUserRequest {
+        @NotBlank(message = "Login must be not blank")
+        @Size(max = 50, message = "Login must be lower than 50")
         String login;
+        @NotBlank(message = "Activationkey must be not blank")
+        @Size(max = 50, message = "Activationkey")
         String activationKey;
     }
 
@@ -78,10 +81,4 @@ public class UserDto {
         String phoneNumber;
         String houseNumber;
     }
-
-    @Value
-    public static class WorkerRestaurantResponse{
-        List<UUID> restaurants;
-    }
-
 }
