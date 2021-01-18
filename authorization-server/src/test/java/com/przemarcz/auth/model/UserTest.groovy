@@ -22,7 +22,7 @@ class UserTest extends Specification {
         User user = User.builder().build()
         user.generateUserActivationKey()
         when:
-        user.activeAccount(user.userAuthorization.activationKey)
+        user.activeAccount(user.activationKey)
         then:
         user.active
     }
@@ -31,9 +31,9 @@ class UserTest extends Specification {
         given:
         User user = User.builder().build()
         user.generateUserActivationKey()
-        user.activeAccount(user.userAuthorization.activationKey)
+        user.activeAccount(user.activationKey)
         when:
-        user.activeAccount(user.userAuthorization.activationKey)
+        user.activeAccount(user.activationKey)
         then:
         thrown AlreadyExistException
     }

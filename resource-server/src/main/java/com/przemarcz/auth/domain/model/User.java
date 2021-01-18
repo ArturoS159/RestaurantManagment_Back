@@ -1,4 +1,4 @@
-package com.przemarcz.auth.model;
+package com.przemarcz.auth.domain.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,10 +12,6 @@ class User implements Serializable, UserDetails {
 
     private static final long serialVersionUID = 6529685098267757690L;
     private UUID id;
-
-    public UUID getId() {
-        return id;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

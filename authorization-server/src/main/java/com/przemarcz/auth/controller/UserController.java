@@ -13,7 +13,6 @@ import static com.przemarcz.auth.domain.dto.UserDto.*;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     private final UserService userService;

@@ -5,16 +5,19 @@ import com.przemarcz.auth.exception.AlreadyExistException;
 import com.przemarcz.auth.exception.IllegalArgumentException;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.przemarcz.auth.exception.ExceptionMessage.ACTIVATED_BEFORE;
 import static com.przemarcz.auth.exception.ExceptionMessage.BAD_ACTIVATION_KEY;
@@ -50,12 +53,12 @@ public class User implements UserDetails, Serializable {
     private String phoneNumber;
     @Column(name = "house_number")
     private String houseNumber;
+    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private final List<UserRole> restaurantRoles = new ArrayList<>();
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_authorization")
-    private UserAuthorization userAuthorization;
+    private final Set<UserRole> restaurantRoles = new HashSet<>();
+    @Column(name = "activation_key")
+    private String activationKey;
     private boolean active;
 
 
@@ -75,11 +78,11 @@ public class User implements UserDetails, Serializable {
     }
 
     private boolean isActivationKeyTheSame(String activationKey) {
-        return nonNull(activationKey) && userAuthorization.getActivationKey().equals(activationKey);
+        return nonNull(activationKey) && this.activationKey.equals(activationKey);
     }
 
     public void generateUserActivationKey() {
-        userAuthorization = new UserAuthorization(generateKey());
+        activationKey = generateKey();
     }
 
     private String generateKey() {
@@ -88,13 +91,9 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        restaurantRoles.forEach(
-                userRole -> grantedAuthorities.add(
-                        new SimpleGrantedAuthority(PRE_ROLE + userRole.getRole() + "_" + userRole.getRestaurantId())
-                )
-        );
-        return grantedAuthorities;
+        return restaurantRoles.stream()
+                .map(userRole -> new SimpleGrantedAuthority((PRE_ROLE + userRole.getRole() + "_" + userRole.getRestaurantId())))
+                .collect(Collectors.toSet());
     }
 
     @Override

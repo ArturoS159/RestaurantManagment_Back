@@ -7,7 +7,6 @@ import com.przemarcz.auth.domain.model.enums.Role;
 import com.przemarcz.auth.domain.repository.UserRepository;
 import com.przemarcz.auth.domain.repository.UserRoleRepository;
 import com.przemarcz.auth.exception.AlreadyExistException;
-import com.przemarcz.auth.exception.ExceptionMessage;
 import com.przemarcz.auth.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +30,7 @@ public class WorkerService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
+    private final UserService userService;
     private final UserMapper userMapper;
 
     @Transactional(value = "transactionManager", readOnly = true)
@@ -51,7 +51,7 @@ public class WorkerService {
 
     @Transactional(value = "transactionManager")
     public WorkerResponse addRestaurantWorker(UUID restaurantId, String email) {
-        User user = getUserFromDatabaseByEmail(email.toLowerCase());
+        User user = userService.getUserFormDatabaseByLoginOrEmail(email.toLowerCase());
         if (isWorkerAddedBefore(restaurantId, user.getId())) {
             throw new AlreadyExistException(RECORD_ALREADY_EXIST);
         }
@@ -64,10 +64,6 @@ public class WorkerService {
         return userRoleRepository.findAllByRestaurantId(restaurantId).stream()
                 .filter(userRole -> userRole.getRole().equals(Role.WORKER))
                 .anyMatch(userRole -> userRole.getUserId().equals(userId));
-    }
-
-    private User getUserFromDatabaseByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ExceptionMessage.RECORD_NOT_FOUND));
     }
 
     @Transactional(value = "transactionManager")

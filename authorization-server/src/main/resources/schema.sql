@@ -28,8 +28,8 @@ create table if not exists users (
   post_code VARCHAR(256),
   phone_number VARCHAR(256),
   house_number VARCHAR(256),
-  active boolean,
-  user_authorization UUID
+  activation_key VARCHAR(256),
+  active boolean
 );
 
 create table if not exists user_roles (
@@ -37,9 +37,4 @@ create table if not exists user_roles (
   user_id UUID,
   role VARCHAR(256),
   restaurant_id UUID
-);
-
-create table if not exists user_authorization (
-  id UUID PRIMARY KEY,
-  activation_key VARCHAR(256)
 );

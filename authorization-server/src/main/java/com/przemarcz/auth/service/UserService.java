@@ -27,7 +27,7 @@ public class UserService {
 
     @Transactional(value = "transactionManager")
     public void active(ActivationUserRequest userActivation) {
-        User user = getUserFormDatabaseByLogin(userActivation.getLogin());
+        User user = getUserFormDatabaseByLoginOrEmail(userActivation.getLogin());
         user.activeAccount(userActivation.getActivationKey());
         userRepository.save(user);
     }
@@ -39,11 +39,13 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public User getUserFromDatabaseById(String value) {
-        return userRepository.findById(textMapper.toUUID(value)).orElseThrow(() -> new NotFoundException(RECORD_NOT_FOUND));
+    public User getUserFromDatabaseById(String userId) {
+        return userRepository.findById(textMapper.toUUID(userId))
+                .orElseThrow(() -> new NotFoundException(RECORD_NOT_FOUND));
     }
 
-    public User getUserFormDatabaseByLogin(String value) {
-        return userRepository.findByLogin(value.toLowerCase()).orElseThrow(() -> new NotFoundException(RECORD_NOT_FOUND));
+    public User getUserFormDatabaseByLoginOrEmail(String login) {
+        return userRepository.findByLoginOrEmail(login.toLowerCase())
+                .orElseThrow(() -> new NotFoundException(RECORD_NOT_FOUND));
     }
 }

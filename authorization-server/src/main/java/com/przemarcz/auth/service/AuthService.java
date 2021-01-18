@@ -32,7 +32,7 @@ public class AuthService implements UserDetailsService {
         try {
             return userService.getUserFromDatabaseById(value);
         } catch (Exception err) {
-            return userService.getUserFormDatabaseByLogin(value);
+            return userService.getUserFormDatabaseByLoginOrEmail(value);
         }
     }
 
@@ -44,7 +44,7 @@ public class AuthService implements UserDetailsService {
         User user = userMapper.toUser(registerUser);
         user.generateUserActivationKey();
         userRepository.save(user);
-        mailSender.sendEmail(user.getEmail(), user.getUserAuthorization().getActivationKey(), user.getLogin());
+        mailSender.sendEmail(user.getEmail(), user.getActivationKey(), user.getLogin());
         log.info(String.format("User %s registered!", user.getLogin()));
     }
 

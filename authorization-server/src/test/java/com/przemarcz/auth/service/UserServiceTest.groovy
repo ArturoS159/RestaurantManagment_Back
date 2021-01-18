@@ -106,7 +106,7 @@ class UserServiceTest extends Specification {
                 .build()
         authService.register(user)
         when:
-        String key = userRepository.findAll().get(0).getUserAuthorization().activationKey
+        String key = userRepository.findAll().get(0).activationKey
         ActivationUserRequest activationUserRequest = new ActivationUserRequest("login", key)
         userService.active(activationUserRequest)
         then:
@@ -121,7 +121,7 @@ class UserServiceTest extends Specification {
                 .password("password")
                 .build()
         authService.register(user)
-        String key = userRepository.findAll().get(0).getUserAuthorization().activationKey
+        String key = userRepository.findAll().get(0).activationKey
         ActivationUserRequest activationUserRequest = new ActivationUserRequest("login", key)
         userService.active(activationUserRequest)
         when:
