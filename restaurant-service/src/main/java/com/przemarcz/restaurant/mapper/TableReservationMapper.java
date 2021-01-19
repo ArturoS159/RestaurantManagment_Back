@@ -13,13 +13,13 @@ import java.util.UUID;
 public interface TableReservationMapper {
 
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")
-    Table toTable(CreateTableRequest createTableRequest);
+    Table toTable(CreateUpdateTableRequest createTablesRequest);
 
     TableResponse toTableResponse(Table table);
 
-    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateTable(@MappingTarget Table table, UpdateTableRequest updateTableRequest);
+//    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+//            nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+//    void updateTable(@MappingTarget Table table, UpdateTableRequest updateTableRequest);
 
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")
     Reservation toReservation(UUID restaurantId, CreateReservationRequest createReservationRequest, UUID userId);

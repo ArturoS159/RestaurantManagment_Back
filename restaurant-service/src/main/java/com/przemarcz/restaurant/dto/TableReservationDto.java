@@ -12,17 +12,15 @@ public class TableReservationDto {
     private TableReservationDto(){
     }
 
-    @Builder
     @Value
-    public static class CreateTableRequest {
-        String name;
-        Integer numberOfSeats;
-        Boolean canReserve;
+    public static class CreateTablesRequest {
+        List<CreateUpdateTableRequest> tables;
+        int nothing;
     }
 
     @Builder
     @Value
-    public static class UpdateTableRequest {
+    public static class CreateUpdateTableRequest {
         String name;
         Integer numberOfSeats;
         Boolean canReserve;
@@ -47,6 +45,11 @@ public class TableReservationDto {
         LocalDate day;
         LocalTime from;
         LocalTime to;
+    }
+
+    @Value
+    public static class TablesResponse {
+        List<TableResponse> tables;
     }
 
     @Value

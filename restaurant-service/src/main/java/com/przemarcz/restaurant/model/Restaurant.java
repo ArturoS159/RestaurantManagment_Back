@@ -130,15 +130,15 @@ public class Restaurant {
     }
 
     private boolean isRateOpinionInRange(BigDecimal rate) {
-        return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
+        return rate.compareTo(MIN) >= ZERO && rate.compareTo(MAX) <= ZERO;
     }
 
     public void delete() {
-        isDeleted=true;
+        isDeleted = true;
     }
 
-    public void createTable(Table table){
-        tables.add(table);
+    public void addTables(List<Table> tables) {
+        this.tables.addAll(tables);
     }
 
     public void addWorkTime(List<WorkTime> incomingTime) {

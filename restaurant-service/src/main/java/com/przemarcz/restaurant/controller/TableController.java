@@ -21,17 +21,17 @@ public class TableController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/tables")
-    public ResponseEntity<TableResponse> addTable(@PathVariable UUID restaurantId,
-                                                  @RequestBody CreateTableRequest createTableRequest) {
-        return new ResponseEntity<>(tableService.addTable(restaurantId, createTableRequest), HttpStatus.CREATED);
+    public ResponseEntity<TablesResponse> addTables(@PathVariable UUID restaurantId,
+                                                  @RequestBody CreateTablesRequest createTablesRequest) {
+        return new ResponseEntity<>(tableService.addTables(restaurantId, createTablesRequest), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PutMapping("/{restaurantId}/tables/{tableId}")
     public ResponseEntity<TableResponse> updateTable(@PathVariable UUID restaurantId,
                                                      @PathVariable UUID tableId,
-                                                     @RequestBody UpdateTableRequest updateTableRequest) {
-        return new ResponseEntity<>(tableService.updateTable(restaurantId, tableId, updateTableRequest), HttpStatus.CREATED);
+                                                     @RequestBody CreateUpdateTableRequest tableRequest) {
+        return new ResponseEntity<>(tableService.updateTable(restaurantId, tableId, tableRequest), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")

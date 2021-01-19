@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.NotFoundException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.przemarcz.restaurant.dto.TableReservationDto.*;
 
@@ -24,18 +26,22 @@ public class TableService {
     private final TableRepository tableRepository;
 
     @Transactional(value = "transactionManager")
-    public TableResponse addTable(UUID restaurantId, CreateTableRequest createTableRequest) {
+    public TablesResponse addTables(UUID restaurantId, CreateTablesRequest createTablesRequest) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        Table table = tableReservationMapper.toTable(createTableRequest);
-        restaurant.createTable(table);
+        List<Table> tables = createTablesRequest.getTables().stream()
+                .map(tableReservationMapper::toTable)
+                .collect(Collectors.toList());
+        restaurant.addTables(tables);
         restaurantRepository.save(restaurant);
-        return tableReservationMapper.toTableResponse(table);
+
+        List<TableResponse> tablesResponse = tables.stream().map(tableReservationMapper::toTableResponse).collect(Collectors.toList());
+        return new TablesResponse(tablesResponse);
     }
 
     @Transactional(value = "transactionManager")
-    public TableResponse updateTable(UUID restaurantId, UUID tableId, UpdateTableRequest updateTableRequest) {
-        Table table = tableRepository.findByIdAndRestaurantId(tableId,restaurantId).orElseThrow(NotFoundException::new);
-        tableReservationMapper.updateTable(table,updateTableRequest);
+    public TableResponse updateTable(UUID restaurantId, UUID tableId, CreateUpdateTableRequest updateTableRequest) {
+        Table table = tableRepository.findByIdAndRestaurantId(tableId, restaurantId).orElseThrow(NotFoundException::new);
+        //tableReservationMapper.updateTable(table,updateTableRequest);
         tableRepository.save(table);
         return tableReservationMapper.toTableResponse(table);
     }
