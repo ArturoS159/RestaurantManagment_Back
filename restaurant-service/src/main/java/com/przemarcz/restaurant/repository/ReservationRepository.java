@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
-    List<Reservation> findAllByDay(LocalDate day);
 
     Page<Reservation> findAllByDay(LocalDate day, Pageable pageable);
 

@@ -14,13 +14,28 @@ public class TableReservationDto {
 
     @Value
     public static class CreateTablesRequest {
-        List<CreateUpdateTableRequest> tables;
+        List<CreateTableRequest> tables;
         int nothing;
     }
 
     @Builder
     @Value
-    public static class CreateUpdateTableRequest {
+    public static class CreateTableRequest {
+        String name;
+        Integer numberOfSeats;
+        Boolean canReserve;
+    }
+
+    @Value
+    public static class UpdateTablesRequest {
+        List<UpdateTableRequest> tables;
+        int nothing;
+    }
+
+    @Builder
+    @Value
+    public static class UpdateTableRequest {
+        UUID id;
         String name;
         Integer numberOfSeats;
         Boolean canReserve;

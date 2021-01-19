@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.NotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,16 +39,24 @@ public class TableService {
     }
 
     @Transactional(value = "transactionManager")
-    public TableResponse updateTable(UUID restaurantId, UUID tableId, CreateUpdateTableRequest updateTableRequest) {
-        Table table = tableRepository.findByIdAndRestaurantId(tableId, restaurantId).orElseThrow(NotFoundException::new);
-        //tableReservationMapper.updateTable(table,updateTableRequest);
-        tableRepository.save(table);
-        return tableReservationMapper.toTableResponse(table);
+    public TablesResponse updateTables(UUID restaurantId, UpdateTablesRequest tablesRequest) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        List<Table> tables = restaurant.getTables();
+        List<Table> tablesResponseTmp = new ArrayList<>();
+        //TODO refactor
+        for (UpdateTableRequest updateTable : tablesRequest.getTables()) {
+            for (Table table : tables) {
+                if (updateTable.getId().equals(table.getId())) {
+                    tablesResponseTmp.add(table);
+                    tableReservationMapper.updateTable(table, updateTable);
+                }
+            }
+        }
+        return new TablesResponse(tablesResponseTmp.stream().map(tableReservationMapper::toTableResponse).collect(Collectors.toList()));
     }
 
     @Transactional(value = "transactionManager")
-    public void deleteTable(UUID restaurantId, UUID tableId) {
-        Table table = tableRepository.findByIdAndRestaurantId(tableId, restaurantId).orElseThrow(NotFoundException::new);
-        tableRepository.delete(table);
+    public void deleteTables(UUID restaurantId, int size) {
+        tableRepository.deleteByRestaurantIdAndNumberOfSeats(restaurantId, size);
     }
 }
