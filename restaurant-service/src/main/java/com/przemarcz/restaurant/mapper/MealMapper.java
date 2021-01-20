@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static java.util.Objects.isNull;
 
-@Mapper(componentModel = "spring", imports = UUID.class)
+@Mapper(componentModel = "spring", imports = {UUID.class})
 public interface MealMapper {
 
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")

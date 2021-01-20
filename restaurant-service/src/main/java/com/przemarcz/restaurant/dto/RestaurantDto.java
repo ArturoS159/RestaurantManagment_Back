@@ -117,7 +117,7 @@ public class RestaurantDto {
     @Value
     public static class RestaurantFilter {
         String name;
-        Set<RestaurantCategory> category;
+        String category;
         String city;
         BigDecimal rate;
         Boolean open;
