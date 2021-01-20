@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -30,5 +31,18 @@ public class UserRole implements Serializable {
     public UserRole(Role role, UUID restaurantId) {
         this.role = role;
         this.restaurantId = restaurantId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        UserRole userRole = (UserRole) object;
+        return id.equals(userRole.id) && userId.equals(userRole.userId) && role == userRole.role && restaurantId.equals(userRole.restaurantId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userId, role, restaurantId);
     }
 }
