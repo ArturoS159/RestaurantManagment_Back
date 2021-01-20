@@ -25,6 +25,15 @@ public class TableService {
     private final RestaurantService restaurantService;
     private final TableRepository tableRepository;
 
+    @Transactional(value = "transactionManager", readOnly = true)
+    public TablesResponse getTables(UUID restaurantId) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        List<TableResponse> tablesResponse = restaurant.getTables()
+                .stream().map(tableReservationMapper::toTableResponse)
+                .collect(Collectors.toList());
+        return new TablesResponse(tablesResponse);
+    }
+
     @Transactional(value = "transactionManager")
     public TablesResponse addTables(UUID restaurantId, CreateTablesRequest createTablesRequest) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
