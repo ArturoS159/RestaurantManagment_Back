@@ -2,6 +2,7 @@ package com.przemarcz.restaurant.model;
 
 import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
+import com.przemarcz.restaurant.model.enums.Days;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
+import static com.przemarcz.restaurant.dto.TableReservationDto.Time;
 import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -203,5 +205,18 @@ public class Restaurant {
                 throw new NotFoundException("No available hours found!");
             }
         });
+    }
+
+    public void addReservation(UUID tableId, Reservation reservation) {
+        tables.stream().filter(table -> table.getId().equals(tableId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Table not found!"))
+                .addReservation(reservation);
+    }
+
+    public Time getWorkTimeOfDay() {
+        Days day = Days.valueOf(LocalDate.now().getDayOfWeek().getValue()).orElseThrow(IllegalArgumentException::new);
+        WorkTime workTime = worksTime.stream().filter(time -> time.getDay().equals(day)).findFirst().orElseThrow(IllegalArgumentException::new);
+        return new Time(workTime.getFrom(), workTime.getTo());
     }
 }

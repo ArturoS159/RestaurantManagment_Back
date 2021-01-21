@@ -6,7 +6,6 @@ import com.przemarcz.restaurant.model.Table;
 import org.mapstruct.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring", uses = MealMapper.class, imports = {BigDecimal.class, UUID.class})
@@ -29,7 +28,5 @@ public interface TableReservationMapper {
     @Mapping(target = "restaurantName", source = "restaurantName")
     MyReservationResponse toMyReservationResponse(String restaurantName, Reservation reservations);
 
-    @Mapping(target = "reservationsInThisTime", source = "reservations")
-    @Mapping(target = "status", source = "status")
-    CheckReservationStatusResponse toCheckReservationStatusResponse(Boolean status, List<Reservation> reservations);
+    CheckReservationStatusRequest convertToCheck(CreateReservationRequest reservationRequest);
 }

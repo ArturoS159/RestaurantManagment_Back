@@ -99,11 +99,17 @@ public class TableReservationDto {
     @Value
     public static class CheckReservationStatusResponse {
         boolean status;
-        List<CheckReservationResponse> reservationsInThisTime;
+        List<CheckReservationResponse> reservations;
     }
 
     @Value
     public static class CheckReservationResponse {
+        UUID tableId;
+        List<Time> times;
+    }
+
+    @Value
+    public static class Time {
         LocalTime from;
         LocalTime to;
     }

@@ -13,13 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -35,45 +32,58 @@ public class ReservationService {
 
     @Transactional(value = "transactionManager")
     public ReservationResponse addReservation(UUID restaurantId, CreateReservationRequest createReservationRequest, String userId) {
-//        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-//        restaurant.checkReservationTime(createReservationRequest.getDay(), createReservationRequest.getFrom(), createReservationRequest.getTo());
-//        List<Table> tablesInRestaurants = getTablesRestaurant(createReservationRequest.getNumberOfSeats(), restaurant);
-//
-//        if (CollectionUtils.isEmpty(tablesInRestaurants)) {
-//            throw new NotFoundException("No tables available found!");
-//        }
-//
-////        List<Reservation> reservationsInThisDay = getRestaurantReservationsInThisDay(createReservationRequest.getDay(), createReservationRequest.getFrom(), createReservationRequest.getTo());
-//        List<Table> availableTables = getAvailableTables(tablesInRestaurants, reservationsInThisDay);
-//
-//        if (CollectionUtils.isEmpty(availableTables)) {
-//            throw new NotFoundException("No tables available found!");
-//        }
-//        Reservation reservation = tableReservationMapper.toReservation(restaurantId, createReservationRequest, textMapper.toUUID(userId));
-//        Table table = availableTables.get(new Random().nextInt(availableTables.size()));
-//        table.addReservation(reservation);
-//        return tableReservationMapper.toReservationResponse(reservation);
-        return null;
+        CheckReservationStatusResponse statusResponse = checkReservationStatus(restaurantId, tableReservationMapper.convertToCheck(createReservationRequest));
+        if (statusResponse.isStatus()) {
+            Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+            Reservation reservation = tableReservationMapper.toReservation(restaurantId, createReservationRequest, textMapper.toUUID(userId));
+            restaurant.addReservation(statusResponse.getReservations().get(new Random().nextInt(statusResponse.getReservations().size())).getTableId(), reservation);
+            return tableReservationMapper.toReservationResponse(reservation);
+        }
+        throw new IllegalArgumentException("Cant reserve");
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
     public CheckReservationStatusResponse checkReservationStatus(UUID restaurantId, CheckReservationStatusRequest checkReservationStatusRequest) {
-//        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-//        List<Table> tablesInRestaurant = getTablesRestaurant(checkReservationStatusRequest.getNumberOfSeats(), restaurant);
-//        if (tablesInRestaurant.isEmpty()) {
-//            return tableReservationMapper.toCheckReservationStatusResponse(false, Collections.emptyList());
-//        }
-////        List<Reservation> reservations = getRestaurantReservationsInThisDay(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo());
-//        List<Table> availableTables = getAvailableTables(tablesInRestaurant, reservations);
-//
-//        if (!availableTables.isEmpty()) {
-//            return tableReservationMapper.toCheckReservationStatusResponse(true, Collections.emptyList());
-//        }
-//        return tableReservationMapper.toCheckReservationStatusResponse(false, reservations);
-        return null;
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        restaurant.checkReservationTime(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo());
+        List<Table> tablesInRestaurant = getRestaurantTables(restaurant, checkReservationStatusRequest.getNumberOfSeats());
+        List<UUID> tablesId = tablesInRestaurant.stream().map(Table::getId).collect(Collectors.toList());
+        if (tablesInRestaurant.isEmpty()) {
+            throw new NotFoundException("No tables found");
+        }
+        List<Reservation> reservations = getRestaurantReservationsInThisDay(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo(), tablesId);
+        List<Table> availableTables = getAvailableTables(tablesInRestaurant, reservations);
+
+        List<CheckReservationResponse> qwe = availableTables.stream()
+                .map(table -> new CheckReservationResponse(table.getId(), null))
+                .collect(Collectors.toList());
+
+        if (!availableTables.isEmpty()) {
+            return new CheckReservationStatusResponse(true, qwe);
+        }
+        Map<UUID, List<Time>> tablesAndTime = new TreeMap<>();
+
+        List<Time> startedTime = new ArrayList<>();
+        startedTime.add(restaurant.getWorkTimeOfDay());
+
+        tablesId.forEach(uuid -> tablesAndTime.put(uuid, startedTime));
+
+        for (Reservation reservation : reservations) {
+            List<Time> time = tablesAndTime.get(reservation.getTableId());
+            time.add(new Time(reservation.getFrom(), reservation.getTo()));
+            tablesAndTime.put(reservation.getTableId(), time);
+        }
+
+        List<CheckReservationResponse> finalList = new ArrayList<>();
+
+        for (Map.Entry<UUID, List<Time>> ss : tablesAndTime.entrySet()) {
+            List<Time> timesss = ss.getValue();
+            finalList.add(new CheckReservationResponse(ss.getKey(), timesss));
+        }
+        return new CheckReservationStatusResponse(false, finalList);
     }
 
-    private List<Table> getTablesRestaurant(int size, Restaurant restaurant) {
+    private List<Table> getRestaurantTables(Restaurant restaurant, int size) {
         return restaurant.getTables().stream()
                 .filter(Table::getCanReserve)
                 .filter(table -> table.getNumberOfSeats().equals(size))
@@ -89,12 +99,12 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
-//    private List<Reservation> getRestaurantReservationsInThisDay(LocalDate day, UUID restauranId) {
-////        return reservationRepository.findAllByDay(day)
-////                .stream()
-////                .filter(reservation -> reservation.get)
-//        return null;
-//    }
+    private List<Reservation> getRestaurantReservationsInThisDay(LocalDate day, LocalTime from, LocalTime to, List<UUID> tablesId) {
+        return reservationRepository.findAllByDayAndTableIdIn(day, tablesId)
+                .stream()
+                .filter(reservation -> !reservation.isReservationOpen(from, to))
+                .collect(Collectors.toList());
+    }
 
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<MyReservationResponse> getMyReservations(String userId, Pageable pageable) {

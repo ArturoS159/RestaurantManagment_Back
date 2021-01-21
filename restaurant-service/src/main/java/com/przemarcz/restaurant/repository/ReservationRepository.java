@@ -15,5 +15,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
 
     Page<Reservation> findAllByDay(LocalDate day, Pageable pageable);
 
+    List<Reservation> findAllByDayAndTableIdIn(LocalDate day, List<UUID> tablesId);
+
     Page<Reservation> findAllByUserId(UUID userId, Pageable pageable);
 }
