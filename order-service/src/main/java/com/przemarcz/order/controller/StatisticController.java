@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+import static com.przemarcz.order.dto.StatisticDto.*;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/restaurants")
@@ -18,8 +20,9 @@ public class StatisticController {
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/stats-owner")
-    public ResponseEntity<Void> getRestaurantStatisticForOwner(@PathVariable UUID restaurantId) {
-        statisticSerivice.getRestaurantStatisticForOwner(restaurantId);
+    public ResponseEntity<Void> getRestaurantStatistic(@PathVariable UUID restaurantId,
+                                                               @ModelAttribute StatisticFilter filters) {
+        statisticSerivice.getRestaurantStatistic(restaurantId, filters);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
