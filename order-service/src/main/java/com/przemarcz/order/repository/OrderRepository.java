@@ -17,4 +17,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecific
     Optional<Order> findByRestaurantIdAndId(UUID restaurantId, UUID id);
 
     List<Order> findAllByRestaurantIdAndTimeBetween(UUID restaurantId, LocalDateTime start, LocalDateTime stop);
+    List<Order> findTop10ByRestaurantIdOrderByTimeDesc(UUID restaurantId);
 }
