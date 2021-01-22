@@ -9,6 +9,4 @@ import java.util.UUID;
 @Repository
 public interface TableRepository extends JpaRepository<Table, UUID> {
     void deleteByRestaurantIdAndNumberOfSeats(UUID restaurnatId, Integer numberOfSeats);
-
-
 }
