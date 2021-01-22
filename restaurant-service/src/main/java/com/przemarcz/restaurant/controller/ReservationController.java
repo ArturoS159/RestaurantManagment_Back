@@ -46,11 +46,11 @@ public class ReservationController {
         return new ResponseEntity<>(reservationService.getMyReservations(user.getName(), pageable), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/reservations")
     public ResponseEntity<Page<ReservationResponse>> getRestaurantReservations(@RequestParam(required = false)
                                                                                @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate day,
-                                                                               Pageable pageable) {
+                                                                               Pageable pageable,
+                                                                               Principal principal) {
         return new ResponseEntity<>(reservationService.getRestaurantReservations(day, pageable), HttpStatus.OK);
     }
 }

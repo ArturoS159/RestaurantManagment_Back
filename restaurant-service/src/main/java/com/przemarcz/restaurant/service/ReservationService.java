@@ -72,18 +72,23 @@ public class ReservationService {
         }
 
         tablesAndTime.forEach((key, value) -> value.addAll(restaurant.getWorkTimeOfDay()));
-        List<CheckReservationResponse> listToReturn = new ArrayList<>();
         tablesAndTime.forEach((key, value) -> Collections.sort(value));
 
-        for (Map.Entry<UUID, List<LocalTime>> map : tablesAndTime.entrySet()) {
-            Collections.sort(map.getValue());
-            List<Time> listOfTimes = new ArrayList<>();
-            for (int i = 0; i < map.getValue().size(); i += 2) {
-                listOfTimes.add(new Time(map.getValue().get(i), map.getValue().get(i + 1)));
-            }
-            listToReturn.add(new CheckReservationResponse(map.getKey(), listOfTimes));
-        }
+        List<CheckReservationResponse> listToReturn = getSortedTimeList(tablesAndTime);
+
         return new CheckReservationStatusResponse(false, listToReturn, availableTables);
+    }
+
+    private List<CheckReservationResponse> getSortedTimeList(Map<UUID, List<LocalTime>> tablesAndTime) {
+        List<CheckReservationResponse> listToReturn = new ArrayList<>();
+        tablesAndTime.forEach((key, value) -> {
+            List<Time> listOfTimes = new ArrayList<>();
+            for (int i = 0; i < value.size(); i += 2) {
+                listOfTimes.add(new Time(value.get(i), value.get(i + 1)));
+            }
+            listToReturn.add(new CheckReservationResponse(key, listOfTimes));
+        });
+        return listToReturn;
     }
 
     private List<Table> getRestaurantTables(Restaurant restaurant, int size) {
