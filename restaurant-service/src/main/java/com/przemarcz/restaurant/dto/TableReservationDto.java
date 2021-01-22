@@ -1,7 +1,9 @@
 package com.przemarcz.restaurant.dto;
 
+import com.przemarcz.restaurant.model.Table;
 import lombok.Builder;
 import lombok.Value;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -77,6 +79,8 @@ public class TableReservationDto {
 
     @Value
     public static class ReservationResponse {
+        String tableName;
+        Integer sizeOfTable;
         LocalDate day;
         LocalTime from;
         LocalTime to;
@@ -88,6 +92,8 @@ public class TableReservationDto {
     @Value
     public static class MyReservationResponse {
         String restaurantName;
+        String tableName;
+        Integer sizeOfTable;
         LocalDate day;
         LocalTime from;
         LocalTime to;
@@ -100,6 +106,8 @@ public class TableReservationDto {
     public static class CheckReservationStatusResponse {
         boolean status;
         List<CheckReservationResponse> reservations;
+        @JsonIgnore
+        List<Table> tables;
     }
 
     @Value

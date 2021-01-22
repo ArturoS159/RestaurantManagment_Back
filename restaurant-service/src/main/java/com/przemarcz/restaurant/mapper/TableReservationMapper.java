@@ -21,12 +21,11 @@ public interface TableReservationMapper {
     void updateTable(@MappingTarget Table table, UpdateTableRequest updateTableRequest);
 
     @Mapping(target = "id", expression = "java(UUID.randomUUID())")
-    Reservation toReservation(UUID restaurantId, CreateReservationRequest createReservationRequest, UUID userId);
+    Reservation toReservation(UUID restaurantId, CreateReservationRequest createReservationRequest, UUID userId, String restaurantName, String tableName, Integer sizeOfTable);
 
     ReservationResponse toReservationResponse(Reservation reservation);
 
-    @Mapping(target = "restaurantName", source = "restaurantName")
-    MyReservationResponse toMyReservationResponse(String restaurantName, Reservation reservations);
+    MyReservationResponse toMyReservationResponse(Reservation reservations);
 
     CheckReservationStatusRequest convertToCheck(CreateReservationRequest reservationRequest);
 }

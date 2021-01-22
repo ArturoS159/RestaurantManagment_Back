@@ -41,7 +41,7 @@ public class ReservationController {
         return new ResponseEntity<>(reservationService.checkReservationStatus(restaurantId, checkReservationStatusRequest), HttpStatus.OK);
     }
 
-    @GetMapping("/{restaurantId}/my-reservations")
+    @GetMapping("/my-reservations")
     public ResponseEntity<Page<MyReservationResponse>> getMyReservations(Principal user, Pageable pageable) {
         return new ResponseEntity<>(reservationService.getMyReservations(user.getName(), pageable), HttpStatus.OK);
     }

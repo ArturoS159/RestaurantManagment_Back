@@ -35,11 +35,16 @@ public class ReservationService {
         CheckReservationStatusResponse statusResponse = checkReservationStatus(restaurantId, tableReservationMapper.convertToCheck(createReservationRequest));
         if (statusResponse.isStatus()) {
             Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-            Reservation reservation = tableReservationMapper.toReservation(restaurantId, createReservationRequest, textMapper.toUUID(userId));
-            restaurant.addReservation(statusResponse.getReservations().get(new Random().nextInt(statusResponse.getReservations().size())).getTableId(), reservation);
+            Table tableToReserve = getRandomTable(statusResponse);
+            Reservation reservation = tableReservationMapper.toReservation(restaurantId, createReservationRequest, textMapper.toUUID(userId), restaurant.getName(), tableToReserve.getName(), tableToReserve.getNumberOfSeats());
+            restaurant.addReservation(tableToReserve.getId(), reservation);
             return tableReservationMapper.toReservationResponse(reservation);
         }
         throw new IllegalArgumentException("Cant reserve");
+    }
+
+    private Table getRandomTable(CheckReservationStatusResponse statusResponse) {
+        return statusResponse.getTables().get(new Random().nextInt(statusResponse.getTables().size()));
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
@@ -54,12 +59,8 @@ public class ReservationService {
         List<Reservation> reservations = getRestaurantReservationsInThisDay(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo(), tablesId);
         List<Table> availableTables = getAvailableTables(tablesInRestaurant, reservations);
 
-        List<CheckReservationResponse> qwe = availableTables.stream()
-                .map(table -> new CheckReservationResponse(table.getId(), null))
-                .collect(Collectors.toList());
-
         if (!availableTables.isEmpty()) {
-            return new CheckReservationStatusResponse(true, qwe);
+            return new CheckReservationStatusResponse(true, Collections.emptyList(), availableTables);
         }
         Map<UUID, List<Time>> tablesAndTime = new TreeMap<>();
 
@@ -80,7 +81,7 @@ public class ReservationService {
             List<Time> timesss = ss.getValue();
             finalList.add(new CheckReservationResponse(ss.getKey(), timesss));
         }
-        return new CheckReservationStatusResponse(false, finalList);
+        return new CheckReservationStatusResponse(false, finalList, availableTables);
     }
 
     private List<Table> getRestaurantTables(Restaurant restaurant, int size) {
@@ -108,11 +109,7 @@ public class ReservationService {
 
     @Transactional(value = "transactionManager", readOnly = true)
     public Page<MyReservationResponse> getMyReservations(String userId, Pageable pageable) {
-        return reservationRepository.findAllByUserId(textMapper.toUUID(userId), pageable)
-                .map(reservation -> {
-                    Restaurant restaurant = restaurantService.getRestaurantFromDatabase(reservation.getRestaurantId());
-                    return tableReservationMapper.toMyReservationResponse(restaurant.getName(), reservation);
-                });
+        return reservationRepository.findAllByUserId(textMapper.toUUID(userId), pageable).map(tableReservationMapper::toMyReservationResponse);
     }
 
     @Transactional(value = "transactionManager", readOnly = true)
