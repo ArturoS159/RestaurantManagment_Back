@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
+import static com.przemarcz.restaurant.dto.TableReservationDto.CheckReservationStatusRequest;
 import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -198,9 +199,9 @@ public class Restaurant {
         return from.isBefore(to);
     }
 
-    public void checkReservationTime(LocalDate reservationDay, LocalTime from, LocalTime to) {
+    public void checkReservationTime(CheckReservationStatusRequest reservationRequest) {
         worksTime.forEach(workTime -> {
-            if (workTime.isDayEquals(reservationDay.getDayOfWeek().getValue()) && !workTime.isTimeInRange(from, to)) {
+            if (workTime.isDayEquals(reservationRequest.getDay().getDayOfWeek().getValue()) && !workTime.isTimeInRange(reservationRequest.getFrom(), reservationRequest.getTo())) {
                 throw new NotFoundException("No available hours found!");
             }
         });

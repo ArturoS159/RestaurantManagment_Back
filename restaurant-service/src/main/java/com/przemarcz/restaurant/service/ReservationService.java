@@ -50,18 +50,20 @@ public class ReservationService {
     @Transactional(value = "transactionManager", readOnly = true)
     public CheckReservationStatusResponse checkReservationStatus(UUID restaurantId, CheckReservationStatusRequest checkReservationStatusRequest) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        restaurant.checkReservationTime(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo());
+        restaurant.checkReservationTime(checkReservationStatusRequest);
         List<Table> tablesInRestaurant = getRestaurantTables(restaurant, checkReservationStatusRequest.getNumberOfSeats());
-        List<UUID> tablesId = tablesInRestaurant.stream().map(Table::getId).collect(Collectors.toList());
         if (tablesInRestaurant.isEmpty()) {
             throw new NotFoundException("No tables found");
         }
+
+        List<UUID> tablesId = tablesInRestaurant.stream().map(Table::getId).collect(Collectors.toList());
         List<Reservation> reservations = getRestaurantReservationsInThisDay(checkReservationStatusRequest.getDay(), checkReservationStatusRequest.getFrom(), checkReservationStatusRequest.getTo(), tablesId);
         List<Table> availableTables = getAvailableTables(tablesInRestaurant, reservations);
 
         if (!availableTables.isEmpty()) {
             return new CheckReservationStatusResponse(true, Collections.emptyList(), availableTables);
         }
+
         Map<UUID, List<LocalTime>> tablesAndTime = new HashMap<>();
 
         for (Reservation reservation : reservations) {
@@ -70,21 +72,19 @@ public class ReservationService {
         }
 
         tablesAndTime.forEach((key, value) -> value.addAll(restaurant.getWorkTimeOfDay()));
+        List<CheckReservationResponse> listToReturn = new ArrayList<>();
+        tablesAndTime.forEach((key, value) -> Collections.sort(value));
 
-        List<CheckReservationResponse> finalList = new ArrayList<>();
-
-        for (Map.Entry<UUID, List<LocalTime>> ss : tablesAndTime.entrySet()) {
-            Collections.sort(ss.getValue());
-            List<Time> aa = new ArrayList<>();
-            for (int i = 0; i < ss.getValue().size(); i+=2) {
-                aa.add(new Time(ss.getValue().get(i), ss.getValue().get(i+1)));
+        for (Map.Entry<UUID, List<LocalTime>> map : tablesAndTime.entrySet()) {
+            Collections.sort(map.getValue());
+            List<Time> listOfTimes = new ArrayList<>();
+            for (int i = 0; i < map.getValue().size(); i += 2) {
+                listOfTimes.add(new Time(map.getValue().get(i), map.getValue().get(i + 1)));
             }
-            finalList.add(new CheckReservationResponse(ss.getKey(), aa));
+            listToReturn.add(new CheckReservationResponse(map.getKey(), listOfTimes));
         }
-        return new CheckReservationStatusResponse(false, finalList, availableTables);
+        return new CheckReservationStatusResponse(false, listToReturn, availableTables);
     }
-
-
 
     private List<Table> getRestaurantTables(Restaurant restaurant, int size) {
         return restaurant.getTables().stream()
