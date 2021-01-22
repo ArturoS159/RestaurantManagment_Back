@@ -288,4 +288,5 @@ class RestaurantTest extends Specification {
         then:
         thrown IllegalArgumentException
     }
+
 }

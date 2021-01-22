@@ -15,6 +15,7 @@ import javax.ws.rs.NotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.przemarcz.restaurant.dto.RestaurantDto.RestaurantFilter;
 import static java.util.Objects.nonNull;
@@ -32,9 +33,18 @@ public class RestaurantSpecification implements Specification<Restaurant> {
     public RestaurantSpecification(RestaurantFilter restaurantFilter) {
         name = restaurantFilter.getName();
         city = restaurantFilter.getCity();
-        category = restaurantFilter.getCategory();
+        category = getCategories(restaurantFilter.getCategory());
         open = restaurantFilter.getOpen();
         rate = restaurantFilter.getRate();
+    }
+
+    private Set<RestaurantCategory> getCategories(String categoriesString){
+        if(nonNull(categoriesString)){
+            return Arrays.stream(categoriesString.split(","))
+                    .map(RestaurantCategory::valueOf)
+                    .collect(Collectors.toSet());
+        }
+        return null;
     }
 
     public RestaurantSpecification(UUID ownerId, RestaurantFilter restaurantFilter) {

@@ -5,11 +5,6 @@ server:
   servlet:
     context-path: /user-api
 
-hibernate:
-  query:
-    interceptor:
-      error-level: NONE
-
 springdoc:
   swagger-ui:
     enabled: false
