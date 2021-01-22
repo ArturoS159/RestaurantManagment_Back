@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-import static com.przemarcz.restaurant.dto.TableReservationDto.Time;
 import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -214,9 +213,9 @@ public class Restaurant {
                 .addReservation(reservation);
     }
 
-    public Time getWorkTimeOfDay() {
+    public List<LocalTime> getWorkTimeOfDay() {
         Days day = Days.valueOf(LocalDate.now().getDayOfWeek().getValue()).orElseThrow(IllegalArgumentException::new);
         WorkTime workTime = worksTime.stream().filter(time -> time.getDay().equals(day)).findFirst().orElseThrow(IllegalArgumentException::new);
-        return new Time(workTime.getFrom(), workTime.getTo());
+        return Arrays.asList(workTime.getFrom(), workTime.getTo());
     }
 }

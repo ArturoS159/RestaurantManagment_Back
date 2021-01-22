@@ -62,27 +62,29 @@ public class ReservationService {
         if (!availableTables.isEmpty()) {
             return new CheckReservationStatusResponse(true, Collections.emptyList(), availableTables);
         }
-        Map<UUID, List<Time>> tablesAndTime = new TreeMap<>();
-
-        List<Time> startedTime = new ArrayList<>();
-        startedTime.add(restaurant.getWorkTimeOfDay());
-
-        tablesId.forEach(uuid -> tablesAndTime.put(uuid, startedTime));
+        Map<UUID, List<LocalTime>> tablesAndTime = new HashMap<>();
 
         for (Reservation reservation : reservations) {
-            List<Time> time = tablesAndTime.get(reservation.getTableId());
-            time.add(new Time(reservation.getFrom(), reservation.getTo()));
-            tablesAndTime.put(reservation.getTableId(), time);
+            tablesAndTime.computeIfAbsent(reservation.getTableId(), k -> new ArrayList<>()).add(reservation.getFrom());
+            tablesAndTime.computeIfAbsent(reservation.getTableId(), k -> new ArrayList<>()).add(reservation.getTo());
         }
+
+        tablesAndTime.forEach((key, value) -> value.addAll(restaurant.getWorkTimeOfDay()));
 
         List<CheckReservationResponse> finalList = new ArrayList<>();
 
-        for (Map.Entry<UUID, List<Time>> ss : tablesAndTime.entrySet()) {
-            List<Time> timesss = ss.getValue();
-            finalList.add(new CheckReservationResponse(ss.getKey(), timesss));
+        for (Map.Entry<UUID, List<LocalTime>> ss : tablesAndTime.entrySet()) {
+            Collections.sort(ss.getValue());
+            List<Time> aa = new ArrayList<>();
+            for (int i = 0; i < ss.getValue().size(); i+=2) {
+                aa.add(new Time(ss.getValue().get(i), ss.getValue().get(i+1)));
+            }
+            finalList.add(new CheckReservationResponse(ss.getKey(), aa));
         }
         return new CheckReservationStatusResponse(false, finalList, availableTables);
     }
+
+
 
     private List<Table> getRestaurantTables(Restaurant restaurant, int size) {
         return restaurant.getTables().stream()

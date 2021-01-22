@@ -1,9 +1,9 @@
 package com.przemarcz.restaurant.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.przemarcz.restaurant.model.Table;
 import lombok.Builder;
 import lombok.Value;
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
