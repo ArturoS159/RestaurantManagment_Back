@@ -42,3 +42,10 @@ create table if not exists payments (
   client_id VARCHAR(256),
   client_secret VARCHAR(256)
 );
+
+create table if not exists statistics (
+  restaurant_id UUID PRIMARY KEY,
+  total_profit NUMERIC,
+  total_orders NUMERIC,
+  total_comments NUMERIC
+);
