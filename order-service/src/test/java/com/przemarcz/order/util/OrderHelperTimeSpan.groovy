@@ -3,7 +3,7 @@ package com.przemarcz.order.util
 import com.przemarcz.order.model.Meal
 import spock.lang.Specification
 
-class OrderHelperTest extends Specification {
+class OrderHelperTimeSpan extends Specification {
 
     def "should count order price"() {
         given:

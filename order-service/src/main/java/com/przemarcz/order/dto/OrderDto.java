@@ -76,6 +76,17 @@ public class OrderDto {
     }
 
     @Value
+    public static class OrderStatisticResponse {
+        UUID id;
+        String meals;
+        PaymentMethod paymentMethod;
+        OrderType orderType;
+        OrderStatus orderStatus;
+        LocalDateTime time;
+        BigDecimal price;
+    }
+
+    @Value
     public static class OrderFilter {
         PaymentMethod paymentMethod;
         OrderType orderType;
