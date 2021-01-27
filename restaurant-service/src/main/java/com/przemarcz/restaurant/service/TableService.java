@@ -52,7 +52,6 @@ public class TableService {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
         List<Table> tables = restaurant.getTables();
         List<Table> tablesResponseTmp = new ArrayList<>();
-        //TODO refactor
         for (UpdateTableRequest updateTable : tablesRequest.getTables()) {
             for (Table table : tables) {
                 if (updateTable.getId().equals(table.getId())) {
