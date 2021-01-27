@@ -6,7 +6,7 @@ import spock.lang.Unroll
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class OrderTest extends Specification {
+class OrderTimeSpan extends Specification {
 
     @Unroll
     def "should return is order expired"() {

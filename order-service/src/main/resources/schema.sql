@@ -43,9 +43,23 @@ create table if not exists payments (
   client_secret VARCHAR(256)
 );
 
-create table if not exists statistics (
+create table if not exists statistics_total (
   restaurant_id UUID PRIMARY KEY,
   total_profit NUMERIC,
-  total_orders NUMERIC,
-  total_comments NUMERIC
+  total_orders BIGINT,
+  total_comments BIGINT,
+  total_payment_cash BIGINT,
+  total_payment_online BIGINT,
+  total_order_in_local BIGINT,
+  total_order_take_away BIGINT,
+  total_order_delivery BIGINT
+);
+
+create table if not exists statistics_popular (
+  id UUID PRIMARY KEY,
+  restaurant_id UUID,
+  statistics_total_id UUID REFERENCES statistics_total(restaurant_id),
+  meal_id UUID,
+  meal_name VARCHAR(256),
+  meal_count BIGINT
 );

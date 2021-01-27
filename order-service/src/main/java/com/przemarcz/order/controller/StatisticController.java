@@ -8,8 +8,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
-import static com.przemarcz.order.dto.StatisticDto.*;
+import static com.przemarcz.order.dto.StatisticDto.StatisticFilter;
+import static com.przemarcz.order.dto.StatisticDto.StatisticResponse;
 
 @RestController
 @AllArgsConstructor
@@ -19,10 +21,9 @@ public class StatisticController {
     private final StatisticService statisticSerivice;
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
-    @GetMapping("/{restaurantId}/stats-owner")
-    public ResponseEntity<Void> getRestaurantStatistic(@PathVariable UUID restaurantId,
-                                                               @ModelAttribute StatisticFilter filters) {
-        statisticSerivice.getRestaurantStatistic(restaurantId, filters);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/{restaurantId}/stats")
+    public ResponseEntity<StatisticResponse> getRestaurantStatistic(@PathVariable UUID restaurantId,
+                                                                    @ModelAttribute StatisticFilter filters) throws ExecutionException, InterruptedException {
+        return new ResponseEntity<>(statisticSerivice.getRestaurantStatistic(restaurantId, filters), HttpStatus.OK);
     }
 }
