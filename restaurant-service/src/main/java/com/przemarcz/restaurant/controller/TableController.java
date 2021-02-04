@@ -19,7 +19,7 @@ public class TableController {
 
     private final TableService tableService;
 
-    @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
+    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/tables")
     public ResponseEntity<TablesResponse> getTables(@PathVariable UUID restaurantId) {
         return new ResponseEntity<>(tableService.getTables(restaurantId), HttpStatus.OK);

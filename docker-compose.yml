@@ -45,3 +45,24 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      
+  # kafdrop:
+    # image: obsidiandynamics/kafdrop
+    # restart: "no"
+    # ports:
+      # - "9000:9000"
+    # environment:
+      # KAFKA_BROKERCONNECT: "broker:29092"
+      # JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    # depends_on:
+      # - broker
+      
+  # schema-registry-ui:
+    # image: landoop/schema-registry-ui
+    # ports:
+      # - "8000:8000"
+    # environment:
+      # SCHEMAREGISTRY_URL: http://schema-registry:8081
+      # PROXY: "true"
+    # depends_on:
+      # - broker

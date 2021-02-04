@@ -62,7 +62,7 @@ public class MailSender {
     }
 
     private void setContent(String activationKey, List<InternetAddress> address, HtmlEmail htmlEmail, String login) throws EmailException {
-        htmlEmail.setHtmlMsg(String.format(content, login, activationKey));
+        htmlEmail.setHtmlMsg(String.format(content, login, activationKey,login, activationKey));
         htmlEmail.setSubject(subject);
         htmlEmail.setFrom(email, userName);
         htmlEmail.setTo(address);

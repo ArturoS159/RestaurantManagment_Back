@@ -62,13 +62,15 @@ email:
   ssl-smtp: 465
   subject: RestaurantManagment rejestracja
   content: '
-  <h1>Witaj !</h1>
-  <h2>Dziękujemy za skorzystanie z naszego systemu 🍔🍟🍕<h2>
-  <h2>Prosimy o aktywację swojego konta w naszym serwisie</h2>
-  <h2>Twój link aktywacyjny: http://localhost:3000/confirm?login=%s&key=%s</h2>
+  <h1>Restaurant Management</h1>
+  <p>Dziękujemy za skorzystanie z naszego systemu 🍔🍟🍕<p>
+  <p>Prosimy o aktywację swojego konta w naszym serwisie</p>
+  <p>Twój link aktywacyjny: http://localhost:3000/confirm?login=%s&key=%s</p>
   </br>
-  <h1>Pozdrawia cały zespół:</h1>
-  <h1>Przemysław Cichoń</h1>
-  <h1>Artur Kowalski</h1>
-  <h1>☺</h1>'
+  <p>lub</p>
+  <p>Login:%s</p>
+  <p>Klucz aktywacyjny:%s</p>
+  <br>
+  <p>Dziękujemy za skorzystanie z naszej aplikacji!</p>
+  '
   charset: utf-8
