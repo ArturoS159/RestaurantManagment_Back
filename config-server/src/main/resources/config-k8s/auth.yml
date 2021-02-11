@@ -21,8 +21,6 @@ logging:
     org.apache.kafka: WARN
 
 spring:
-#  jpa:
-#    show-sql: true
   kafka:
     properties:
       schema.reflection: true

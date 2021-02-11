@@ -3,9 +3,9 @@ package com.przemarcz.order.util
 import com.przemarcz.order.model.Meal
 import spock.lang.Specification
 
-class OrderHelperTimeSpan extends Specification {
+class OrderHelperOrderPrice extends Specification {
 
-    def "should count order price"() {
+    def "should correct count order price"() {
         given:
         List<Meal> meals = new ArrayList<>()
         meals << Meal.builder().price(BigDecimal.valueOf(10.00)).quantity(1).build()
@@ -16,6 +16,5 @@ class OrderHelperTimeSpan extends Specification {
         OrderHelper helper = new OrderHelper()
         expect:
         helper.countOrderPrice(meals) == 525.56
-
     }
 }

@@ -1,5 +1,6 @@
 package com.przemarcz.auth.service
 
+
 import com.przemarcz.auth.domain.model.User
 import com.przemarcz.auth.domain.model.UserRole
 import com.przemarcz.auth.domain.repository.UserRepository
@@ -7,6 +8,7 @@ import com.przemarcz.auth.domain.repository.UserRoleRepository
 import com.przemarcz.avro.AccessAvro
 import com.przemarcz.avro.AddDelete
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
@@ -15,6 +17,7 @@ import spock.lang.Specification
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:bootstrap-test.yml")
+@ConditionalOnProperty(value = "kafka.enable", havingValue = "true", matchIfMissing = true)
 class AccessConsumerServiceTest extends Specification {
 
     @Autowired

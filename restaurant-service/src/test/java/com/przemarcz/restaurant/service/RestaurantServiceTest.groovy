@@ -1,6 +1,6 @@
 package com.przemarcz.restaurant.service
 
-import com.google.common.collect.Sets
+
 import com.przemarcz.restaurant.model.Restaurant
 import com.przemarcz.restaurant.model.enums.RestaurantCategory
 import com.przemarcz.restaurant.repository.RestaurantRepository
@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
+
+import java.util.stream.Collectors
 
 import static com.przemarcz.restaurant.dto.RestaurantDto.*
 import static org.springframework.data.domain.Pageable.unpaged
@@ -87,17 +89,14 @@ class RestaurantServiceTest extends Specification {
                 .category("KEBAB")
                 .build()
         restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
-        RestaurantFilter fitlers1 = new RestaurantFilter(null, Sets.newHashSet(RestaurantCategory.BURGER), null, null, null)
-        RestaurantFilter fitlers2 = new RestaurantFilter(null, Sets.newHashSet(RestaurantCategory.KEBAB), null, null, null)
-        RestaurantFilter fitlers3 = new RestaurantFilter(null, Sets.newHashSet(RestaurantCategory.BURGER, RestaurantCategory.KEBAB), null, null, null)
+        RestaurantFilter fitlers1 = new RestaurantFilter(null, RestaurantCategory.BURGER.toString(), null, null, null)
+        RestaurantFilter fitlers2 = new RestaurantFilter(null, RestaurantCategory.KEBAB.toString(), null, null, null)
         when:
         Page<AllRestaurantResponse> response1 = restaurantService.getAllRestaurants(fitlers1, unpaged())
         Page<AllRestaurantResponse> response2 = restaurantService.getAllRestaurants(fitlers2, unpaged())
-        Page<AllRestaurantResponse> response3 = restaurantService.getAllRestaurants(fitlers3, unpaged())
         then:
         response1.size == 2
         response2.size == 1
-        response3.size == 0
     }
 
     def "should return all restaurants filtered by city"() {

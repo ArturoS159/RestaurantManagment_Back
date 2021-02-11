@@ -83,7 +83,7 @@ class ReservationServiceTest extends Specification {
         thrown NotFoundException
     }
 
-    def "should return false when tables not found"() {
+    def "should thrown exception when tables not found"() {
         given:
         Restaurant restaurant = Restaurant.builder()
                 .id(UUID.randomUUID())
@@ -96,9 +96,9 @@ class ReservationServiceTest extends Specification {
                 .to(LocalTime.parse("21:00"))
                 .build()
         when:
-        CheckReservationStatusResponse response = reservationService.checkReservationStatus(restaurant.id, reservationRequest)
+        reservationService.checkReservationStatus(restaurant.id, reservationRequest)
         then:
-        !response.status
+        thrown NotFoundException
     }
 
     def "should return true when reservation time is ok"() {
