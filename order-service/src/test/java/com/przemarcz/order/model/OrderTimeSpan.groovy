@@ -21,7 +21,7 @@ class OrderTimeSpan extends Specification {
         where:
         time               || expectValue
         "2020-01-01 10:30" || false
-        "2020-01-01 09:10"  || false
+        "2020-01-01 09:10" || false
         "2020-01-01 11:30" || false
         "2020-01-01 11:31" || true
         "2020-01-02 10:00" || true

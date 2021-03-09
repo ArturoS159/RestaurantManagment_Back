@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import static com.przemarcz.auth.domain.dto.UserDto.*;
 
-@Mapper(componentModel = "spring", uses = PasswordEncoderMapper.class, imports = UUID.class)
+@Mapper(componentModel = "spring", uses = PasswordEncoderMapper.class, imports = UUID.class, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface UserMapper {
 
     @Mapping(target = "password", source = "user.password", qualifiedBy = EncodedMapping.class)

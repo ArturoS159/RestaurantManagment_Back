@@ -3,5 +3,4 @@ spring:
     name: resource-server
   cloud:
     config:
-
       name: resource

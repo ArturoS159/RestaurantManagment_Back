@@ -1,0 +1,54 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info,metric
+
+server:
+  port: 8883
+  application:
+    name: restaurant-service
+  servlet:
+    context-path: /restaurant-api
+
+logging:
+  level:
+    org.springframework: INFO
+    org.apache.kafka: WARN
+
+spring:
+  kafka:
+    topic-access-owner: access-owner
+    topic-orders: orders
+    properties:
+      schema.reflection: true
+      schema.registry.url: http://kafka-cp-schema-registry.kafka:8081
+    consumer:
+      group-id: group
+      isolation-level: read_committed
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    producer:
+      transaction-id-prefix: tx-
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    bootstrap-servers: http://kafka-cp-kafka.kafka:9092
+  datasource:
+    hikari:
+      maxLifeTime: 600000
+    initialization-mode: always
+    schema: classpath:schema.sql
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://165.227.137.37:5432/restaurantDb?currentSchema=restaurant
+    username: postgres
+    password: password
+
+
+security:
+  oauth2:
+    resource:
+      userInfoUri: http://resource-server:8881/resource-api/me
+
+springdoc:
+  swagger-ui:
+    enabled: false
