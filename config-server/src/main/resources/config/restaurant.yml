@@ -29,7 +29,7 @@ spring:
     bootstrap-servers: http://localhost:9092
   datasource:
     hikari:
-      maxLifeTime: 1200000
+      maxLifeTime: 600000
     initialization-mode: always
     schema: classpath:schema.sql
     driver-class-name: org.postgresql.Driver

@@ -1,0 +1,80 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info,metric
+
+server:
+  port: 8882
+  application:
+    name: auth-server
+  servlet:
+    context-path: /user-api
+
+springdoc:
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    org.springframework: INFO
+    org.apache.kafka: WARN
+
+spring:
+  kafka:
+    properties:
+      schema.reflection: true
+      schema.registry.url: http://kafka-cp-schema-registry.kafka:8081
+    consumer:
+      group-id: group
+      isolation-level: read_committed
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    producer:
+      transaction-id-prefix: txa-
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    bootstrap-servers: http://kafka-cp-kafka.kafka:9092
+
+  datasource:
+    hikari:
+      maxLifeTime : 600000
+    initialization-mode: always
+    schema: classpath:schema.sql
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://165.227.137.37:5432/authDb?currentSchema=auth
+    username: postgres
+    password: password
+
+security:
+  oauth2:
+    resource:
+      userInfoUri: http://resource-server:8881/resource-api/me
+
+user:
+  client: app
+  resourceId: rest_service
+  secret: $2a$10$z29A3ca3ktEh15ooDfUnI.k9avxG2R7hfJQOrndRBu4YMl9UFXTBS
+
+email:
+  user: managmentrestaurantinz2
+  user-name: RestaurantManagment
+  password: Testowe123
+  email: managmentrestaurantinz2@gmail.com
+  host: smtp.gmail.com
+  smtp-port: 587
+  ssl-smtp: 465
+  subject: RestaurantManagment rejestracja
+  content: '
+  <h1>Restaurant Management</h1>
+  <p>Dziękujemy za skorzystanie z naszego systemu 🍔🍟🍕<p>
+  <p>Prosimy o aktywację swojego konta w naszym serwisie</p>
+  <p>Twój link aktywacyjny: http://localhost:3000/confirm?login=%s&key=%s</p>
+  </br>
+  <p>lub</p>
+  <p>Login:%s</p>
+  <p>Klucz aktywacyjny:%s</p>
+  <br>
+  <p>Dziękujemy za skorzystanie z naszej aplikacji!</p>
+  '
+  charset: utf-8

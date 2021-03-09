@@ -36,6 +36,7 @@ public class WorkTime {
     }
 
     public boolean isTimeInRange(LocalTime from, LocalTime to) {
-        return (nonNull(this.from) && nonNull(this.to)) && (from.isAfter(this.from) || to.isBefore(this.to));
+        return (nonNull(this.from) && nonNull(this.to)) && (from.isAfter(this.from) && to.isBefore(this.to) || from.isAfter(this.from) && to.isAfter(this.to));
+
     }
 }

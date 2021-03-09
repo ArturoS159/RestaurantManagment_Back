@@ -11,12 +11,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.przemarcz.auth.dto.UserDto.WorkerResponse;
+import static com.przemarcz.auth.domain.dto.UserDto.WorkerResponse;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/restaurants")
-@CrossOrigin(origins = "http://localhost:3000")
 public class WorkerController {
 
     private final WorkerService workerService;

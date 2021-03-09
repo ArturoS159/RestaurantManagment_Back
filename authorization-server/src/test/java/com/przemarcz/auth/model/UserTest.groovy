@@ -1,7 +1,9 @@
 package com.przemarcz.auth.model
 
+import com.przemarcz.auth.domain.model.User
+import com.przemarcz.auth.domain.model.enums.Role
 import com.przemarcz.auth.exception.AlreadyExistException
-import com.przemarcz.auth.model.enums.Role
+import com.przemarcz.auth.exception.IllegalArgumentException
 import spock.lang.Specification
 
 class UserTest extends Specification {
@@ -20,7 +22,7 @@ class UserTest extends Specification {
         User user = User.builder().build()
         user.generateUserActivationKey()
         when:
-        user.activeAccount(user.userAuthorization.activationKey)
+        user.activeAccount(user.activationKey)
         then:
         user.active
     }
@@ -29,9 +31,9 @@ class UserTest extends Specification {
         given:
         User user = User.builder().build()
         user.generateUserActivationKey()
-        user.activeAccount(user.userAuthorization.activationKey)
+        user.activeAccount(user.activationKey)
         when:
-        user.activeAccount(user.userAuthorization.activationKey)
+        user.activeAccount(user.activationKey)
         then:
         thrown AlreadyExistException
     }

@@ -41,7 +41,6 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getAllOrdersForUser(user.getName(), pageable), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/orders/refresh")
     public ResponseEntity<Void> refreshOrdersStatus(@PathVariable UUID restaurantId){
         orderService.refreshOrdersStatus(restaurantId);

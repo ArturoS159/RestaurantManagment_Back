@@ -1,3 +1,9 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info,metric
+
 server:
   port: 8882
   application:
@@ -15,6 +21,8 @@ logging:
     org.apache.kafka: WARN
 
 spring:
+  #  jpa:
+  #    show-sql: true
   kafka:
     properties:
       schema.reflection: true
@@ -32,7 +40,7 @@ spring:
 
   datasource:
     hikari:
-      maxLifeTime : 1200000
+      maxLifeTime : 600000
     initialization-mode: always
     schema: classpath:schema.sql
     driver-class-name: org.postgresql.Driver
@@ -51,22 +59,24 @@ user:
   secret: $2a$10$z29A3ca3ktEh15ooDfUnI.k9avxG2R7hfJQOrndRBu4YMl9UFXTBS
 
 email:
-  user: managmentrestaurantinz
+  user: managmentrestaurantinz2
   user-name: RestaurantManagment
   password: Testowe123
-  email: managmentrestaurantinz@gmail.com
+  email: managmentrestaurantinz2@gmail.com
   host: smtp.gmail.com
   smtp-port: 587
   ssl-smtp: 465
   subject: RestaurantManagment rejestracja
   content: '
-  <h1>Witaj !</h1>
-  <h2>Dziękujemy za skorzystanie z naszego systemu 🍔🍟🍕<h2>
-  <h2>Prosimy o aktywację swojego konta w naszym serwisie</h2>
-  <h2>Twój link aktywacyjny: http://localhost:3000/confirm?login=%s&key=%s</h2>
+  <h1>Restaurant Management</h1>
+  <p>Dziękujemy za skorzystanie z naszego systemu 🍔🍟🍕<p>
+  <p>Prosimy o aktywację swojego konta w naszym serwisie</p>
+  <p>Twój link aktywacyjny: http://localhost:3000/confirm?login=%s&key=%s</p>
   </br>
-  <h1>Pozdrawia cały zespół:</h1>
-  <h1>Przemysław Cichoń</h1>
-  <h1>Artur Kowalski</h1>
-  <h1>☺</h1>'
+  <p>lub</p>
+  <p>Login:%s</p>
+  <p>Klucz aktywacyjny:%s</p>
+  <br>
+  <p>Dziękujemy za skorzystanie z naszej aplikacji!</p>
+  '
   charset: utf-8

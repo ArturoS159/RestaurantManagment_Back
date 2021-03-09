@@ -12,7 +12,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     hikari:
-      maxLifeTime: 1200000
+      maxLifeTime: 600000
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://165.227.137.37:5432/authDb?currentSchema=auth
     username: postgres

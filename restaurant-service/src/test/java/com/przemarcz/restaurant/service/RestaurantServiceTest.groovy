@@ -72,34 +72,6 @@ class RestaurantServiceTest extends Specification {
         response2.size == 1
     }
 
-    def "should return all restaurants filtered by category"() {
-        given:
-        Restaurant restaurant1 = Restaurant.builder()
-                .id(UUID.randomUUID())
-                .category("PIZZA,BURGER")
-                .build()
-        Restaurant restaurant2 = Restaurant.builder()
-                .id(UUID.randomUUID())
-                .category("BURGER")
-                .build()
-        Restaurant restaurant3 = Restaurant.builder()
-                .id(UUID.randomUUID())
-                .category("KEBAB")
-                .build()
-        restaurantRepository.saveAll(Arrays.asList(restaurant1, restaurant2, restaurant3))
-        RestaurantFilter fitlers1 = new RestaurantFilter(null, Sets.newHashSet(RestaurantCategory.BURGER), null, null, null)
-        RestaurantFilter fitlers2 = new RestaurantFilter(null, Sets.newHashSet(RestaurantCategory.KEBAB), null, null, null)
-        RestaurantFilter fitlers3 = new RestaurantFilter(null, Sets.newHashSet(RestaurantCategory.BURGER, RestaurantCategory.KEBAB), null, null, null)
-        when:
-        Page<AllRestaurantResponse> response1 = restaurantService.getAllRestaurants(fitlers1, unpaged())
-        Page<AllRestaurantResponse> response2 = restaurantService.getAllRestaurants(fitlers2, unpaged())
-        Page<AllRestaurantResponse> response3 = restaurantService.getAllRestaurants(fitlers3, unpaged())
-        then:
-        response1.size == 2
-        response2.size == 1
-        response3.size == 0
-    }
-
     def "should return all restaurants filtered by city"() {
         given:
         Restaurant restaurant1 = Restaurant.builder()

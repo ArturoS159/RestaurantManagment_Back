@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
 @RequiredArgsConstructor
 @Service
 public class OrderService {
@@ -45,6 +44,7 @@ public class OrderService {
     private final TextMapper textMapper;
     private final OrderHelper orderHelper;
     private final PaymentHelper paymentHelper;
+    private final StatisticService statisticService;
 
 
     public Page<OrderForRestaurantResponse> getAllOrders(UUID restaurantId, OrderFilter orderFilter, Pageable pageable) {
@@ -82,6 +82,7 @@ public class OrderService {
     public void addOrder(OrderAvro orderAvro) {
         Order order = avroMapper.toOrder(orderAvro);
         order.setPrice(orderHelper.countOrderPrice(order.getMeals()));
+        statisticService.addStatistic(order);
         orderRepository.save(order);
     }
 

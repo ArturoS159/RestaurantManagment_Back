@@ -42,7 +42,7 @@ public class OrderController {
     }
 
     @KafkaListener(topics = TOPIC_PAYMENT)
-    public void consumeOrders(ConsumerRecord<String, PaymentAvro> paymentAvro){
+    public void consumePayment(ConsumerRecord<String, PaymentAvro> paymentAvro){
         orderService.addOrDeletePayment(paymentAvro.value());
     }
 }

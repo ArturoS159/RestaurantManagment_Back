@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.NotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.przemarcz.restaurant.dto.TableReservationDto.*;
 
@@ -23,26 +25,46 @@ public class TableService {
     private final RestaurantService restaurantService;
     private final TableRepository tableRepository;
 
-    @Transactional(value = "transactionManager")
-    public TableResponse addTable(UUID restaurantId, CreateTableRequest createTableRequest) {
+    @Transactional(value = "transactionManager", readOnly = true)
+    public TablesResponse getTables(UUID restaurantId) {
         Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
-        Table table = tableReservationMapper.toTable(createTableRequest);
-        restaurant.createTable(table);
+        List<TableResponse> tablesResponse = restaurant.getTables()
+                .stream().map(tableReservationMapper::toTableResponse)
+                .collect(Collectors.toList());
+        return new TablesResponse(tablesResponse);
+    }
+
+    @Transactional(value = "transactionManager")
+    public TablesResponse addTables(UUID restaurantId, CreateTablesRequest createTablesRequest) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        List<Table> tables = createTablesRequest.getTables().stream()
+                .map(tableReservationMapper::toTable)
+                .collect(Collectors.toList());
+        restaurant.addTables(tables);
         restaurantRepository.save(restaurant);
-        return tableReservationMapper.toTableResponse(table);
+
+        List<TableResponse> tablesResponse = tables.stream().map(tableReservationMapper::toTableResponse).collect(Collectors.toList());
+        return new TablesResponse(tablesResponse);
     }
 
     @Transactional(value = "transactionManager")
-    public TableResponse updateTable(UUID restaurantId, UUID tableId, UpdateTableRequest updateTableRequest) {
-        Table table = tableRepository.findByIdAndRestaurantId(tableId,restaurantId).orElseThrow(NotFoundException::new);
-        tableReservationMapper.updateTable(table,updateTableRequest);
-        tableRepository.save(table);
-        return tableReservationMapper.toTableResponse(table);
+    public TablesResponse updateTables(UUID restaurantId, UpdateTablesRequest tablesRequest) {
+        Restaurant restaurant = restaurantService.getRestaurantFromDatabase(restaurantId);
+        List<Table> tables = restaurant.getTables();
+        List<Table> tablesResponseTmp = new ArrayList<>();
+        for (UpdateTableRequest updateTable : tablesRequest.getTables()) {
+            for (Table table : tables) {
+                if (updateTable.getId().equals(table.getId())) {
+                    tablesResponseTmp.add(table);
+                    tableReservationMapper.updateTable(table, updateTable);
+                }
+            }
+        }
+        return new TablesResponse(tablesResponseTmp.stream().map(tableReservationMapper::toTableResponse).collect(Collectors.toList()));
     }
 
     @Transactional(value = "transactionManager")
-    public void deleteTable(UUID restaurantId, UUID tableId) {
-        Table table = tableRepository.findByIdAndRestaurantId(tableId, restaurantId).orElseThrow(NotFoundException::new);
-        tableRepository.delete(table);
+    public void deleteTables(UUID restaurantId, int size) {
+        tableRepository.deleteByRestaurantIdAndNumberOfSeats(restaurantId, size);
     }
 }

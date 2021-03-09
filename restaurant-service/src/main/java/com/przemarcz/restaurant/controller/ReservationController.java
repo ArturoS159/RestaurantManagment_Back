@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -41,16 +40,16 @@ public class ReservationController {
         return new ResponseEntity<>(reservationService.checkReservationStatus(restaurantId, checkReservationStatusRequest), HttpStatus.OK);
     }
 
-    @GetMapping("/{restaurantId}/my-reservations")
+    @GetMapping("/my-reservations")
     public ResponseEntity<Page<MyReservationResponse>> getMyReservations(Principal user, Pageable pageable) {
         return new ResponseEntity<>(reservationService.getMyReservations(user.getName(), pageable), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
     @GetMapping("/{restaurantId}/reservations")
     public ResponseEntity<Page<ReservationResponse>> getRestaurantReservations(@RequestParam(required = false)
                                                                                @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate day,
-                                                                               Pageable pageable) {
+                                                                               Pageable pageable,
+                                                                               Principal principal) {
         return new ResponseEntity<>(reservationService.getRestaurantReservations(day, pageable), HttpStatus.OK);
     }
 }

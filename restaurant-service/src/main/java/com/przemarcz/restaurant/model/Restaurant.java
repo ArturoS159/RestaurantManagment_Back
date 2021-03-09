@@ -2,6 +2,7 @@ package com.przemarcz.restaurant.model;
 
 import com.przemarcz.restaurant.exception.AlreadyExistException;
 import com.przemarcz.restaurant.exception.NotFoundException;
+import com.przemarcz.restaurant.model.enums.Days;
 import com.przemarcz.restaurant.model.enums.RestaurantCategory;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
+import static com.przemarcz.restaurant.dto.TableReservationDto.CheckReservationStatusRequest;
 import static com.przemarcz.restaurant.dto.WorkTimeDto.WorkTimeRequest;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -130,15 +132,15 @@ public class Restaurant {
     }
 
     private boolean isRateOpinionInRange(BigDecimal rate) {
-        return rate.compareTo(MIN)>=ZERO&&rate.compareTo(MAX)<=ZERO;
+        return rate.compareTo(MIN) >= ZERO && rate.compareTo(MAX) <= ZERO;
     }
 
     public void delete() {
-        isDeleted=true;
+        isDeleted = true;
     }
 
-    public void createTable(Table table){
-        tables.add(table);
+    public void addTables(List<Table> tables) {
+        this.tables.addAll(tables);
     }
 
     public void addWorkTime(List<WorkTime> incomingTime) {
@@ -197,11 +199,24 @@ public class Restaurant {
         return from.isBefore(to);
     }
 
-    public void checkReservationTime(LocalDate reservationDay, LocalTime from, LocalTime to) {
+    public void checkReservationTime(CheckReservationStatusRequest reservationRequest) {
         worksTime.forEach(workTime -> {
-            if (workTime.isDayEquals(reservationDay.getDayOfWeek().getValue()) && !workTime.isTimeInRange(from, to)) {
+            if (workTime.isDayEquals(reservationRequest.getDay().getDayOfWeek().getValue()) && !workTime.isTimeInRange(reservationRequest.getFrom(), reservationRequest.getTo())) {
                 throw new NotFoundException("No available hours found!");
             }
         });
+    }
+
+    public void addReservation(UUID tableId, Reservation reservation) {
+        tables.stream().filter(table -> table.getId().equals(tableId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Table not found!"))
+                .addReservation(reservation);
+    }
+
+    public List<LocalTime> getWorkTimeOfDay() {
+        Days day = Days.valueOf(LocalDate.now().getDayOfWeek().getValue()).orElseThrow(IllegalArgumentException::new);
+        WorkTime workTime = worksTime.stream().filter(time -> time.getDay().equals(day)).findFirst().orElseThrow(IllegalArgumentException::new);
+        return Arrays.asList(workTime.getFrom(), workTime.getTo());
     }
 }

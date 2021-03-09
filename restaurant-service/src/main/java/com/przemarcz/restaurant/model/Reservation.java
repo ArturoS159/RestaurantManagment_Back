@@ -21,6 +21,12 @@ public class Reservation {
     private UUID tableId;
     @Column(name = "restaurant_id")
     private UUID restaurantId;
+    @Column(name = "restaurant_name")
+    private String restaurantName;
+    @Column(name = "size_of_table")
+    private Integer sizeOfTable;
+    @Column(name = "table_name")
+    private String tableName;
     @Column(name = "user_id")
     private UUID userId;
     @Column(name = "reservation_day")

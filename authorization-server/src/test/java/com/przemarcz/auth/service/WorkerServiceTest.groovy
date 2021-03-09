@@ -2,11 +2,11 @@ package com.przemarcz.auth.service
 
 import com.przemarcz.auth.exception.AlreadyExistException
 import com.przemarcz.auth.exception.NotFoundException
-import com.przemarcz.auth.model.User
-import com.przemarcz.auth.model.UserRole
-import com.przemarcz.auth.model.enums.Role
-import com.przemarcz.auth.repository.UserRepository
-import com.przemarcz.auth.repository.UserRoleRepository
+import com.przemarcz.auth.domain.model.User
+import com.przemarcz.auth.domain.model.UserRole
+import com.przemarcz.auth.domain.model.enums.Role
+import com.przemarcz.auth.domain.repository.UserRepository
+import com.przemarcz.auth.domain.repository.UserRoleRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 
-import static com.przemarcz.auth.dto.UserDto.WorkerResponse
+import static com.przemarcz.auth.domain.dto.UserDto.WorkerResponse
 import static org.springframework.data.domain.Pageable.unpaged
 
 @SpringBootTest

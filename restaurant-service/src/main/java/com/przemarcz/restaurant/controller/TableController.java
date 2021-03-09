@@ -19,25 +19,30 @@ public class TableController {
 
     private final TableService tableService;
 
+    @PreAuthorize("hasAnyRole('OWNER_'+#restaurantId,'WORKER_'+#restaurantId)")
+    @GetMapping("/{restaurantId}/tables")
+    public ResponseEntity<TablesResponse> getTables(@PathVariable UUID restaurantId) {
+        return new ResponseEntity<>(tableService.getTables(restaurantId), HttpStatus.OK);
+    }
+
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
     @PostMapping("/{restaurantId}/tables")
-    public ResponseEntity<TableResponse> addTable(@PathVariable UUID restaurantId,
-                                                  @RequestBody CreateTableRequest createTableRequest) {
-        return new ResponseEntity<>(tableService.addTable(restaurantId, createTableRequest), HttpStatus.CREATED);
+    public ResponseEntity<TablesResponse> addTables(@PathVariable UUID restaurantId,
+                                                    @RequestBody CreateTablesRequest createTablesRequest) {
+        return new ResponseEntity<>(tableService.addTables(restaurantId, createTablesRequest), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
-    @PutMapping("/{restaurantId}/tables/{tableId}")
-    public ResponseEntity<TableResponse> updateTable(@PathVariable UUID restaurantId,
-                                                     @PathVariable UUID tableId,
-                                                     @RequestBody UpdateTableRequest updateTableRequest) {
-        return new ResponseEntity<>(tableService.updateTable(restaurantId, tableId, updateTableRequest), HttpStatus.CREATED);
+    @PutMapping("/{restaurantId}/tables")
+    public ResponseEntity<TablesResponse> updateTables(@PathVariable UUID restaurantId,
+                                                       @RequestBody UpdateTablesRequest updateTablesRequest) {
+        return new ResponseEntity<>(tableService.updateTables(restaurantId, updateTablesRequest), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('OWNER_'+#restaurantId)")
-    @DeleteMapping("/{restaurantId}/tables/{tableId}")
-    public ResponseEntity<Void> deleteTable(@PathVariable UUID restaurantId, @PathVariable UUID tableId) {
-        tableService.deleteTable(restaurantId, tableId);
+    @DeleteMapping("/{restaurantId}/tables")
+    public ResponseEntity<Void> deleteTables(@PathVariable UUID restaurantId, @RequestParam int size) {
+        tableService.deleteTables(restaurantId, size);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
