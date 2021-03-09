@@ -1,0 +1,27 @@
+cp-zookeeper:
+  prometheus:
+    jmx:
+      enabled: false
+cp-kafka:
+  prometheus:
+    jmx:
+      enabled: false
+  configurationOverrides:
+    "auto.create.topics.enable": true
+    
+cp-schema-registry:
+  enabled: true
+  prometheus:
+    jmx:
+      enabled: false
+cp-kafka-rest:
+  enabled: false
+
+cp-kafka-connect:
+  enabled: false
+
+cp-ksql-server:
+  enabled: false
+      
+cp-control-center:
+  enabled: false

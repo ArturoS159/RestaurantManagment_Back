@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-server
+  labels:
+    app: resource-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-server
+  template:
+    metadata:
+      labels:
+        app: resource-server
+    spec:
+      containers:
+      - name: resource-server
+        image: resource-server
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8881
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-server
+  labels:
+    app: resource-server
+spec:
+  ports:
+  - port: 8881
+    protocol: TCP
+  selector:
+    app: resource-server
+  type: ClusterIP

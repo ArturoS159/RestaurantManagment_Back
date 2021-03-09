@@ -1,0 +1,40 @@
+prometheus:
+  url: http://prometheus-server.monitoring.svc
+  port: 80
+
+rules:
+  default: false
+  custom:
+  - seriesQuery: '{__name__=~"^http_server_requests_seconds_.*"}'
+    resources:
+      overrides:
+        kubernetes_namespace:
+          resource: namespace
+        kubernetes_pod_name:
+          resource: pod
+    name:
+      matches: "^http_server_requests_seconds_count(.*)"
+      as: "http_server_requests_seconds_count_sum_auth"
+    metricsQuery: sum(rate(<<.Series>>{<<.LabelMatchers>>,app="auth-server"}[5m])) by (<<.GroupBy>>)
+  - seriesQuery: '{__name__=~"^http_server_requests_seconds_.*"}'
+    resources:
+      overrides:
+        kubernetes_namespace:
+          resource: namespace
+        kubernetes_pod_name:
+          resource: pod
+    name:
+      matches: "^http_server_requests_seconds_count(.*)"
+      as: "http_server_requests_seconds_count_sum_restaurant"
+    metricsQuery: sum(rate(<<.Series>>{<<.LabelMatchers>>,app="restaurant-service"}[5m])) by (<<.GroupBy>>)
+  - seriesQuery: '{__name__=~"^http_server_requests_seconds_.*"}'
+    resources:
+      overrides:
+        kubernetes_namespace:
+          resource: namespace
+        kubernetes_pod_name:
+          resource: pod
+    name:
+      matches: "^http_server_requests_seconds_count(.*)"
+      as: "http_server_requests_seconds_count_sum_order"
+    metricsQuery: sum(rate(<<.Series>>{<<.LabelMatchers>>,app="order-service"}[5m])) by (<<.GroupBy>>)
